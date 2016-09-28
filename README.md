@@ -15,7 +15,7 @@ else begin
     some other code
 end
 ```
-inputs are defined in the module declaration 
+inputs and outputs are defined in the module declaration 
 ```
 module MyModule(
     input in,
