@@ -26,7 +26,7 @@ module mag_sw(
 		input RFS, LFS, RRS, LRS,
 		input SW0
 );
-assign led0 = LEDS[0];
+assign led0 = LEDSAEMINEOSJER[0];
 assign led1 = LEDS[1];
 assign led2 = LEDS[2];
 assign led3 = LEDS[3];
