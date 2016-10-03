@@ -20,8 +20,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module mag_sw(
-		output led0, led1, led2, led3, led4, led5, led6, led7, //Led output for testing
-		output reg [3:0]LEDS,
 		output reg [3:0]DIR, //Actual output
 		input clk,
 		input RFS, RRS, LFS, LRS //Sensor input
@@ -29,18 +27,10 @@ module mag_sw(
 
 reg [24:0] COUNT_ONE = 0;
 reg [24:0] COUNT_TWO = 0;
+reg [3:0] LEDS //Stable output
 reg [3:0] SIGNAL; //Used to store realtime signal
 reg [1:0] TEST = 0;
 parameter MAX_COUNT = 12_500_000; // 500 ms time delay
-
-assign led0 = LEDS[0];	//Led outputs for testing purposes
-assign led1 = LEDS[1];
-assign led2 = LEDS[2];
-assign led3 = LEDS[3];
-assign led4 = DIR[0];
-assign led5 = DIR[1];
-assign led6 = DIR[2];
-assign led7 = DIR[3];
 
 always@(posedge clk)begin
 
@@ -107,8 +97,7 @@ case (LEDS)			//Case Statement for output to main module
 endcase
 
 end	
-	
-	
+		
 endmodule
 
 
