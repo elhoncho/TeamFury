@@ -1,0 +1,55 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    10:19:56 10/03/2016 
+// Design Name: 
+// Module Name:    colDetect 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description: 
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
+module colDetect(
+	input clk,
+	input sens1, sens2,
+	output drive	
+    );
+	 
+	reg regSens1;
+	reg regSens2; 
+
+	assign sens1 = regSens1;
+	assign sens2 = regSens2;
+
+always @(posedge clk)
+	begin 
+		if (regSens1) begin 
+			drive <= 0;
+		end 
+		else	
+		drive <= 1; 
+	end 
+	
+always @(posedge clk
+	begin
+		if (regSens2) begin
+			drive <= 0;
+		end
+		else 
+		drive <= 1; 
+	end
+	
+	
+//code for drive 
+
+
+endmodule
