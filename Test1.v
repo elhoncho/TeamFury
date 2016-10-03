@@ -20,73 +20,71 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module mag_sw(
-		output led0, led1, led2, led3, led4, led5, led6, led7,
-		output reg [7:0]LEDS,
-	   output seg_a, seg_b, seg_c, seg_d, seg_e, seg_f, seg_g, seg_dp,	
-		input RFS, LFS, RRS, LRS,
-		input SW0
+		output led0, led1, led2, led3, led4, led5, led6, led7, //Led output for testing
+		output reg [3:0]LEDS,
+		output reg [3:0]DIR, //Actual output
+		input clk,
+		input RFS, RRS, LFS, LRS //Sensor input
 );
-assign led0 = LEDS[0];
+
+reg [24:0] COUNT_ONE = 0;
+reg [24:0] COUNT_TWO = 0;
+reg [3:0] SIGNAL; //Used to store realtime signal
+reg [1:0] TEST = 0;
+parameter MAX_COUNT = 12_500_000; // 500 ms time delay
+
+assign led0 = LEDS[0];	//Led outputs for testing purposes
 assign led1 = LEDS[1];
 assign led2 = LEDS[2];
 assign led3 = LEDS[3];
-assign led4 = LEDS[4];
-assign led5 = LEDS[5];
-assign led6 = LEDS[6];
-assign led7 = LEDS[7];
+assign led4 = DIR[0];
+assign led5 = DIR[1];
+assign led6 = DIR[2];
+assign led7 = DIR[3];
 
-initial begin
-LEDS = 8'b0000_0000;
-end
+always@(posedge clk)begin
 
-always @(*)
-begin
-if (SW0) //Forward motion detected
-begin
-	if(RFS == 0)
-		begin
-		if (LFS == 0)
-	       LEDS = 8'b1111_1111; //proceed
-		else
-		  LEDS = 8'b1111_0000; //Turn left
+SIGNAL[0] <= RFS;
+SIGNAL[1] <= LFS;
+SIGNAL[2] <= RRS;
+SIGNAL[3] <= LRS;
+
+
+	if (LEDS != SIGNAL)begin //test for change in signal
+		if(COUNT_ONE < MAX_COUNT) begin //Delay count 1
+			COUNT_ONE <= COUNT_ONE + 1;
+			TEST <= 1;
 		end
-	else if(LFS == 0)
-		  begin
-	     LEDS = 8'b0000_1111; //Turn right
-		  end
-   else begin
-		 LEDS = 8'b0000_0000; //Stop
-	     end
+      else if(LEDS != SIGNAL && TEST >= 1)begin		//Signal still there?
+					if(COUNT_TWO < MAX_COUNT) begin //Delay count 2
+						COUNT_TWO <= COUNT_TWO + 1;
+						TEST <= 2;
+					end
+					else if (LEDS != SIGNAL && TEST >= 1)begin //Signal Still there?
+								LEDS <= ~SIGNAL; //Place signal input to LED output
+								COUNT_ONE <= 0;	//Reset count values
+								COUNT_TWO <= 0;
+				 end
+		end
+	end
+	else if (SIGNAL == 4'b11_11) begin //No signal
+		LEDS <= 4'b00_00;			//Turn LEDS off
+	end	
+end	
 	
-   end
-else if (~SW0) //Reverse motion detected
-		begin
-			if(RRS == 0)
-			begin
-			if (LRS == 0)
-				LEDS = 8'b1111_1111; //proceed
-			else
-			LEDS = 8'b1111_0000; //Turn left
-			end
-			else if(LRS == 0)
-			begin
-			LEDS = 8'b0000_1111; //Turn right
-			end
-			else begin
-			LEDS = 8'b0000_0000; //Stop
-			end
-		end
-end		
+	
+always@(LEDS)begin
 
-assign seg_a = 1;
-assign seg_b = 1;
-assign seg_c = 1;
-assign seg_d = 1;
-assign seg_e = 1;
-assign seg_f = 1;
-assign seg_g = 1;
-assign seg_dp = 1;
+case (LEDS)			//Case Statement for output to main module
+						//Still in progress
+	4'b00_11: DIR <= 4'b00_11;
+	4'b11_00: DIR <= 4'b11_00;
+	default: DIR <= 4'b00_00;
+endcase
 
-
-
+end	
+	
+	
 endmodule
+
+
