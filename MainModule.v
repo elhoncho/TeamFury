@@ -14,7 +14,8 @@ module MainModule(
 	 output sevenSeg0, 
     output sevenSeg1, 
 	 output sevenSeg2, 
-	 output sevenSeg3
+	 output sevenSeg3,
+	 output testOut
     );
 	
 	 //PWM Parameters
@@ -62,7 +63,7 @@ module MainModule(
 	 assign hbIn4 = regHbIn4;
 	 
 	 //Testing Pin
-	 assign pwmOut = regVeerSpeedPwm;
+	 assign testOut = regVeerSpeedPwm;
 	 
 
 	 //Turn Off The 7-Seg Display
@@ -76,20 +77,20 @@ module MainModule(
 	     //Full Speed PWM
 	     pwmFullSpeedCount <= pwmFullSpeedCount +1;
 		  if(pwmFullSpeedCount == PWM_COUNT_FULL_SPEED_ON) begin
-	         regFullSpeedPwm = 0;
+	         regFullSpeedPwm <= 0;
 		  end
 		  else if(pwmFullSpeedCount == PWM_COUNT_FREQ) begin
-				regFullSpeedPwm = 1;
+				regFullSpeedPwm <= 1;
 				pwmFullSpeedCount <= 0;
 		  end
 		  
 		  //Veer Speed PWM
 		  pwmVeerSpeedCount <= pwmVeerSpeedCount +1;
 		  if(pwmVeerSpeedCount == PWM_COUNT_VEER_SPEED_ON) begin
-	         regVeerSpeedPwm = 0;
+	         regVeerSpeedPwm <= 0;
 		  end
 		  else if(pwmVeerSpeedCount == PWM_COUNT_FREQ) begin
-				regVeerSpeedPwm = 1;
+				regVeerSpeedPwm <= 1;
 				pwmVeerSpeedCount <= 0;
 		  end
 	 end
@@ -100,7 +101,7 @@ module MainModule(
 		      FORWARDS: begin
 				    //Collision detected
 					 if(collision) begin
-					     driveState = COLLISION;
+					     driveState <= COLLISION;
 					 end
 					 //Veer Left
 					 else if(veerLeft) begin

@@ -9,3 +9,4 @@ NET "sevenSeg0" LOC = "F12";
 NET "sevenSeg1" LOC = "J12";
 NET "sevenSeg2" LOC = "M13";
 NET "sevenSeg3" LOC = "K14";
+NET "testOut" LOC = "B5";
