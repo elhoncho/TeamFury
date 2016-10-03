@@ -77,9 +77,33 @@ always@(LEDS)begin
 
 case (LEDS)			//Case Statement for output to main module
 						//Still in progress
-	4'b00_11: DIR <= 4'b00_11;
-	4'b11_00: DIR <= 4'b11_00;
-	default: DIR <= 4'b00_00;
+						//Basic Forward Only tracking outside of tape
+	//Proceed at Full Speed
+	4'b00_00: DIR <= 4'b00_00;
+	4'b00_01: DIR <= 4'b00_00;
+	4'b00_10: DIR <= 4'b00_00;
+	4'b00_11: DIR <= 4'b00_00;
+	
+	//Veer Left
+	4'b10_00: DIR <= 4'b01_01;
+	4'b10_01: DIR <= 4'b01_01;
+	4'b10_10: DIR <= 4'b01_01;
+	4'b10_11: DIR <= 4'b01_01;
+	
+   //Veer Right
+	4'b01_00: DIR <= 4'b10_01;
+	4'b01_01: DIR <= 4'b10_01;
+	4'b01_10: DIR <= 4'b10_01;
+	4'b01_11: DIR <= 4'b10_01;
+	
+	
+	//Stop
+	4'b11_00: DIR <= 4'b11_11;
+	4'b11_01: DIR <= 4'b11_11;
+	4'b11_10: DIR <= 4'b11_11;
+	4'b11_11: DIR <= 4'b11_11;
+	
+	default: DIR <= 4'b11_11;
 endcase
 
 end	
