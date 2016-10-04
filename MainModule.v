@@ -7,7 +7,7 @@ module MainModule(
 	input clk,
 	
 	//Drive
-	output hbEnAa, 
+	output hbEnA, 
 	output hbEnB, 
 	output hbIn1, 
 	output hbIn2, 
