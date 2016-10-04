@@ -48,7 +48,7 @@ module DirectionControl(
 		end	
 	end	
 	
-	always@(LEDS)begin
+	always@(LEDS)begin ////////////WRONG//////////
 		//Case Statement for output to main module
 		//Still in progress
 		//Basic Forward Only tracking outside of tape
