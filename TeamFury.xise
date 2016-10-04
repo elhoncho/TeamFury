@@ -22,6 +22,7 @@
     <file xil_pn:name="ConstraintsFile.ucf" xil_pn:type="FILE_UCF">
       <association xil_pn:name="Implementation" xil_pn:seqID="0"/>
     </file>
+<<<<<<< HEAD
     <file xil_pn:name="DirectionControl.v" xil_pn:type="FILE_VERILOG">
       <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="58"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="1"/>
@@ -29,6 +30,11 @@
     <file xil_pn:name="ToneDetection.v" xil_pn:type="FILE_VERILOG">
       <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="59"/>
       <association xil_pn:name="Implementation" xil_pn:seqID="0"/>
+=======
+    <file xil_pn:name="colDetect.v" xil_pn:type="FILE_VERILOG">
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="3"/>
+      <association xil_pn:name="Implementation" xil_pn:seqID="3"/>
+>>>>>>> origin/master
     </file>
   </files>
 
