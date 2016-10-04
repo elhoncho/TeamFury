@@ -4,9 +4,12 @@
 // Direction Control
 //////////////////////////////////////////////////////////////////////////////////
 module DirectionControl(
-		output reg [3:0]DIR, //Actual output
 		input clk,
-		input RFS, RRS, LFS, LRS //Sensor input
+		input RFS, 
+		input RRS, 
+		input LFS, 
+		input LRS,
+		output reg [3:0]DIR
    );
 	
 	reg [24:0] COUNT_ONE = 0;
