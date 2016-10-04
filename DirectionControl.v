@@ -1,31 +1,17 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date:    22:02:44 10/03/2016 
-// Design Name: 
-// Module Name:    DirectionControl 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
-//
-// Dependencies: 
-//
-// Revision: 
-// Revision 0.01 - File Created
-// Additional Comments: 
-//
+// Team Fury
+// Direction Control
 //////////////////////////////////////////////////////////////////////////////////
 module DirectionControl(
-	output reg [3:0]DIR, //Actual output
-	input clk,
-	input RFS, RRS, LFS, LRS //Sensor input
-    );
+		output reg [3:0]DIR, //Actual output
+		input clk,
+		input RFS, RRS, LFS, LRS //Sensor input
+   );
+	
 	reg [24:0] COUNT_ONE = 0;
 	reg [24:0] COUNT_TWO = 0;
-	reg [3:0] LEDS //Stable output
+	reg [3:0] LEDS; //Stable output
 	reg [3:0] SIGNAL; //Used to store realtime signal
 	reg [1:0] TEST = 0;
 
@@ -66,31 +52,30 @@ module DirectionControl(
 		//Proceed at Full Speed
 							
 		case (LEDS)
-			4'b00_00: DIR <= 4'b00_00;
-			4'b00_01: DIR <= 4'b00_00;
-			4'b00_10: DIR <= 4'b00_00;
-			4'b00_11: DIR <= 4'b00_00;
+			4'b00_00: DIR = 4'b00_00;
+			4'b00_01: DIR = 4'b00_00;
+			4'b00_10: DIR = 4'b00_00;
+			4'b00_11: DIR = 4'b00_00;
 		
 			//Veer Left
-			4'b10_00: DIR <= 4'b01_01;
-			4'b10_01: DIR <= 4'b01_01;
-			4'b10_10: DIR <= 4'b01_01;
-			4'b10_11: DIR <= 4'b01_01;
+			4'b10_00: DIR = 4'b01_01;
+			4'b10_01: DIR = 4'b01_01;
+			4'b10_10: DIR = 4'b01_01;
+			4'b10_11: DIR = 4'b01_01;
 			
 			//Veer Right
-			4'b01_00: DIR <= 4'b10_01;
-			4'b01_01: DIR <= 4'b10_01;
-			4'b01_10: DIR <= 4'b10_01;
-			4'b01_11: DIR <= 4'b10_01;
-			
+			4'b01_00: DIR = 4'b10_01;
+			4'b01_01: DIR = 4'b10_01;
+			4'b01_10: DIR = 4'b10_01;
+			4'b01_11: DIR = 4'b10_01;
 			
 			//Stop
-			4'b11_00: DIR <= 4'b11_11;
-			4'b11_01: DIR <= 4'b11_11;
-			4'b11_10: DIR <= 4'b11_11;
-			4'b11_11: DIR <= 4'b11_11;
+			4'b11_00: DIR = 4'b11_11;
+			4'b11_01: DIR = 4'b11_11;
+			4'b11_10: DIR = 4'b11_11;
+			4'b11_11: DIR = 4'b11_11;
 			
-			default: DIR <= 4'b11_11;
+			default: DIR = 4'b11_11;
 		endcase
 	end
 endmodule

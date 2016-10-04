@@ -5,18 +5,30 @@
 //////////////////////////////////////////////////////////////////////////////////
 module MainModule(
 	input clk,
+	
+	//Drive
 	output hbEnA, 
 	output hbEnB, 
 	output hbIn1, 
 	output hbIn2, 
 	output hbIn3,
 	output hbIn4,
+	
+	//Direction Control
+	input RFS, RRS, LFS, LRS,
+	
+	//Seven Seg
 	output sevenSeg0, 
 	output sevenSeg1, 
 	output sevenSeg2, 
 	output sevenSeg3,
+	
+	//Test Output
 	output testOut
 	);
+	
+	//Input from Direction Control module
+	wire [3:0] dirControl;
 
 	//PWM Parameters
 	//Do not exceed 80% on per H-Bridge specifications (Allows for a max of 2.5A Stall)
@@ -50,9 +62,7 @@ module MainModule(
 
 	//Drive State Machine Registers
 	reg [1:0] driveState = FORWARDS;
-	reg collision = 0;
-	reg veerLeft = 0;
-	reg veerRight = 0;
+	reg colDetect = 0;
 
 	//Pin Assignments
 	assign hbEnA = regHbEnA;
@@ -71,6 +81,16 @@ module MainModule(
 	assign sevenSeg1 = 1;
 	assign sevenSeg2 = 1;
 	assign sevenSeg3 = 1;
+
+	//Instanciate Drive Control
+	DirectionControl myDirectionControl(
+		.clk	(clk),
+		.RFS	(RFS),
+		.RRS	(RRS),
+		.LFS	(LFS),
+		.LRS	(LRS),
+		.DIR	(dirControl)
+	);
 
 	//PWM
 	always @(posedge clk) begin
@@ -100,11 +120,11 @@ module MainModule(
 		case(driveState)
 			FORWARDS: begin
 				//Collision detected
-				if(collision) begin
+				if(colDetect) begin
 					driveState <= COLLISION;
 				end
-				//Veer Left
-				else if(veerLeft) begin
+				//Turn Left
+				else if(dirControl[3:2] == 2'b01) begin
 					regHbEnA <= 1 & regVeerSpeedPwm;
 					regHbEnB <= 1 & regFullSpeedPwm;
 					regHbIn1 <= 0;
@@ -112,13 +132,23 @@ module MainModule(
 					regHbIn3 <= 1;
 					regHbIn4 <= 0;
 				end
-				//Veer Right
-				else if(veerRight) begin
+				//Turn Right
+				else if(dirControl[3:2] == 2'b10) begin
 					regHbEnA <= 1 & regFullSpeedPwm;
 					regHbEnB <= 1 & regVeerSpeedPwm;
 					regHbIn1 <= 0;
 					regHbIn2 <= 1;
 					regHbIn3 <= 1;
+					regHbIn4 <= 0;
+				end
+				//Stop
+				//TODO: Think about how puting the enables to 0 spins the motors where as the inputs to 0 is a break
+				else if(dirControl[3:2] == 2'b11) begin
+					regHbEnA <= 0;
+					regHbEnB <= 0;
+					regHbIn1 <= 0;
+					regHbIn2 <= 0;
+					regHbIn3 <= 0;
 					regHbIn4 <= 0;
 				end
 				//Straight
@@ -138,6 +168,10 @@ module MainModule(
 			COLLISION: begin
 				regHbEnA <= 0;
 				regHbEnB <= 0;
+				if(!colDetect)begin
+				//TODO: Be sure to setup a case for when the robot is doing the track backwards
+					driveState <= FORWARDS;
+				end
 			end
 
 			JUNCTION: begin

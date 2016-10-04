@@ -1,22 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date:    15:30:25 10/03/2016 
-// Design Name: 
-// Module Name:    ToneDetection 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
-//
-// Dependencies: 
-//
-// Revision: 
-// Revision 0.01 - File Created
-// Additional Comments: 
-//
+// Team Fury
+// Tone Detection
 //////////////////////////////////////////////////////////////////////////////////
 module ToneDetection(
 	 input clock,

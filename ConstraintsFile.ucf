@@ -18,16 +18,6 @@ NET "RFS" LOC = "B9" | pullup;
 NET "RRS" LOC = "A10" | pullup;
 NET "LRS" LOC = "C9" | pullup;
 
-#LEDs
-NET "led0" LOC = "M5";
-NET "led1" LOC = "M11";
-NET "led2" LOC = "P7";
-NET "led3" LOC = "P6";
-NET "led4" LOC = "N5";
-NET "led5" LOC = "N4";
-NET "led6" LOC = "P4";
-NET "led7" LOC = "G1";
-
 #Seven Seg
 NET "sevenSeg0" LOC = "F12";
 NET "sevenSeg1" LOC = "J12";
