@@ -1,12 +1,35 @@
+#Clock
+NET "clk" LOC = "B8";
+
+#Drive Pins
 NET "hbEnA"  LOC = "B2";
 NET "hbIn1" LOC = "A3";
 NET "hbIn2" LOC = "J3";
 NET "hbEnB" LOC = "C6";
 NET "hbIn3" LOC = "B6";
 NET "hbIn4" LOC = "C5";
-NET "clock" LOC = "B8";
+
+#Test Pin
+NET "testOut" LOC = "B5";
+
+#Direction Control Pins
+NET "LFS" LOC = "A9" | pullup;
+NET "RFS" LOC = "B9" | pullup;
+NET "RRS" LOC = "A10" | pullup;
+NET "LRS" LOC = "C9" | pullup;
+
+#LEDs
+NET "led0" LOC = "M5";
+NET "led1" LOC = "M11";
+NET "led2" LOC = "P7";
+NET "led3" LOC = "P6";
+NET "led4" LOC = "N5";
+NET "led5" LOC = "N4";
+NET "led6" LOC = "P4";
+NET "led7" LOC = "G1";
+
+#Seven Seg
 NET "sevenSeg0" LOC = "F12";
 NET "sevenSeg1" LOC = "J12";
 NET "sevenSeg2" LOC = "M13";
 NET "sevenSeg3" LOC = "K14";
-NET "testOut" LOC = "B5";
