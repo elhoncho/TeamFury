@@ -5,6 +5,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 module MainModule(
 	 input clock,
+	 input bp1,
+	 input bp2,
+	 input bp3,
+	 input bp4,
+	 input bp5,
     output hbEnA, 
     output hbEnB, 
     output hbIn1, 
@@ -60,17 +65,13 @@ module MainModule(
 	 assign hbIn2 = regHbIn2;
 	 assign hbIn3 = regHbIn3;
 	 assign hbIn4 = regHbIn4;
-	 
-	 //Testing Pin
-	 assign pwmOut = regVeerSpeedPwm;
-	 
 
 	 //Turn Off The 7-Seg Display
 	 assign sevenSeg0 = 1;
 	 assign sevenSeg1 = 1;
 	 assign sevenSeg2 = 1;
 	 assign sevenSeg3 = 1;
-	 
+	 	 
 	 //PWM
 	 always @(posedge clock) begin
 	     //Full Speed PWM
@@ -104,8 +105,8 @@ module MainModule(
 					 end
 					 //Veer Left
 					 else if(veerLeft) begin
-					     regHbEnA <= 1 & regVeerSpeedPwm;
-	                 regHbEnB <= 1 & regFullSpeedPwm;
+					     regHbEnA <= regVeerSpeedPwm;
+	                 regHbEnB <= regFullSpeedPwm;
 	                 regHbIn1 <= 0;
 	                 regHbIn2 <= 1;
 	                 regHbIn3 <= 1;
@@ -113,8 +114,8 @@ module MainModule(
 					 end
 					 //Veer Right
 					 else if(veerRight) begin
-					     regHbEnA <= 1 & regFullSpeedPwm;
-	                 regHbEnB <= 1 & regVeerSpeedPwm;
+					     regHbEnA <= regFullSpeedPwm;
+	                 regHbEnB <= regVeerSpeedPwm;
 	                 regHbIn1 <= 0;
 	                 regHbIn2 <= 1;
 	                 regHbIn3 <= 1;
@@ -122,8 +123,8 @@ module MainModule(
 					 end
 					 //Straight
 					 else begin
-					     regHbEnA <= 1 & regFullSpeedPwm;
-	                 regHbEnB <= 1 & regFullSpeedPwm;
+					     regHbEnA <= regFullSpeedPwm;
+	                 regHbEnB <= regFullSpeedPwm;
 	                 regHbIn1 <= 0;
 	                 regHbIn2 <= 1;
 	                 regHbIn3 <= 1;
@@ -140,6 +141,16 @@ module MainModule(
 				end
 				
 				JUNCTION: begin
+					 if (bp1 == 1)
+						driveState = COLLISION;
+					 if (bp1 == 2)
+					   driveState = FORWARDS;
+					 if (bp1 == 3)
+					   veerLeft = 1;
+					 if (bp1 == 4)
+					   veerRight = 1;
+					 if (bp1 == 5)	
+					   driveState = REVERSE;
 				end
 				
 			endcase
