@@ -31,7 +31,7 @@ module MainModule(
 	input bp2,
 	input bp3,
 	input bp4,
-	input bp5,
+	input bp5
 	);
 	
 	//Input from Direction Control module
