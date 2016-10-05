@@ -13,10 +13,6 @@ module DirectionControl(
 		//input LRS,
 		//input Forward,
 		//input Backward,
-		output led0,
-		output led1,
-		output led2,
-		output led3,
 		output reg [3:0]DIR
    );
 	
@@ -31,12 +27,6 @@ module DirectionControl(
 	parameter MAX_COUNT = 12_500_000; // 500 ms time delay
 	parameter CORNER_TIMER = 50_000_000;
 	
-	assign led0 = DIR[3];
-	assign led1 = DIR[2];
-	assign led2 = DIR[1];
-	assign led3 = DIR[0];
-	
-
 	always@(posedge clk)begin
 		Signal[0] <= LMS;	//[2]
 		Signal[1] <= RMS;	//[3]
