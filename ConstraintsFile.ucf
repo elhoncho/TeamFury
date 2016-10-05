@@ -9,17 +9,24 @@ NET "hbEnB" LOC = "C6";
 NET "hbIn3" LOC = "B6";
 NET "hbIn4" LOC = "C5";
 
-#Test Pin
-NET "testOut" LOC = "B5";
-
 #Direction Control Pins
 NET "LFS" LOC = "A9" | pullup;
 NET "RFS" LOC = "B9" | pullup;
 NET "RRS" LOC = "A10" | pullup;
 NET "LRS" LOC = "C9" | pullup;
 
+#Tone Detection Pins
+NET "bp1" LOC = "F13";
+NET "bp2" LOC = "G14";
+NET "bp3" LOC = "J13";
+NET "bp4" LOC = "J14";
+NET "bp5" LOC = "K13";
+
 #Seven Seg
 NET "sevenSeg0" LOC = "F12";
 NET "sevenSeg1" LOC = "J12";
 NET "sevenSeg2" LOC = "M13";
 NET "sevenSeg3" LOC = "K14";
+
+#Test Pin
+NET "testOut" LOC = "B5";

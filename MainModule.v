@@ -15,7 +15,10 @@ module MainModule(
 	output hbIn4,
 	
 	//Direction Control
-	input RFS, RRS, LFS, LRS,
+	input RFS, 
+	input RRS, 
+	input LFS, 
+	input LRS,
 	
 	//Seven Seg
 	output sevenSeg0, 
@@ -24,7 +27,7 @@ module MainModule(
 	output sevenSeg3,
 	
 	//Test Output
-	output testOut
+	output testOut,
 
 	//Tone  Detection
 	input bp1,
@@ -36,22 +39,32 @@ module MainModule(
 	
 	//Input from Direction Control module
 	wire [3:0] dirControl;
+	
+	//Input from Tone Detection module
+	wire tdEn;
+	wire [1:0] tdDir;
 
 	//PWM Parameters
 	//Do not exceed 80% on per H-Bridge specifications (Allows for a max of 2.5A Stall)
-	parameter   PWM_FULL_SPEED_PERCENT_ON = 80;
-	parameter   PWM_VEER_SPEED_PERCENT_ON = 40;
-	parameter   PWM_FREQUENCY  = 80;
+	parameter PWM_FULL_SPEED_PERCENT_ON = 80;
+	parameter PWM_VEER_SPEED_PERCENT_ON = 40;
+	parameter PWM_FREQUENCY  = 80;
 
-	parameter   PWM_COUNT_FREQ = 50_000_000/(PWM_FREQUENCY);
-	parameter   PWM_COUNT_FULL_SPEED_ON   = PWM_COUNT_FREQ*PWM_FULL_SPEED_PERCENT_ON/100;
-	parameter   PWM_COUNT_VEER_SPEED_ON   = PWM_COUNT_FREQ*PWM_VEER_SPEED_PERCENT_ON/100;
+	parameter PWM_COUNT_FREQ = 50_000_000/(PWM_FREQUENCY);
+	parameter PWM_COUNT_FULL_SPEED_ON   = PWM_COUNT_FREQ*PWM_FULL_SPEED_PERCENT_ON/100;
+	parameter PWM_COUNT_VEER_SPEED_ON   = PWM_COUNT_FREQ*PWM_VEER_SPEED_PERCENT_ON/100;
 
 	//Drive State Machine States
-	parameter   FORWARDS = 2'b00;
-	parameter	 REVERSE = 2'b01;
-	parameter   COLLISION = 2'b10;
-	parameter   JUNCTION = 2'b11;
+	parameter FORWARDS = 2'b00;
+	parameter REVERSE = 2'b01;
+	parameter COLLISION = 2'b10;
+	parameter JUNCTION = 2'b11;
+	
+	//Junction Conditions
+	parameter  STRAIGHT = 2'b00;
+	parameter  LEFT = 2'b01;
+	parameter  RIGHT = 2'b10;
+	parameter  BACK = 2'b11;
 
 	//PWM Registers
 	reg regFullSpeedPwm = 0;
@@ -132,8 +145,8 @@ module MainModule(
 				end
 				//Turn Left
 				else if(dirControl[3:2] == 2'b01) begin
-					regHbEnA <= 1 & regVeerSpeedPwm;
-					regHbEnB <= 1 & regFullSpeedPwm;
+					regHbEnA <= regVeerSpeedPwm;
+					regHbEnB <= regFullSpeedPwm;
 					regHbIn1 <= 0;
 					regHbIn2 <= 1;
 					regHbIn3 <= 1;
@@ -141,25 +154,14 @@ module MainModule(
 				end
 				//Turn Right
 				else if(dirControl[3:2] == 2'b10) begin
-					regHbEnA <= 1 & regFullSpeedPwm;
-					regHbEnB <= 1 & regVeerSpeedPwm;
+					regHbEnA <= regFullSpeedPwm;
+					regHbEnB <= regVeerSpeedPwm;
 					regHbIn1 <= 0;
 					regHbIn2 <= 1;
 					regHbIn3 <= 1;
 					regHbIn4 <= 0;
 				end
-				
-				JUNCTION: begin
-					 if (bp1 == 1)
-						driveState = COLLISION;
-					 if (bp1 == 2)
-					   driveState = FORWARDS;
-					 if (bp1 == 3)
-					   veerLeft = 1;
-					 if (bp1 == 4)
-					   veerRight = 1;
-					 if (bp1 == 5)	
-					   driveState = REVERSE;
+
 				//Stop
 				//TODO: Think about how puting the enables to 0 spins the motors where as the inputs to 0 is a break
 				else if(dirControl[3:2] == 2'b11) begin
@@ -172,8 +174,8 @@ module MainModule(
 				end
 				//Straight
 				else begin
-					regHbEnA <= 1 & regFullSpeedPwm;
-					regHbEnB <= 1 & regFullSpeedPwm;
+					regHbEnA <= regFullSpeedPwm;
+					regHbEnB <= regFullSpeedPwm;
 					regHbIn1 <= 0;
 					regHbIn2 <= 1;
 					regHbIn3 <= 1;
@@ -182,6 +184,7 @@ module MainModule(
 			end
 
 			REVERSE: begin
+				//TODO: Add code to handle the reverse direction
 			end
 
 			COLLISION: begin
@@ -194,6 +197,20 @@ module MainModule(
 			end
 
 			JUNCTION: begin
+				if(tdEn)begin
+					if(tdDir == STRAIGHT)begin
+						//TODO: Add code for go straight
+					end
+					else if (tdDir == LEFT)begin
+						//TODO: Add code for turn left
+					end
+					else if (tdDir == RIGHT)begin
+						//TODO: Add code for turn right
+					end
+					else if (tdDir == BACK)begin
+						//TODO: Add code for run backwards
+					end
+				end
 			end		
 		endcase
 	end
