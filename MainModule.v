@@ -149,47 +149,64 @@ module MainModule(
 				if(colDetect) begin
 					driveState <= COLLISION;
 				end
-				//Veer Left
-				else if(dirControl == 4'b0101) begin
-					regHbEnA <= regVeerSpeedPwm;
-					regHbEnB <= regFullSpeedPwm;
-					regHbIn1 <= 0;
-					regHbIn2 <= 1;
-					regHbIn3 <= 1;
-					regHbIn4 <= 0;
-				end
-				//Veer Right
-				else if(dirControl == 4'b1001) begin
-					regHbEnA <= regFullSpeedPwm;
-					regHbEnB <= regVeerSpeedPwm;
-					regHbIn1 <= 0;
-					regHbIn2 <= 1;
-					regHbIn3 <= 1;
-					regHbIn4 <= 0;
-				end
-				
-				//Stop Left
-				else if(dirControl == 4'b0111) begin
-					regHbEnA <= regFullSpeedPwm;
-					regHbEnB <= regFullSpeedPwm;
-					regHbIn1 <= 1;
-					regHbIn2 <= 0;
-					regHbIn3 <= 1;
-					regHbIn4 <= 0;
-				end
-				
-				//Stop Right
-				else if(dirControl == 4'b0111) begin
-					regHbEnA <= regFullSpeedPwm;
-					regHbEnB <= regFullSpeedPwm;
-					regHbIn1 <= 0;
-					regHbIn2 <= 1;
-					regHbIn3 <= 0;
-					regHbIn4 <= 1;
+
+				//Turn Left
+				else if(dirControl[3:2] == 2'b01)begin
+					//Veer Left
+					if(dirControl[1:0] == 2'b01)begin
+						regHbEnA <= regVeerSpeedPwm;
+						regHbEnB <= regFullSpeedPwm;
+						regHbIn1 <= 0;
+						regHbIn2 <= 1;
+						regHbIn3 <= 1;
+						regHbIn4 <= 0;
+					end
+					//Stop Left
+					else if(dirControl[1:0] == 1'b11) begin
+						regHbEnA <= regFullSpeedPwm;
+						regHbEnB <= regFullSpeedPwm;
+						regHbIn1 <= 1;
+						regHbIn2 <= 0;
+						regHbIn3 <= 1;
+						regHbIn4 <= 0;
+					end
 				end
 
+				//Turn Right
+				else if(dirControl[3:2] == 2'b10) begin
+					//Veer Right
+					if(dirControl[1:0] == 2'b01) begin
+						regHbEnA <= regFullSpeedPwm;
+						regHbEnB <= regVeerSpeedPwm;
+						regHbIn1 <= 0;
+						regHbIn2 <= 1;
+						regHbIn3 <= 1;
+						regHbIn4 <= 0;
+					end
+					//Stop Right
+					else if(dirControl[1:0] == 2'b11) begin
+						regHbEnA <= regFullSpeedPwm;
+						regHbEnB <= regFullSpeedPwm;
+						regHbIn1 <= 0;
+						regHbIn2 <= 1;
+						regHbIn3 <= 0;
+						regHbIn4 <= 1;
+					end 
+				end
+
+				//Straight
+				else if(dirControl[3:2] == 2'b00) begin
+					if(dirControl[1:0] == 2'b00) begin
+						regHbEnA <= regFullSpeedPwm;
+						regHbEnB <= regFullSpeedPwm;
+						regHbIn1 <= 0;
+						regHbIn2 <= 1;
+						regHbIn3 <= 1;
+						regHbIn4 <= 0;
+					end
+				end
+				
 				//Stop
-				//TODO: Think about how puting the enables to 0 spins the motors where as the inputs to 0 is a break
 				else if(dirControl[3:2] == 2'b11) begin
 					regHbEnA <= 0;
 					regHbEnB <= 0;
@@ -198,14 +215,14 @@ module MainModule(
 					regHbIn3 <= 0;
 					regHbIn4 <= 0;
 				end
-
-				//Straight
+				
+				//Default Stop
 				else begin
 					regHbEnA <= regFullSpeedPwm;
 					regHbEnB <= regFullSpeedPwm;
 					regHbIn1 <= 0;
-					regHbIn2 <= 1;
-					regHbIn3 <= 1;
+					regHbIn2 <= 0;
+					regHbIn3 <= 0;
 					regHbIn4 <= 0;
 				end
 			end
