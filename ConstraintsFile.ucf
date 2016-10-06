@@ -10,10 +10,12 @@ NET "hbIn3" LOC = "B6";
 NET "hbIn4" LOC = "C5";
 
 #Direction Control Pins
-NET "LFS" LOC = "A9" | pullup;
-NET "RFS" LOC = "B9" | pullup;
-NET "RRS" LOC = "A10" | pullup;
-NET "LRS" LOC = "C9" | pullup;
+NET "RFS" LOC = "A9" | pullup;
+NET "LFS" LOC = "B9" | pullup;
+NET "RMS" LOC = "A10" | pullup;
+NET "LMS" LOC = "C9" | pullup;
+NET "RRS" LOC = "C12" | pullup;
+NET "LRS" LOC = "A13" | pullup;
 
 #Tone Detection Pins
 NET "bp1" LOC = "F13";

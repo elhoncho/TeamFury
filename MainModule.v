@@ -16,9 +16,11 @@ module MainModule(
 	
 	//Direction Control
 	input RFS, 
-	input RRS, 
+	input RRS,
+	input RMS,
 	input LFS, 
 	input LRS,
+	input LMS,
 	
 	//Seven Seg
 	output sevenSeg0, 
@@ -107,8 +109,10 @@ module MainModule(
 		.clk	(clk),
 		.RFS	(RFS),
 		.RRS	(RRS),
+		.RMS  (RMS),
 		.LFS	(LFS),
 		.LRS	(LRS),
+		.LMS  (LMS),
 		.DIR	(dirControl)
 	);
 

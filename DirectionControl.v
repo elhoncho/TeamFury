@@ -8,9 +8,9 @@ module DirectionControl(
 		input RFS, 
 		input RRS, 
 		input RMS, 
-		input LMS,
 		input LFS, 
 		input LRS,
+		input LMS,
 		//input Forward,
 		//input Backward,
 		output reg [3:0]DIR
