@@ -18,9 +18,9 @@ module DirectionControl(
 	
 	reg [24:0] CountOne = 0; //Time Delay for input signal
 	reg [24:0] CountTwo = 0;
-   reg [24:0] CountFinal = 0;
+        reg [24:0] CountFinal = 0;
 	reg [27:0] Count90 = 0;
-   reg [5:0] UnstableIn; //Unstable input
+        reg [5:0] UnstableIn; //Unstable input
 	reg [5:0] StableOut; //Stable output
 	reg [5:0] Signal; //Used to store stable input signal
 	reg [1:0] Test;
@@ -50,16 +50,16 @@ module DirectionControl(
 					Test <= 2;
 				end
 				else if (StableOut != Signal && Test >= 1)begin //Signal Still there?
-						  if (CountFinal < MAX_COUNT) begin
-								CountFinal <= CountFinal + 1;
-								Test <= 3;
-						  end
-						  else if (StableOut != Signal && Test >= 2) begin //Signal Still there?
-									StableOut <= ~Signal; //Place signal input to LED output
-									CountOne <= 0;	//Reset count values
-									CountTwo <= 0;
-									CountFinal <= 0;
-									Test <= Test + 1; //Keeps compiler happy
+					 if (CountFinal < MAX_COUNT) begin
+						CountFinal <= CountFinal + 1;
+						Test <= 3;
+					  end
+				          else if (StableOut != Signal && Test >= 2) begin //Signal Still there?
+						StableOut <= ~Signal; //Place signal input to LED output
+						CountOne <= 0;	//Reset count values
+						CountTwo <= 0;
+						CountFinal <= 0;
+						Test <= Test + 1; //Keeps compiler happy
 					end
 				end
 			end
@@ -82,33 +82,33 @@ module DirectionControl(
 			6'b01_??_??: DIR = 4'b10_01;
 			//90 degree or intersect		
 			6'b00_??_??: begin
-								if (Count90 <= CORNER_TIMER) begin
-									 casex (StableOut)
-											  //90 degree left
-											  6'b00_01_??: DIR = 4'b01_11;
-											  //90 degree right
-											  6'b00_10_??: DIR = 4'b10_11;
-												//Hold time
-												default: begin
-													DIR = 4'b00_00;
-													Count90 <= Count90 + 1;
-												end
-									endcase
-								end
-								else 
-										casex (StableOut)
-												//90 degree left
-												6'b00_01_??: DIR = 4'b01_11;
-												//90 degree right
-												6'b00_10_??: DIR = 4'b10_11;
-												//Stop
-												default: DIR = 4'b11_11;
-										endcase
+					if (Count90 <= CORNER_TIMER) begin
+					    casex (StableOut)
+						//90 degree left
+						 6'b00_01_??: DIR = 4'b01_11;
+						 //90 degree right
+					         6'b00_10_??: DIR = 4'b10_11;
+						//Hold time
+						default: begin
+							DIR = 4'b00_00;
+							Count90 <= Count90 + 1;
+							end
+					      endcase
+					 end
+					 else 
+					     casex (StableOut)
+					            //90 degree left
+						    6'b00_01_??: DIR = 4'b01_11;
+						    //90 degree right
+						    6'b00_10_??: DIR = 4'b10_11;
+						    //Stop
+						    default: DIR = 4'b11_11;
+						endcase
 												
-									if(StableOut != ~Signal) begin //Reset count for next signal
-									   Count90 <= 0;
-									end	
-						      end
+						  if(StableOut != ~Signal) begin //Reset count for next signal
+						     Count90 <= 0;
+						  end	
+					end
 			
 			default: DIR = 4'b11_11;
 		endcase
