@@ -109,10 +109,10 @@ module MainModule(
 		.clk	(clk),
 		.RFS	(RFS),
 		.RRS	(RRS),
-		.RMS  (RMS),
+		.RMS    (RMS),
 		.LFS	(LFS),
 		.LRS	(LRS),
-		.LMS  (LMS),
+		.LMS    (LMS),
 		.DIR	(dirControl)
 	);
 
