@@ -149,8 +149,8 @@ module MainModule(
 				if(colDetect) begin
 					driveState <= COLLISION;
 				end
-				//Turn Left
-				else if(dirControl[3:2] == 2'b01) begin
+				//Veer Left
+				else if(dirControl == 4'b0101) begin
 					regHbEnA <= regVeerSpeedPwm;
 					regHbEnB <= regFullSpeedPwm;
 					regHbIn1 <= 0;
@@ -158,14 +158,34 @@ module MainModule(
 					regHbIn3 <= 1;
 					regHbIn4 <= 0;
 				end
-				//Turn Right
-				else if(dirControl[3:2] == 2'b10) begin
+				//Veer Right
+				else if(dirControl == 4'b1001) begin
 					regHbEnA <= regFullSpeedPwm;
 					regHbEnB <= regVeerSpeedPwm;
 					regHbIn1 <= 0;
 					regHbIn2 <= 1;
 					regHbIn3 <= 1;
 					regHbIn4 <= 0;
+				end
+				
+				//Stop Left
+				else if(dirControl == 4'b0111) begin
+					regHbEnA <= regFullSpeedPwm;
+					regHbEnB <= regFullSpeedPwm;
+					regHbIn1 <= 1;
+					regHbIn2 <= 0;
+					regHbIn3 <= 1;
+					regHbIn4 <= 0;
+				end
+				
+				//Stop Right
+				else if(dirControl == 4'b0111) begin
+					regHbEnA <= regFullSpeedPwm;
+					regHbEnB <= regFullSpeedPwm;
+					regHbIn1 <= 0;
+					regHbIn2 <= 1;
+					regHbIn3 <= 0;
+					regHbIn4 <= 1;
 				end
 
 				//Stop
@@ -178,6 +198,7 @@ module MainModule(
 					regHbIn3 <= 0;
 					regHbIn4 <= 0;
 				end
+
 				//Straight
 				else begin
 					regHbEnA <= regFullSpeedPwm;
