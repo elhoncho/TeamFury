@@ -28,6 +28,16 @@ module DirectionControl(
 	parameter MAX_COUNT = 8_388_608; // 500 ms time delay
 	parameter CORNER_TIMER = 50_000_000; //Detect 90 or intersect
 	
+	//Turning
+	parameter VEER_RIGHT = 4'b10_01;
+	parameter HARD_RIGHT = 4'b10_10;
+	parameter NINETY_RIGHT = 4'b10_11;
+	parameter VEER_LEFT = 4'b01_01;
+	parameter HARD_LEFT = 4'b01_10;
+	parameter NINETY_LEFT = 4'b01_11;
+	parameter PROCEED = 4'b00_00;
+	parameter STOP = 4'b11_11;
+	
 	always@(posedge clk)begin
 	   //Signal inputs
 		UnstableIn[0] <= LRS;
@@ -75,34 +85,33 @@ module DirectionControl(
 		
 		casex (StableOut)
 			//Proceed
-			6'b11_??_??: DIR = 4'b00_00;
+			6'b11_??_??: DIR = PROCEED;
 			//Veer Left
-			6'b10_??_??: DIR = 4'b01_01;
-			//Veer Right
-			6'b01_??_??: DIR = 4'b10_01;
+			6'b10_??_??: DIR = VEER_LEFT;
+			6'b01_??_??: DIR = VEER_RIGHT;
 			//90 degree or intersect		
 			6'b00_??_??: begin
 					if (Count90 <= CORNER_TIMER) begin
 					    casex (StableOut)
 						//90 degree left
-						 6'b00_01_??: DIR = 4'b01_11;
+						 6'b00_01_??: DIR = NINETY_LEFT;
 						 //90 degree right
-					         6'b00_10_??: DIR = 4'b10_11;
+					         6'b00_10_??: DIR = NINETY_RIGHT;
 						//Hold time
 						default: begin
-							DIR = 4'b00_00;
+							DIR = PROCEED;
 							Count90 <= Count90 + 1;
 							end
 					      endcase
 					 end
 					 else 
 					     casex (StableOut)
-					            //90 degree left
-						    6'b00_01_??: DIR = 4'b01_11;
+					       //90 degree left
+						    6'b00_01_??: DIR = NINETY_LEFT;
 						    //90 degree right
-						    6'b00_10_??: DIR = 4'b10_11;
+						    6'b00_10_??: DIR = NINETY_RIGHT;
 						    //Stop
-						    default: DIR = 4'b11_11;
+						    default: DIR = STOP;
 						endcase
 												
 						  if(StableOut != ~Signal) begin //Reset count for next signal
@@ -110,7 +119,7 @@ module DirectionControl(
 						  end	
 					end
 			
-			default: DIR = 4'b11_11;
+			default: DIR = STOP;
 		endcase
 	end
 	
