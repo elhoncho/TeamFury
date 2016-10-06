@@ -13,6 +13,8 @@ module MainModule(
 	output hbIn2, 
 	output hbIn3,
 	output hbIn4,
+	input shaftPulseL,
+	input shaftPulseR,
 	
 	//Direction Control
 	input RFS, 
@@ -109,10 +111,10 @@ module MainModule(
 		.clk	(clk),
 		.RFS	(RFS),
 		.RRS	(RRS),
-		.RMS    (RMS),
+		.RMS  (RMS),
 		.LFS	(LFS),
 		.LRS	(LRS),
-		.LMS    (LMS),
+		.LMS  (LMS),
 		.DIR	(dirControl)
 	);
 

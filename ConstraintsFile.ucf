@@ -5,9 +5,11 @@ NET "clk" LOC = "B8";
 NET "hbEnA"  LOC = "B2";
 NET "hbIn1" LOC = "A3";
 NET "hbIn2" LOC = "J3";
+NET "shaftPulseL" LOC = "B5";
 NET "hbEnB" LOC = "C6";
 NET "hbIn3" LOC = "B6";
 NET "hbIn4" LOC = "C5";
+NET "shaftPulseR" LOC = "B7";
 
 #Direction Control Pins
 NET "RFS" LOC = "A9" | pullup;
@@ -29,6 +31,3 @@ NET "sevenSeg0" LOC = "F12";
 NET "sevenSeg1" LOC = "J12";
 NET "sevenSeg2" LOC = "M13";
 NET "sevenSeg3" LOC = "K14";
-
-#Test Pin
-NET "testOut" LOC = "B5";
