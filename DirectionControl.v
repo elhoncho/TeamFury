@@ -18,9 +18,9 @@ module DirectionControl(
 	
 	reg [23:0] CountOne = 0; //Time Delay for input signal
 	reg [23:0] CountTwo = 0;
-   reg [23:0] CountFinal = 0;
+        reg [23:0] CountFinal = 0;
 	reg [27:0] Count90 = 0;
-   reg [5:0] UnstableIn; //Unstable input
+        reg [5:0] UnstableIn; //Unstable input
 	reg [5:0] StableOut; //Stable output
 	reg [5:0] Signal; //Used to store stable input signal
 	reg [1:0] Test;
