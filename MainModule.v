@@ -162,7 +162,7 @@ module MainModule(
 						regHbIn4 <= 0;
 					end
 					//Stop Left
-					else if(dirControl[1:0] == 1'b11) begin
+					else if(dirControl[1:0] == 2'b11) begin
 						regHbEnA <= regFullSpeedPwm;
 						regHbEnB <= regFullSpeedPwm;
 						regHbIn1 <= 1;
