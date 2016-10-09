@@ -102,7 +102,7 @@ module DirectionControl(
 								DIR = PROCEED;
 								Count90 <= Count90 + 1;
 								end
-								endcase
+							endcase
 						end
 						else 
 							casex (StableOut)
@@ -143,7 +143,7 @@ module DirectionControl(
 								DIR = PROCEED;
 								Count90 <= Count90 + 1;
 								end
-								endcase
+							endcase
 						end
 						else 
 							casex (StableOut)
