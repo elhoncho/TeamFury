@@ -17,9 +17,9 @@ module DirectionControl(
 	
 	reg [24:0] CountOne = 0; //Time Delay for input signal
 	reg [24:0] CountTwo = 0;
-   reg [24:0] CountFinal = 0;
+        reg [24:0] CountFinal = 0;
 	reg [27:0] Count90 = 0;
-   reg [5:0] UnstableIn; //Unstable input
+        reg [5:0] UnstableIn; //Unstable input
 	reg [5:0] StableOut; //Stable output
 	reg [5:0] Signal; //Used to store stable input signal
 	reg [1:0] Test;
@@ -50,29 +50,29 @@ module DirectionControl(
 		Signal <= UnstableIn;
 		
 		if (StableOut != Signal)begin //test for change in signal
-			if(CountOne < MAX_COUNT) begin //Delay count 1
-				CountOne <= CountOne + 1;
-				Test <= 1;
-			end
-			else if(StableOut != Signal && Test >= 1)begin		//Signal still there?
-				if(CountTwo < MAX_COUNT) begin //Delay count 2
-					CountTwo <= CountTwo + 1;
-					Test <= 2;
-				end
-				else if (StableOut != Signal && Test >= 1)begin //Signal Still there?
-						  if (CountFinal < MAX_COUNT) begin
-								CountFinal <= CountFinal + 1;
-								Test <= 3;
-						  end
-						  else if (StableOut != Signal && Test >= 2) begin //Signal Still there?
-									StableOut <= ~Signal; //Place signal input to LED output
-									CountOne <= 0;	//Reset count values
-									CountTwo <= 0;
-									CountFinal <= 0;
-									Test <= Test + 1; //Keeps compiler happy
+		     if(CountOne < MAX_COUNT) begin //Delay count 1
+			 CountOne <= CountOne + 1;
+			  Test <= 1;
+		      end
+		      else if(StableOut != Signal && Test >= 1)begin		//Signal still there?
+			      if(CountTwo < MAX_COUNT) begin //Delay count 2
+				 CountTwo <= CountTwo + 1;
+				 Test <= 2;
+			       end
+			       else if (StableOut != Signal && Test >= 1)begin //Signal Still there?
+					if (CountFinal < MAX_COUNT) begin
+					    CountFinal <= CountFinal + 1;
+					     Test <= 3;
+				         end
+				         else if (StableOut != Signal && Test >= 2) begin //Signal Still there?
+						  StableOut <= ~Signal; //Place signal input to LED output
+						  CountOne <= 0;	//Reset count values
+						  CountTwo <= 0;
+					          CountFinal <= 0;
+					          Test <= Test + 1; //Keeps compiler happy
 					end
 				end
-			end
+		     end
 		end
 		else if (Signal == 6'b11_11_11) begin //No signal
 			StableOut <= 6'b00_00_00;
@@ -96,7 +96,7 @@ module DirectionControl(
 							//90 degree left
 							6'b00_01_??: DIR = NINETY_LEFT;
 							//90 degree right
-									6'b00_10_??: DIR = NINETY_RIGHT;
+							6'b00_10_??: DIR = NINETY_RIGHT;
 							//Hold time
 							default: begin
 								DIR = PROCEED;
