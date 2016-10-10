@@ -115,7 +115,7 @@ module DirectionControl(
 								6'b00_00_??: DIR = STOP;
 							endcase
 												
-							if(StableOut != ~Signal) begin //Reset count for next signal
+							if(StableOut[5:2] != ~Signal[5:2]) begin //Reset count for next signal
 								Count90 <= 0;
 							end	
 						end
@@ -156,7 +156,7 @@ module DirectionControl(
 								6'b??_00_00: DIR = STOP;
 							endcase
 												
-							if(StableOut != ~Signal) begin //Reset count for next signal
+							if(StableOut[3:0] != ~Signal[3:0]) begin //Reset count for next signal
 								Count90 <= 0;
 							end	
 						end
