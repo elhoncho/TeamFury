@@ -42,6 +42,7 @@ module MainModule(
 	);
 	
 	//Input from Direction Control module
+	//wire DirSignal,
 	wire [3:0] dirControl;
 	
 	//Input from Tone Detection module
@@ -115,6 +116,7 @@ module MainModule(
 		.LFS	(LFS),
 		.LRS	(LRS),
 		.LMS  (LMS),
+		//.Direction (DirSignal),
 		.DIR	(dirControl)
 	);
 
