@@ -18,6 +18,7 @@ NET "RMS" LOC = "A10" | pullup;
 NET "LMS" LOC = "C9" | pullup;
 NET "RRS" LOC = "C12" | pullup;
 NET "LRS" LOC = "A13" | pullup;
+NET "Switch" LOC = "P11";
 
 #Tone Detection Pins
 NET "bp1" LOC = "F13";

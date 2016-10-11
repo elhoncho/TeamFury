@@ -87,12 +87,16 @@ module DirectionControl(
 				//Proceed
 				6'b11_??_??: DIR = PROCEED;
 				//Veer Left
-				6'b10_??_??: DIR = VEER_LEFT;
-				6'b01_??_??: DIR = VEER_RIGHT;
+				6'b10_??_??: DIR = VEER_RIGHT;
+				//Veer Right
+				6'b01_??_??: DIR = VEER_LEFT;
 				//90 degree or intersect		
 				6'b00_??_??: begin
 						if (Count90 <= CORNER_TIMER) begin
 							casex (StableOut)
+							6'b10_??_??: DIR = VEER_RIGHT;
+							//Veer Right
+							6'b01_??_??: DIR = VEER_LEFT;
 							//90 degree left
 							6'b00_01_??: DIR = NINETY_LEFT;
 							//90 degree right
@@ -106,7 +110,7 @@ module DirectionControl(
 						end
 						else 
 							casex (StableOut)
-					            //90 degree left
+					         //90 degree left
 								6'b00_01_??: DIR = NINETY_LEFT;
 								//90 degree right
 								6'b00_10_??: DIR = NINETY_RIGHT;
@@ -129,11 +133,16 @@ module DirectionControl(
 				6'b??_??_11: DIR = PROCEED;
 				//Veer Left
 				6'b??_??_01: DIR = VEER_LEFT;
+				//Veer Right
 				6'b??_??_10: DIR = VEER_RIGHT;
 				//90 degree or intersect		
 				6'b??_??_00: begin
 						if (Count90 <= CORNER_TIMER) begin
 							casex (StableOut)
+							//Veer Left
+							6'b??_??_01: DIR = VEER_LEFT;
+							//Veer Right
+							6'b??_??_10: DIR = VEER_RIGHT;
 							//90 degree right
 							6'b??_01_00: DIR = NINETY_RIGHT;
 							//90 degree left

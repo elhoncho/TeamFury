@@ -23,6 +23,7 @@ module MainModule(
 	input LFS, 
 	input LRS,
 	input LMS,
+	input Switch,
 	
 	//Seven Seg
 	output sevenSeg0, 
@@ -99,6 +100,7 @@ module MainModule(
 
 	//Testing Pin
 	assign testOut = regVeerSpeedPwm;
+	assign Direction = Switch;
 
 
 	//Turn Off The 7-Seg Display
@@ -116,7 +118,7 @@ module MainModule(
 		.LFS	(LFS),
 		.LRS	(LRS),
 		.LMS  (LMS),
-		//.Direction (DirSignal),
+		.Direction (Direction),
 		.DIR	(dirControl)
 	);
 
@@ -190,7 +192,7 @@ module MainModule(
 						regHbEnA <= regFullSpeedPwm;
 						regHbEnB <= regFullSpeedPwm;
 						regHbIn1 <= 0;
-						regHbIn2 <= 1;
+						regHbIn2 <= 0;
 						regHbIn3 <= 0;
 						regHbIn4 <= 1;
 					end 
