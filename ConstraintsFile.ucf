@@ -18,7 +18,6 @@ NET "RMS" LOC = "A10" | pullup;
 NET "LMS" LOC = "C9" | pullup;
 NET "RRS" LOC = "C12" | pullup;
 NET "LRS" LOC = "A13" | pullup;
-NET "Switch" LOC = "P11";
 
 #Tone Detection Pins
 NET "bp1" LOC = "F13";
@@ -32,3 +31,11 @@ NET "sevenSeg0" LOC = "F12";
 NET "sevenSeg1" LOC = "J12";
 NET "sevenSeg2" LOC = "M13";
 NET "sevenSeg3" LOC = "K14";
+
+#LEDs
+NET "led1" LOC = "G1";
+NET "led2" LOC = "P4";
+NET "led3" LOC = "N4";
+
+#Collision Detection
+NET "colDetF" LOC = "C13";
