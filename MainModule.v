@@ -192,7 +192,7 @@ module MainModule(
 						regHbEnA <= regFullSpeedPwm;
 						regHbEnB <= regFullSpeedPwm;
 						regHbIn1 <= 0;
-						regHbIn2 <= 0;
+						regHbIn2 <= 1;
 						regHbIn3 <= 0;
 						regHbIn4 <= 1;
 					end 
