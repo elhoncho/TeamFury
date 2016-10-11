@@ -23,7 +23,6 @@ module MainModule(
 	input LFS, 
 	input LRS,
 	input LMS,
-	input Switch,
 	
 	//Seven Seg
 	output sevenSeg0, 
@@ -39,7 +38,15 @@ module MainModule(
 	input bp2,
 	input bp3,
 	input bp4,
-	input bp5
+	input bp5,
+	
+	//LEDs
+	output led1,
+	output led2,
+	output led3,
+	
+	//Collision Detection
+	input colDetF
 	);
 	
 	//Input from Direction Control module
@@ -100,8 +107,6 @@ module MainModule(
 
 	//Testing Pin
 	assign testOut = regVeerSpeedPwm;
-	assign Direction = Switch;
-
 
 	//Turn Off The 7-Seg Display
 	assign sevenSeg0 = 1;
@@ -118,8 +123,11 @@ module MainModule(
 		.LFS	(LFS),
 		.LRS	(LRS),
 		.LMS  (LMS),
-		.Direction (Direction),
-		.DIR	(dirControl)
+		.dcDrive (1'b1),
+		.dcDir	(dirControl),
+		.led1 (led1),
+		.led2 (led2),
+		.led3 (led3)
 	);
 
 	//PWM
@@ -150,7 +158,7 @@ module MainModule(
 		case(driveState)
 			FORWARDS: begin
 				//Collision detected
-				if(colDetect) begin
+				if(colDetF) begin
 					driveState <= COLLISION;
 				end
 
@@ -192,7 +200,7 @@ module MainModule(
 						regHbEnA <= regFullSpeedPwm;
 						regHbEnB <= regFullSpeedPwm;
 						regHbIn1 <= 0;
-						regHbIn2 <= 0;
+						regHbIn2 <= 1;
 						regHbIn3 <= 0;
 						regHbIn4 <= 1;
 					end 
