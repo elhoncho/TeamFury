@@ -3,9 +3,10 @@
 // Team Fury
 // Collision Detection
 //////////////////////////////////////////////////////////////////////////////////
-module colDetect(
+module CollisionDetection(
 	input clk, sens1,
-	output led1, led2, led3
+	output led1, led2, led3,
+	output reg colDetect = 0
     );
 	 
 	parameter NO_COL_DETECT = 0;
@@ -19,7 +20,6 @@ module colDetect(
 	reg regLed3 = 0;
 	reg [1:0] state = 2'b00; 
 	reg [25:0] count = 0;
-	reg colDetect = DRIVE; 	
 	
 	assign led1 = regLed1; 
 	assign led2 = regLed2; 
@@ -33,7 +33,7 @@ module colDetect(
 				regLed1 <= 1;
 				regLed2 <= 0;
 				regLed3 <= 0;
-				if(sens1) begin
+				if(!sens1) begin
 					state <= VALIDATE_SIGNAL;
 				end	
 			end 
@@ -42,7 +42,7 @@ module colDetect(
 				regLed1 <= 0;
 				regLed2 <= 1;
 				regLed3 <= 0;
-				if (sens1) begin
+				if (!sens1) begin
 					count = count + 1; 
 					if (count == 50_000) begin 
 						state <= COLLISION_STATE; 
@@ -60,8 +60,15 @@ module colDetect(
 				regLed1 <= 0;
 				regLed2 <= 0;
 				regLed3 <= 1;
-				if (sens1 == 0) begin 
-					state <= NO_COL_DETECT; 
+				if (sens1) begin
+					count = count +1;
+					if (count == 50_000)begin
+						state <= NO_COL_DETECT; 
+						count = 0;
+					end
+				end
+				else begin
+					count = 0;
 				end
 			end
 		endcase

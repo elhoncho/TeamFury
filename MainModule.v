@@ -40,18 +40,19 @@ module MainModule(
 	input bp4,
 	input bp5,
 	
+	//Collision Detection
+	input colDetF,
+	
 	//LEDs
 	output led1,
 	output led2,
-	output led3,
-	
-	//Collision Detection
-	input colDetF
+	output led3
 	);
 	
 	//Input from Direction Control module
 	//wire DirSignal,
 	wire [3:0] dirControl;
+	wire colDetect;
 	
 	//Input from Tone Detection module
 	wire tdEn;
@@ -95,7 +96,7 @@ module MainModule(
 
 	//Drive State Machine Registers
 	reg [1:0] driveState = FORWARDS;
-	reg colDetect = 0;
+	
 
 	//Pin Assignments
 	assign hbEnA = regHbEnA;
@@ -123,11 +124,18 @@ module MainModule(
 		.LFS	(LFS),
 		.LRS	(LRS),
 		.LMS  (LMS),
-		.dcDrive (1'b1),
-		.dcDir	(dirControl),
+		.Direction (1'b1),
+		.DIR	(dirControl)
+	);
+	
+	//Instanciate COllision Detection
+	CollisionDetection myCollisionDetection(
+		.clk (clk),
+		.sens1 (colDetF),
 		.led1 (led1),
 		.led2 (led2),
-		.led3 (led3)
+		.led3 (led3),
+		.colDetect (colDetect)
 	);
 
 	//PWM
@@ -158,7 +166,7 @@ module MainModule(
 		case(driveState)
 			FORWARDS: begin
 				//Collision detected
-				if(colDetF) begin
+				if(!colDetect) begin
 					driveState <= COLLISION;
 				end
 
@@ -246,8 +254,7 @@ module MainModule(
 			COLLISION: begin
 				regHbEnA <= 0;
 				regHbEnB <= 0;
-				if(!colDetect)begin
-				//TODO: Be sure to setup a case for when the robot is doing the track backwards
+				if(colDetect)begin
 					driveState <= FORWARDS;
 				end
 			end
