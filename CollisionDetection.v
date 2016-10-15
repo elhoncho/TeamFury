@@ -12,8 +12,8 @@ module CollisionDetection(
 	parameter NO_COL_DETECT = 0;
 	parameter VALIDATE_SIGNAL = 1;
 	parameter COLLISION_STATE = 2;
-	parameter DRIVE = 0;
-	parameter STOP = 1; 
+	parameter DRIVE = 1;
+	parameter STOP = 0; 
 
 	reg regLed1 = 0;
 	reg regLed2 = 0;
