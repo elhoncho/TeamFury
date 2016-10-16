@@ -14,17 +14,6 @@ module DirectionControl(
 		input Direction,
 		output reg [3:0]DIR
    );
-	
-	reg [24:0] CountOne = 0; //Time Delay for input signal
-	reg [27:0] Count90 = 0;
-   reg [5:0] unstableIn = 0; //Unstable input
-	reg [5:0] stableSignal = 0; //Stable output
-	reg [5:0] bufferedSignal = 0;
-	reg [5:0] prevSignal = 0; //Used to store stable input signal
-	reg [5:0] tempSignal = 0;
-	reg [2:0] state = 0;
-	reg prevDirection = 0;
-
 
 	parameter MAX_COUNT = 12_500_000; // 500 ms time delay
 	parameter CORNER_TIMER = 50_000_000; //Detect 90 or intersect
@@ -44,6 +33,17 @@ module DirectionControl(
 	parameter NINETY_LEFT = 4'b01_11;
 	parameter PROCEED = 4'b00_00;
 	parameter STOP = 4'b11_11;
+	
+		
+	reg [24:0] CountOne = 0; //Time Delay for input signal
+	reg [27:0] Count90 = 0;
+   reg [5:0] unstableIn = 0; //Unstable input
+	reg [5:0] stableSignal = 0; //Stable output
+	reg [5:0] bufferedSignal = 0;
+	reg [5:0] prevSignal = 0; //Used to store stable input signal
+	reg [5:0] tempSignal = 0;
+	reg [2:0] state = 0;
+	reg prevDirection = 0;
 	
 	
 	always@(posedge clk)begin
