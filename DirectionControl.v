@@ -45,18 +45,19 @@ module DirectionControl(
 	parameter PROCEED = 4'b00_00;
 	parameter STOP = 4'b11_11;
 	
+	
 	always@(posedge clk)begin
 	   //Signal inputs
 		
 		prevSignal <= stableSignal;
 		stableSignal <= bufferedSignal;
 		bufferedSignal <= unstableIn;
-		unstableIn[0] <= LRS;
-		unstableIn[1] <= RRS;
-		unstableIn[2] <= LMS; 
-		unstableIn[3] <= RMS;
-		unstableIn[4] <= LFS;
-		unstableIn[5] <= RFS;
+		unstableIn[0] <= ~LRS;
+		unstableIn[1] <= ~RRS;
+		unstableIn[2] <= ~LMS; 
+		unstableIn[3] <= ~RMS;
+		unstableIn[4] <= ~LFS;
+		unstableIn[5] <= ~RFS;
 
 		case(state)
 			NORMAL: begin
@@ -80,7 +81,7 @@ module DirectionControl(
 			CHANGE_DIR: begin
 							if (Direction == FORWARDS) begin
 								prevDirection = FORWARDS;
-								casex (~stableSignal)
+								casex (stableSignal)
 									//Proceed
 									6'b11_??_??: DIR = PROCEED;
 									//Veer Left
@@ -88,15 +89,15 @@ module DirectionControl(
 									6'b01_??_??: DIR = VEER_RIGHT;
 									//90 degree or intersect		
 									6'b00_??_??: begin
-														state = CHK_INTERSECT;
-														/*casex (~stableSignal)
+														//state = CHK_INTERSECT;
+														casex (stableSignal)
 																//90 degree left
 															6'b00_01_??: DIR = NINETY_LEFT;
 															//90 degree right
 															6'b00_10_??: DIR = NINETY_RIGHT;
 															//Stop
 															default: DIR = STOP;
-														endcase*/
+														endcase
 													end										
 									default: DIR = STOP;
 								endcase	
@@ -104,7 +105,7 @@ module DirectionControl(
 							end
 							else if (Direction == BACKWARDS) begin //If Backwards
 										prevDirection = BACKWARDS;
-										casex (~stableSignal)
+										casex (stableSignal)
 											//Proceed
 											6'b??_??_11: DIR = PROCEED;
 											//Veer Left
@@ -112,7 +113,7 @@ module DirectionControl(
 											6'b??_??_10: DIR = VEER_RIGHT;
 											//90 degree or intersect		
 											6'b??_??_00: begin
-																casex (~stableSignal)
+																casex (stableSignal)
 																	 //90 degree right
 																	6'b??_01_00: DIR = NINETY_RIGHT;
 																	//90 degree left
