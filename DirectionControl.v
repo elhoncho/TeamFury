@@ -16,7 +16,7 @@ module DirectionControl(
    );
 
 	parameter MAX_COUNT = 12_500_000; // 500 ms time delay
-	parameter CORNER_TIMER = 50_000_000; //Detect 90 or intersect
+	parameter INTERSECT_TIMER = 50_000_000; //Detect 90 or intersect
 	parameter NORMAL = 2'b00;
 	parameter DEBOUNCE = 2'b01;
 	parameter CHANGE_DIR = 2'b10;
@@ -36,13 +36,13 @@ module DirectionControl(
 	
 		
 	reg [24:0] CountOne = 0; //Time Delay for input signal
-	reg [27:0] Count90 = 0;
+	reg [27:0] intersectCount = 0;
    reg [5:0] unstableIn = 0; //Unstable input
 	reg [5:0] stableSignal = 0; //Stable output
 	reg [5:0] bufferedSignal = 0;
 	reg [5:0] prevSignal = 0; //Used to store stable input signal
 	reg [5:0] tempSignal = 0;
-	reg [2:0] state = 0;
+	reg [1:0] state = 0;
 	reg prevDirection = 0;
 	
 	
@@ -83,57 +83,88 @@ module DirectionControl(
 								prevDirection = FORWARDS;
 								casex (stableSignal)
 									//Proceed
-									6'b11_??_??: DIR = PROCEED;
+									6'b11_??_??: begin
+														DIR = PROCEED;
+														state = NORMAL;
+													 end
 									//Veer Left
-									6'b10_??_??: DIR = VEER_LEFT;
-									6'b01_??_??: DIR = VEER_RIGHT;
+									6'b10_??_??: begin
+														DIR = VEER_LEFT;
+														state = NORMAL;
+													 end
+									6'b01_??_??: begin
+														DIR = VEER_RIGHT;
+														state = NORMAL;
+													 end
 									//90 degree or intersect		
 									6'b00_??_??: begin
-														//state = CHK_INTERSECT;
-														casex (stableSignal)
-																//90 degree left
-															6'b00_01_??: DIR = NINETY_LEFT;
-															//90 degree right
-															6'b00_10_??: DIR = NINETY_RIGHT;
-															//Stop
-															default: DIR = STOP;
-														endcase
-													end										
+														intersectCount = 0;
+														state = CHK_INTERSECT;
+													 end										
 									default: DIR = STOP;
 								endcase	
-								state = PROCEED;
 							end
 							else if (Direction == BACKWARDS) begin //If Backwards
 										prevDirection = BACKWARDS;
 										casex (stableSignal)
 											//Proceed
-											6'b??_??_11: DIR = PROCEED;
+											6'b??_??_11: begin
+																DIR = PROCEED;
+																state = NORMAL;
+															 end
 											//Veer Left
-											6'b??_??_01: DIR = VEER_LEFT;
-											6'b??_??_10: DIR = VEER_RIGHT;
+											6'b??_??_01: begin
+																DIR = VEER_LEFT;
+																state = NORMAL;
+															 end
+											6'b??_??_10: begin 
+																DIR = VEER_RIGHT;
+																state = NORMAL;
+															 end
 											//90 degree or intersect		
 											6'b??_??_00: begin
-																casex (stableSignal)
-																	 //90 degree right
-																	6'b??_01_00: DIR = NINETY_RIGHT;
-																	//90 degree left
-																	6'b??_10_00: DIR = NINETY_LEFT;
-																	//Stop
-																	6'b??_11_00: DIR = STOP;
-																	6'b??_00_00: DIR = STOP;
-																endcase
-											end
-										
+																state = CHK_INTERSECT;
+															 end
 											default: DIR = STOP;
 										endcase
-									end							
-				end
+									end
+			end
 			
-			//CHK_INTERSECT: begin
-				//				intersect_Count
-					//			if()
+			CHK_INTERSECT: begin
+								if (intersectCount == INTERSECT_TIMER || stableSignal[3:2] == 2'b11) begin
+									DIR = STOP;
+									state = NORMAL;
+								end
+								else if (stableSignal[5:4] != 2'b00) begin
+									state = CHANGE_DIR;
+								end
+								else if(Direction == FORWARDS) begin
+									if (stableSignal[3:2] == 2'b01) begin
+										DIR = NINETY_LEFT;
+									end
+									else if (stableSignal[3:2] == 2'b10) begin
+										DIR = NINETY_RIGHT;
+									end
+									else if (DIR != NINETY_RIGHT && DIR != NINETY_LEFT && stableSignal[3:2] == 2'b00)begin
+											if (stableSignal[5:4] != 2'b00) begin
+												state = CHANGE_DIR;
+											end
+											intersectCount = intersectCount + 1;
+											DIR = PROCEED;
+									end
+								end
+								else if (Direction == BACKWARDS) begin
+										casex (stableSignal)
+											 //90 degree right
+											6'b??_01_00: DIR = NINETY_RIGHT;
+											//90 degree left
+											6'b??_10_00: DIR = NINETY_LEFT;
+											//Proceed
+											default: DIR = PROCEED;
+										endcase
+								end
+			end
 			
-		//	end
 			endcase
 	end
 	
