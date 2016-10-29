@@ -41,13 +41,9 @@ module MainModule(
 	input bp5,
 	
 	//Collision Detection
-<<<<<<< HEAD
 	input colDetF1,
 	input colDetF2, 
-=======
-	input colDetF,
 	input SW7,
->>>>>>> origin/master
 	
 	//LEDs
 	output led1,
