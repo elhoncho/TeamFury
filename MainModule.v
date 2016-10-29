@@ -41,7 +41,8 @@ module MainModule(
 	input bp5,
 	
 	//Collision Detection
-	input colDetF,
+	input colDetF1,
+	input colDetF2, 
 	
 	//LEDs
 	output led1,
@@ -131,7 +132,8 @@ module MainModule(
 	//Instanciate COllision Detection
 	CollisionDetection myCollisionDetection(
 		.clk (clk),
-		.sens1 (colDetF),
+		.sensf1 (colDetF1),
+		.sensf2 (colDetF2),
 		.led1 (led1),
 		.led2 (led2),
 		.led3 (led3),

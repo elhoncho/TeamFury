@@ -33,7 +33,8 @@ NET "sevenSeg2" LOC = "M13";
 NET "sevenSeg3" LOC = "K14";
 
 #Collision Detection
-NET "colDetF" LOC = "C13";
+NET "colDetF1" LOC = "C13";
+NET "colDetF2" LOC = "D12";
 
 #LED
 NET "led1" LOC = "M5";
