@@ -42,6 +42,7 @@ module MainModule(
 	
 	//Collision Detection
 	input colDetF,
+	input SW7,
 	
 	//LEDs
 	output led1,
@@ -60,13 +61,15 @@ module MainModule(
 
 	//PWM Parameters
 	//Do not exceed 80% on per H-Bridge specifications (Allows for a max of 2.5A Stall)
-	parameter PWM_FULL_SPEED_PERCENT_ON = 80;
-	parameter PWM_VEER_SPEED_PERCENT_ON = 20;
+	parameter PWM_FULL_SPEED_PERCENT_ON = 60;
+	parameter PWM_HARD_SPEED_PERCENT_ON = 80;
+	parameter PWM_VEER_SPEED_PERCENT_ON = 15;
 	parameter PWM_FREQUENCY  = 80;
 
 	parameter PWM_COUNT_FREQ = 50_000_000/(PWM_FREQUENCY);
 	parameter PWM_COUNT_FULL_SPEED_ON   = PWM_COUNT_FREQ*PWM_FULL_SPEED_PERCENT_ON/100;
 	parameter PWM_COUNT_VEER_SPEED_ON   = PWM_COUNT_FREQ*PWM_VEER_SPEED_PERCENT_ON/100;
+	parameter PWM_COUNT_HARD_SPEED_ON   = PWM_COUNT_FREQ*PWM_HARD_SPEED_PERCENT_ON/100;
 
 	//Drive State Machine States
 	parameter FORWARDS = 2'b00;
@@ -83,7 +86,9 @@ module MainModule(
 	//PWM Registers
 	reg regFullSpeedPwm = 0;
 	reg regVeerSpeedPwm = 0;
+	reg regHardSpeedPwm = 0;
 	reg [19:0] pwmFullSpeedCount = 0;
+	reg [19:0] pwmHardSpeedCount = 0;
 	reg [19:0] pwmVeerSpeedCount = 0;
 
 	//H-Bridge Registers
@@ -159,14 +164,26 @@ module MainModule(
 			regVeerSpeedPwm <= 1;
 			pwmVeerSpeedCount <= 0;
 		end
+		
+		//Hard Speed PWM
+		pwmHardSpeedCount <= pwmHardSpeedCount +1;
+		if(pwmHardSpeedCount == PWM_COUNT_HARD_SPEED_ON) begin
+			regHardSpeedPwm <= 0;
+		end
+		else if(pwmHardSpeedCount == PWM_COUNT_FREQ) begin
+			regHardSpeedPwm <= 1;
+			pwmHardSpeedCount <= 0;
+		end
 	end
+	
+
 
 	//Drive State Machine
 	always @(posedge clk) begin
 		case(driveState)
 			FORWARDS: begin
 				//Collision detected
-				if(!colDetect) begin
+				if(!colDetect || SW7) begin
 					driveState <= COLLISION;
 				end
 
@@ -178,6 +195,15 @@ module MainModule(
 						regHbEnB <= regFullSpeedPwm;
 						regHbIn1 <= 0;
 						regHbIn2 <= 1;
+						regHbIn3 <= 1;
+						regHbIn4 <= 0;
+					end
+					//Hard Left
+					else if(dirControl[1:0] == 2'b10) begin
+						regHbEnA <= regVeerSpeedPwm;
+						regHbEnB <= regHardSpeedPwm;
+						regHbIn1 <= 1;
+						regHbIn2 <= 0;
 						regHbIn3 <= 1;
 						regHbIn4 <= 0;
 					end
@@ -203,6 +229,15 @@ module MainModule(
 						regHbIn3 <= 1;
 						regHbIn4 <= 0;
 					end
+					//Hard Right
+				   else if(dirControl[1:0] == 2'b10) begin
+						regHbEnA <= regHardSpeedPwm;
+						regHbEnB <= regVeerSpeedPwm;
+						regHbIn1 <= 0;
+						regHbIn2 <= 1;
+						regHbIn3 <= 0;
+						regHbIn4 <= 1;
+					end 
 					//Stop Right
 					else if(dirControl[1:0] == 2'b11) begin
 						regHbEnA <= regFullSpeedPwm;

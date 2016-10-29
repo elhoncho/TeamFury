@@ -34,6 +34,7 @@ NET "sevenSeg3" LOC = "K14";
 
 #Collision Detection
 NET "colDetF" LOC = "C13";
+NET "SW7" LOC = "N3";
 
 #LED
 NET "led1" LOC = "M5";
