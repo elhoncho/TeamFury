@@ -89,11 +89,11 @@ module DirectionControl(
 													 end
 									//Veer Left
 									6'b10_??_??: begin
-														DIR = VEER_LEFT;
+														DIR = VEER_RIGHT;
 														state = NORMAL;
 													 end
 									6'b01_??_??: begin
-														DIR = VEER_RIGHT;
+														DIR = VEER_LEFT;
 														state = NORMAL;
 													 end
 									//90 degree or intersect		
