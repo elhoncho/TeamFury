@@ -33,13 +33,9 @@ NET "sevenSeg2" LOC = "M13";
 NET "sevenSeg3" LOC = "K14";
 
 #Collision Detection
-<<<<<<< HEAD
 NET "colDetF1" LOC = "C13";
 NET "colDetF2" LOC = "D12";
-=======
-NET "colDetF" LOC = "C13";
 NET "SW7" LOC = "N3";
->>>>>>> origin/master
 
 #LED
 NET "led1" LOC = "M5";
