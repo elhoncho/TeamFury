@@ -62,9 +62,9 @@ module MainModule(
 
 	//PWM Parameters
 	//Do not exceed 80% on per H-Bridge specifications (Allows for a max of 2.5A Stall)
-	parameter PWM_FULL_SPEED_PERCENT_ON = 55;
-	parameter PWM_HARD_SPEED_PERCENT_ON = 75;
-	parameter PWM_VEER_SPEED_PERCENT_ON = 15;
+	parameter PWM_FULL_SPEED_PERCENT_ON = 40;
+	parameter PWM_HARD_SPEED_PERCENT_ON = 30;
+	parameter PWM_VEER_SPEED_PERCENT_ON = 25;
 	parameter PWM_FREQUENCY  = 80;
 
 	parameter PWM_COUNT_FREQ = 50_000_000/(PWM_FREQUENCY);
@@ -203,7 +203,7 @@ module MainModule(
 					//Hard Left
 					else if(dirControl[1:0] == 2'b10) begin
 						regHbEnA <= regVeerSpeedPwm;
-						regHbEnB <= regHardSpeedPwm;
+						regHbEnB <= regFullSpeedPwm;
 						regHbIn1 <= 1;
 						regHbIn2 <= 0;
 						regHbIn3 <= 1;
@@ -212,7 +212,7 @@ module MainModule(
 					//Stop Left
 					else if(dirControl[1:0] == 2'b11) begin
 						regHbEnA <= regFullSpeedPwm;
-						regHbEnB <= regFullSpeedPwm;
+						regHbEnB <= regHardSpeedPwm;
 						regHbIn1 <= 1;
 						regHbIn2 <= 0;
 						regHbIn3 <= 1;
@@ -233,7 +233,7 @@ module MainModule(
 					end
 					//Hard Right
 				   else if(dirControl[1:0] == 2'b10) begin
-						regHbEnA <= regHardSpeedPwm;
+						regHbEnA <= regFullSpeedPwm;
 						regHbEnB <= regVeerSpeedPwm;
 						regHbIn1 <= 0;
 						regHbIn2 <= 1;
@@ -242,7 +242,7 @@ module MainModule(
 					end 
 					//Stop Right
 					else if(dirControl[1:0] == 2'b11) begin
-						regHbEnA <= regFullSpeedPwm;
+						regHbEnA <= regHardSpeedPwm;
 						regHbEnB <= regFullSpeedPwm;
 						regHbIn1 <= 0;
 						regHbIn2 <= 1;
