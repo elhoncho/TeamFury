@@ -58,7 +58,7 @@ module MainModule(
 	
 	//Input from Tone Detection module
 	wire tdEn;
-	wire [1:0] tdDir;
+	wire [2:0] tdDir;
 
 	//PWM Parameters
 	//Do not exceed 80% on per H-Bridge specifications (Allows for a max of 2.5A Stall)
@@ -79,10 +79,11 @@ module MainModule(
 	parameter JUNCTION = 2'b11;
 	
 	//Junction Conditions
-	parameter  STRAIGHT = 2'b00;
-	parameter  LEFT = 2'b01;
-	parameter  RIGHT = 2'b10;
-	parameter  BACK = 2'b11;
+	parameter  STRAIGHT = 3'b000;
+	parameter  LEFT = 3'b001;
+	parameter  RIGHT = 3'b010;
+	parameter  BACK = 3'b011;
+	parameter  STOP = 3'b100;
 
 	//PWM Registers
 	reg regFullSpeedPwm = 0;
@@ -145,6 +146,17 @@ module MainModule(
 		.colDetect (colDetect)
 	);
 
+	//Instanciate Tone Detection
+	ToneDetection myToneDetection (
+		.clk (clk),
+		.bp1 (bp1),
+		.bp2 (bp2),
+		.bp3 (bp3),
+		.bp4 (bp4),
+		.bp5 (bp5),
+		.tdDIR (tdDir)
+	);
+	
 	//PWM
 	always @(posedge clk) begin
 		//Full Speed PWM
@@ -298,8 +310,11 @@ module MainModule(
 
 			JUNCTION: begin
 				if(tdEn)begin
-					if(tdDir == STRAIGHT)begin
-						//TODO: Add code for go straight
+					if(tdDir == STOP)begin
+						//TODO: Add code for stop
+					end
+					else if (tdDir == STRAIGHT)begin
+						//TODO: Add code for forward
 					end
 					else if (tdDir == LEFT)begin
 						//TODO: Add code for turn left
