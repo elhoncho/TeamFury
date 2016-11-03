@@ -4,25 +4,19 @@
 // Tone Detection
 //////////////////////////////////////////////////////////////////////////////////
 module ToneDetection(
-	 input clk,
+	 input clock,
 	 input bp1,
 	 input bp2,
 	 input bp3,
 	 input bp4,
 	 input bp5,
-	 output reg [2:0] tdDIR
+	 output [7:0] led
     );
-	 //State parameters
+	 
 	 parameter   NOSIGNAL = 2'b00;
 	 parameter   CHECKSIGNAL = 2'b01;
 	 parameter   DETECTED = 2'b10;
 	 parameter   DONE = 2'b11;
-	 //Output parameters
-	 parameter   STOP = 3'b1_00;
-	 parameter   STRAIGHT = 3'b0_00;
-	 parameter   LEFT = 3'b0_01;
-	 parameter   RIGHT = 3'b0_10;
-	 parameter   BACK = 3'b0_11;
 	 
 	 reg [31:0] toneCounter;
 	 reg [31:0] bp1Counter;
@@ -40,7 +34,7 @@ module ToneDetection(
 	 
 	 assign led = led_reg;
 	 
-	 always @ (posedge clk) begin
+	 always @ (posedge clock) begin
 			case(toneState)
 				NOSIGNAL: begin
 					bp1Counter <= 0;
@@ -123,15 +117,17 @@ module ToneDetection(
 				end			
 				DETECTED: begin
 					if (bp1Detect == 1) 
-						tdDIR <= STOP;
+						led_reg[7] <= 1;
 					if (bp2Detect == 1) 
-						tdDIR <= STRAIGHT;
+						led_reg[6] <= 1;
 					if (bp3Detect == 1) 
-						tdDIR <= LEFT;
+						led_reg[5] <= 1;
 					if (bp4Detect == 1) 
-						tdDIR <= RIGHT;
+						led_reg[4] <= 1;
 					if (bp5Detect == 1) 
-						tdDIR <= BACK;	
+						led_reg[3] <= 1;	
+				end
+				DONE: begin
 				end
 				default: toneState <= NOSIGNAL;
 			endcase
