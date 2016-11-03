@@ -62,15 +62,17 @@ module MainModule(
 
 	//PWM Parameters
 	//Do not exceed 80% on per H-Bridge specifications (Allows for a max of 2.5A Stall)
-	parameter PWM_FULL_SPEED_PERCENT_ON = 40;
-	parameter PWM_HARD_SPEED_PERCENT_ON = 30;
-	parameter PWM_VEER_SPEED_PERCENT_ON = 25;
+	parameter PWM_FULL_SPEED_PERCENT_ON = 30;
+	parameter PWM_HARD_SPEED_PERCENT_ON = 40;
+	parameter PWM_VEER_SPEED_PERCENT_ON = 20;
+	parameter PWM_NINETY_SPEED_PERCENT_ON = 35;
 	parameter PWM_FREQUENCY  = 80;
 
 	parameter PWM_COUNT_FREQ = 50_000_000/(PWM_FREQUENCY);
 	parameter PWM_COUNT_FULL_SPEED_ON   = PWM_COUNT_FREQ*PWM_FULL_SPEED_PERCENT_ON/100;
 	parameter PWM_COUNT_VEER_SPEED_ON   = PWM_COUNT_FREQ*PWM_VEER_SPEED_PERCENT_ON/100;
 	parameter PWM_COUNT_HARD_SPEED_ON   = PWM_COUNT_FREQ*PWM_HARD_SPEED_PERCENT_ON/100;
+	parameter PWM_COUNT_NINETY_SPEED_ON   = PWM_COUNT_FREQ*PWM_HARD_SPEED_PERCENT_ON/100;
 
 	//Drive State Machine States
 	parameter FORWARDS = 2'b00;
@@ -89,9 +91,11 @@ module MainModule(
 	reg regFullSpeedPwm = 0;
 	reg regVeerSpeedPwm = 0;
 	reg regHardSpeedPwm = 0;
+	reg regNinetySpeedPwm = 0;
 	reg [19:0] pwmFullSpeedCount = 0;
 	reg [19:0] pwmHardSpeedCount = 0;
 	reg [19:0] pwmVeerSpeedCount = 0;
+	reg [19:0] pwmNinetySpeedCount = 0;
 
 	//H-Bridge Registers
 	reg regHbEnA = 0;
@@ -179,6 +183,17 @@ module MainModule(
 			pwmVeerSpeedCount <= 0;
 		end
 		
+		
+		//Ninety Speed PWM
+		pwmNinetySpeedCount <= pwmNinetySpeedCount +1;
+		if(pwmNinetySpeedCount == PWM_COUNT_NINETY_SPEED_ON) begin
+			regVeerSpeedPwm <= 0;
+		end
+		else if(pwmNinetySpeedCount == PWM_COUNT_FREQ) begin
+			regNinetySpeedPwm <= 1;
+			pwmNinetySpeedCount <= 0;
+		end
+		
 		//Hard Speed PWM
 		pwmHardSpeedCount <= pwmHardSpeedCount +1;
 		if(pwmHardSpeedCount == PWM_COUNT_HARD_SPEED_ON) begin
@@ -215,7 +230,7 @@ module MainModule(
 					//Hard Left
 					else if(dirControl[1:0] == 2'b10) begin
 						regHbEnA <= regVeerSpeedPwm;
-						regHbEnB <= regFullSpeedPwm;
+						regHbEnB <= regHardSpeedPwm;
 						regHbIn1 <= 1;
 						regHbIn2 <= 0;
 						regHbIn3 <= 1;
@@ -223,7 +238,7 @@ module MainModule(
 					end
 					//Stop Left
 					else if(dirControl[1:0] == 2'b11) begin
-						regHbEnA <= regFullSpeedPwm;
+						regHbEnA <= regNinetySpeedPwm;
 						regHbEnB <= regHardSpeedPwm;
 						regHbIn1 <= 1;
 						regHbIn2 <= 0;
@@ -245,7 +260,7 @@ module MainModule(
 					end
 					//Hard Right
 				   else if(dirControl[1:0] == 2'b10) begin
-						regHbEnA <= regFullSpeedPwm;
+						regHbEnA <= regHardSpeedPwm;
 						regHbEnB <= regVeerSpeedPwm;
 						regHbIn1 <= 0;
 						regHbIn2 <= 1;
@@ -255,7 +270,7 @@ module MainModule(
 					//Stop Right
 					else if(dirControl[1:0] == 2'b11) begin
 						regHbEnA <= regHardSpeedPwm;
-						regHbEnB <= regFullSpeedPwm;
+						regHbEnB <= regNinetySpeedPwm;
 						regHbIn1 <= 0;
 						regHbIn2 <= 1;
 						regHbIn3 <= 0;

@@ -16,7 +16,7 @@ module DirectionControl(
    );
 
 	parameter MAX_COUNT = 100_000; // 500 ms time delay
-	parameter INTERSECT_TIMER = 20_000_000; //Detect 90 or intersect
+	parameter INTERSECT_TIMER = 25_000_000; //Detect 90 or intersect
 	parameter NORMAL = 2'b00;
 	parameter DEBOUNCE = 2'b01;
 	parameter CHANGE_DIR = 2'b10;
@@ -71,6 +71,7 @@ module DirectionControl(
 				CountOne = CountOne + 1;
 				if (stableSignal == tempSignal && Direction == prevDirection) begin
 					state = NORMAL;
+					
 				end
 				else if (CountOne == MAX_COUNT) begin
 					state = CHANGE_DIR;
@@ -81,23 +82,23 @@ module DirectionControl(
 			CHANGE_DIR: begin
 							if (Direction == FORWARDS) begin
 								prevDirection = FORWARDS;
-								casex (stableSignal)
+								case (stableSignal[5:4])
 									//Proceed
-									6'b11_??_??: begin
+									2'b11: begin
 														DIR = PROCEED;
 														state = NORMAL;
 													 end
 									//Veer Left
-									6'b10_??_??: begin
+									2'b10: begin
 														DIR = HARD_RIGHT;
 														state = NORMAL;
 													 end
-									6'b01_??_??: begin
+									2'b01: begin
 														DIR = HARD_LEFT;
 														state = NORMAL;
 													 end
 									//90 degree or intersect		
-									6'b00_??_??: begin
+									2'b00: begin
 														intersectCount = 0;
 														state = CHK_INTERSECT;
 													 end										
@@ -106,23 +107,23 @@ module DirectionControl(
 							end
 							else if (Direction == BACKWARDS) begin //If Backwards
 										prevDirection = BACKWARDS;
-										casex (stableSignal)
+										casex (stableSignal[1:0])
 											//Proceed
-											6'b??_??_11: begin
+											2'b11: begin
 																DIR = PROCEED;
 																state = NORMAL;
 															 end
 											//Veer Left
-											6'b??_??_01: begin
+											2'b01: begin
 																DIR = VEER_LEFT;
 																state = NORMAL;
 															 end
-											6'b??_??_10: begin 
+											2'b10: begin 
 																DIR = VEER_RIGHT;
 																state = NORMAL;
 															 end
 											//90 degree or intersect		
-											6'b??_??_00: begin
+											2'b00: begin
 																state = CHK_INTERSECT;
 															 end
 											default: DIR = STOP;
