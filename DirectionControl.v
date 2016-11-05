@@ -11,12 +11,12 @@ module DirectionControl(
 		input LMS,
 		input LFS, 
 		input LRS,
-		input Direction,
+		input wire Direction,
 		output reg [3:0]DIR
    );
 
-	parameter MAX_COUNT = 100_000; // 500 ms time delay
-	parameter INTERSECT_TIMER = 25_000_000; //Detect 90 or intersect
+	parameter MAX_COUNT = 15_000; // 500 ms time delay
+	parameter INTERSECT_TIMER = 30_000_000; //Detect 90 or intersect
 	parameter NORMAL = 2'b00;
 	parameter DEBOUNCE = 2'b01;
 	parameter CHANGE_DIR = 2'b10;
@@ -45,6 +45,9 @@ module DirectionControl(
 	reg [1:0] state = 0;
 	reg prevDirection = 0;
 	
+	initial begin
+		DIR = STOP;
+	end
 	
 	always@(posedge clk)begin
 	   //Signal inputs
@@ -85,23 +88,23 @@ module DirectionControl(
 								case (stableSignal[5:4])
 									//Proceed
 									2'b11: begin
-														DIR = PROCEED;
-														state = NORMAL;
-													 end
+											DIR = PROCEED;
+											state = NORMAL;
+									end
 									//Veer Left
 									2'b10: begin
-														DIR = HARD_RIGHT;
-														state = NORMAL;
-													 end
+											DIR = HARD_RIGHT;
+											state = NORMAL;
+									end
 									2'b01: begin
-														DIR = HARD_LEFT;
-														state = NORMAL;
-													 end
+											DIR = HARD_LEFT;
+											state = NORMAL;
+									end
 									//90 degree or intersect		
 									2'b00: begin
-														intersectCount = 0;
-														state = CHK_INTERSECT;
-													 end										
+												intersectCount = 0;
+												state = CHK_INTERSECT;
+									end										
 									default: DIR = STOP;
 								endcase	
 							end
@@ -110,22 +113,23 @@ module DirectionControl(
 										casex (stableSignal[1:0])
 											//Proceed
 											2'b11: begin
-																DIR = PROCEED;
-																state = NORMAL;
-															 end
+													DIR = PROCEED;
+													state = NORMAL;
+											end
 											//Veer Left
 											2'b01: begin
-																DIR = VEER_LEFT;
-																state = NORMAL;
-															 end
+													DIR = HARD_LEFT;
+													state = NORMAL;
+											end
 											2'b10: begin 
-																DIR = VEER_RIGHT;
-																state = NORMAL;
-															 end
+													DIR = HARD_RIGHT;
+													state = NORMAL;
+											end
 											//90 degree or intersect		
 											2'b00: begin
-																state = CHK_INTERSECT;
-															 end
+													intersectCount = 0;
+													state = CHK_INTERSECT;
+											end
 											default: DIR = STOP;
 										endcase
 									end
@@ -136,9 +140,6 @@ module DirectionControl(
 									DIR = STOP;
 									state = NORMAL;
 								end
-								else if (stableSignal[5:4] != 2'b00) begin
-									state = CHANGE_DIR;
-								end
 								else if(Direction == FORWARDS) begin
 									if (stableSignal[3:2] == 2'b01) begin
 										DIR = NINETY_LEFT;
@@ -146,23 +147,28 @@ module DirectionControl(
 									else if (stableSignal[3:2] == 2'b10) begin
 										DIR = NINETY_RIGHT;
 									end
+									if (stableSignal[5:4] != 2'b00) begin
+										state = CHANGE_DIR;
+									end
 									else if (DIR != NINETY_RIGHT && DIR != NINETY_LEFT && stableSignal[3:2] == 2'b00)begin
-											if (stableSignal[5:4] != 2'b00) begin
-												state = CHANGE_DIR;
-											end
 											intersectCount = intersectCount + 1;
 											DIR = PROCEED;
 									end
 								end
 								else if (Direction == BACKWARDS) begin
-										casex (stableSignal)
-											 //90 degree right
-											6'b??_01_00: DIR = NINETY_RIGHT;
-											//90 degree left
-											6'b??_10_00: DIR = NINETY_LEFT;
-											//Proceed
-											default: DIR = PROCEED;
-										endcase
+											if (stableSignal[3:2] == 2'b01) begin
+											DIR = NINETY_LEFT;
+											end
+											else if (stableSignal[3:2] == 2'b10) begin
+												DIR = NINETY_RIGHT;
+											end
+											if (stableSignal[1:0] != 2'b00) begin
+												state = CHANGE_DIR;
+											end
+											else if (DIR != NINETY_RIGHT && DIR != NINETY_LEFT && stableSignal[3:2] == 2'b00)begin
+											intersectCount = intersectCount + 1;
+											DIR = PROCEED;
+									end
 								end
 			end
 			
