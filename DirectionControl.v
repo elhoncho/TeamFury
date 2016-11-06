@@ -15,7 +15,7 @@ module DirectionControl(
 		output reg [3:0]DIR
    );
 
-	parameter MAX_COUNT = 15_000; // 500 ms time delay
+	parameter MAX_COUNT = 20_000; // 500 ms time delay
 	parameter INTERSECT_TIMER = 30_000_000; //Detect 90 or intersect
 	parameter NORMAL = 2'b00;
 	parameter DEBOUNCE = 2'b01;
@@ -64,17 +64,28 @@ module DirectionControl(
 
 		case(state)
 			NORMAL: begin
-				if (prevSignal != stableSignal || Direction != prevDirection) begin
-					state = DEBOUNCE;
-					tempSignal = prevSignal;
+				if (Direction == FORWARDS) begin
+					if (prevSignal[5:2] != stableSignal[5:2] || Direction != prevDirection) begin
+						state = DEBOUNCE;
+						tempSignal = prevSignal[5:2];
+					end
 				end
+				else if (Direction == BACKWARDS) begin
+						if (prevSignal[3:0] != stableSignal[3:0] || Direction != prevDirection) begin
+							state = DEBOUNCE;
+							tempSignal = prevSignal[3:0];
+						end
+				end
+
 			end
 			
 			DEBOUNCE: begin
 				CountOne = CountOne + 1;
-				if (stableSignal == tempSignal && Direction == prevDirection) begin
-					state = NORMAL;
-					
+				if (stableSignal[5:2] == tempSignal && Direction == prevDirection && Direction == FORWARDS) begin
+					state = NORMAL;		
+				end
+				else if (stableSignal[3:0] == tempSignal && Direction == prevDirection && Direction == BACKWARDS) begin
+					state = NORMAL;		
 				end
 				else if (CountOne == MAX_COUNT) begin
 					state = CHANGE_DIR;
