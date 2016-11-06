@@ -64,9 +64,9 @@ module MainModule(
 
 	//PWM Parameters
 	//Do not exceed 80% on per H-Bridge specifications (Allows for a max of 2.5A Stall)
-	parameter PWM_FULL_SPEED_PERCENT_ON = 30;
+	parameter PWM_FULL_SPEED_PERCENT_ON = 27;
 	parameter PWM_HARD_SPEED_PERCENT_ON = 80;
-	parameter PWM_VEER_SPEED_PERCENT_ON = 30;
+	parameter PWM_VEER_SPEED_PERCENT_ON = 33;
 	parameter PWM_NINETY_SPEED_PERCENT_ON = 40;
 	parameter PWM_NINETY_FAST_SPEED_PERCENT_ON = 42;
 	parameter PWM_FREQUENCY  = 80;
