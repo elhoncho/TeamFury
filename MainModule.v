@@ -150,8 +150,9 @@ module MainModule(
 	//Instanciate COllision Detection
 	CollisionDetection myCollisionDetection(
 		.clk (clk),
-		.sensf1 (colDetF1),
-		.sensf2 (colDetF2),
+		.direction (dcDrive),
+		.sensf (colDetF1),
+		.sensb (colDetF2),
 		.led1 (led1),
 		.led2 (led2),
 		.led3 (led3),
