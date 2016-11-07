@@ -47,7 +47,7 @@ module DirectionControl(
 	
 	//State machine registers
 	reg [1:0] state = 0;
-	reg [1:0] dcDir = 0; //Picks out leading sensors
+	reg [1:0] leadSens = 0; //Picks out leading sensors
 	reg prevDirection = 0;
 	
 	initial begin
@@ -70,11 +70,11 @@ module DirectionControl(
 		//Pulls out leading sensors
 		if (Direction == FORWARDS) begin //If forwards
 			prevDirection = FORWARDS;		//Resets debouonce check for change in direction
-			dcDir = stableSignal[5:4]; //Front two sensors
+			leadSens = stableSignal[5:4]; //Front two sensors
 		end
 		else if (Direction == BACKWARDS) begin // If backwards
 			prevDirection = BACKWARDS;	//Resets debouonce check for change in direction
-			dcDir = stableSignal[1:0]; //Rear two sensors
+			leadSens = stableSignal[1:0]; //Rear two sensors
 		end
 		
 		//State machine for direction control
@@ -120,7 +120,7 @@ module DirectionControl(
 			
 			//Change direction state: intreprets signal and outputs to main module
 			CHANGE_DIR: begin
-								case (dcDir)
+								case (leadSens)
 									//Proceed
 									2'b11: begin
 											DIR = PROCEED;
@@ -163,7 +163,7 @@ module DirectionControl(
 										DIR = NINETY_RIGHT;
 									end
 									//Leading sensors on tape, change states
-									if (dcDir != 2'b00) begin
+									if (leadSens != 2'b00) begin
 										state = CHANGE_DIR;
 									end
 									//No signal detected, proceed and keep counting
