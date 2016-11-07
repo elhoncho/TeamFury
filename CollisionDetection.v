@@ -4,7 +4,7 @@
 // Collision Detection
 //////////////////////////////////////////////////////////////////////////////////
 module CollisionDetection(
-	input clk, sensf1, sensf2,
+	input clk, sensf,
 	output led1, led2, led3,
 	output reg colDetect = 0
     );
@@ -33,7 +33,7 @@ module CollisionDetection(
 				regLed1 <= 1;
 				regLed2 <= 0;
 				regLed3 <= 0;
-				if(!(sensf1 && sensf2)) begin
+				if(!sensf) begin
 					state <= VALIDATE_SIGNAL;
 				end	
 			end 
@@ -42,7 +42,7 @@ module CollisionDetection(
 				regLed1 <= 0;
 				regLed2 <= 1;
 				regLed3 <= 0;
-				if (!(sensf1 && sensf2)) begin
+				if (!sensf) begin
 					count <= count + 1; 
 					if (count == 50_000) begin 
 						state <= COLLISION_STATE; 
@@ -60,7 +60,7 @@ module CollisionDetection(
 				regLed1 <= 0;
 				regLed2 <= 0;
 				regLed3 <= 1;
-				if (sensf1 && sensf2) begin
+				if (sensf) begin
 					count <= count +1;
 					if (count == 50_000)begin
 						state <= NO_COL_DETECT; 
