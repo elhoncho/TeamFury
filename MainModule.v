@@ -445,11 +445,18 @@ module MainModule(
 			end
 
 			COLLISION: begin
+						if (SW6 == 0 && colDetect || SW6 == 0) begin
+							driveState <= REVERSE;
+							Drive <= 0;
+						end
+						else if (SW6 == 1 && colDetect || SW6 == 1) begin
+							driveState <= FORWARDS;
+							Drive <= 1;
+						end					
+						
 				regHbEnA <= 0;
 				regHbEnB <= 0;
-				if(colDetect)begin
-					driveState <= FORWARDS;
-				end
+				
 			end
 
 			JUNCTION: begin
