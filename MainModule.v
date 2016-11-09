@@ -49,7 +49,13 @@ module MainModule(
 	//LEDs
 	output led1,
 	output led2,
-	output led3
+	output led3,
+	
+	//Pushbuttons
+	input pb1,
+	input pb2,
+	input pb3,
+	input pb4
 	);
 	
 	//Input from Direction Control module
@@ -170,6 +176,10 @@ module MainModule(
 		.bp3 (bp3),
 		.bp4 (bp4),
 		.bp5 (bp5),
+		.pb1 (pb1),
+		.pb2 (pb2),
+		.pb3 (pb3),
+		.pb4 (pb4),
 		.tdDIR (tdDir)
 	);
 	
@@ -438,6 +448,8 @@ module MainModule(
 					regHbIn2 <= 0;
 					regHbIn3 <= 0;
 					regHbIn4 <= 0;
+					tdEn <= 1;
+					driveState <= JUNCTION;
 				end
 				
 				//Default Stop
@@ -448,6 +460,8 @@ module MainModule(
 					regHbIn2 <= 0;
 					regHbIn3 <= 0;
 					regHbIn4 <= 0;
+					tdEn <= 1;
+					driveState <= JUNCTION;
 				end
 			end
 
@@ -469,8 +483,9 @@ module MainModule(
 			JUNCTION: begin
 				if(tdEn)begin
 					if(tdDir == STOP)begin
-						//TODO: Add code for stop
+						//not sure if we have to do anything here, so we chillin
 					end
+					//Straight
 					else if (tdDir == STRAIGHT)begin
 						if (jncCounter <= 12_500_000)begin
 							jncCounter <= jncCounter + 1;
@@ -487,14 +502,56 @@ module MainModule(
 							tdEn <= 0;
 						end	
 					end
+					//Left
 					else if (tdDir == LEFT)begin
-						//TODO: Add code for turn left
+						if (jncCounter <= 25_000_000)begin
+							jncCounter <= jncCounter + 1;
+							regHbEnA <= regNinetySpeedPwm;
+							regHbEnB <= regNinetyFastSpeedPwm;
+							regHbIn1 <= 1;
+							regHbIn2 <= 0;
+							regHbIn3 <= 1;
+							regHbIn4 <= 0;
+						end
+						else begin
+							driveState <= FORWARDS;
+							jncCounter <= 0;
+							tdEn <= 0;
+						end	
 					end
+					//Right
 					else if (tdDir == RIGHT)begin
-						//TODO: Add code for turn right
+						if (jncCounter <= 25_000_000)begin
+							jncCounter <= jncCounter + 1;
+							regHbEnA <= regNinetyFastSpeedPwm;
+							regHbEnB <= regNinetySpeedPwm;
+							regHbIn1 <= 0;
+							regHbIn2 <= 1;
+							regHbIn3 <= 0;
+							regHbIn4 <= 1;
+						end
+						else begin
+							driveState <= FORWARDS;
+							jncCounter <= 0;
+							tdEn <= 0;
+						end	
 					end
+					//Back
 					else if (tdDir == BACK)begin
-						//TODO: Add code for run backwards
+						if (jncCounter <= 12_500_000)begin
+							jncCounter <= jncCounter + 1;
+							regHbEnA <= regFullSpeedPwm;
+							regHbEnB <= regFullSpeedPwm;
+							regHbIn1 <= 1;
+							regHbIn2 <= 0;
+							regHbIn3 <= 0;
+							regHbIn4 <= 1;
+						end
+						else begin
+							driveState <= REVERSE;
+							jncCounter <= 0;
+							tdEn <= 0;
+						end	
 					end
 				end
 			end		
