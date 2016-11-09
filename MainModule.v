@@ -115,6 +115,9 @@ module MainModule(
 	reg [1:0] driveState = FORWARDS;
 	reg Drive = 1;
 	
+	//Junction Registers
+	reg [26:0] jncCounter = 0;
+	
 
 	//Pin Assignments
 	assign hbEnA = regHbEnA;
@@ -324,6 +327,8 @@ module MainModule(
 					regHbIn2 <= 0;
 					regHbIn3 <= 0;
 					regHbIn4 <= 0;
+					tdEn <= 1;
+					driveState <= JUNCTION;
 				end
 				
 				//Default Stop
@@ -334,6 +339,8 @@ module MainModule(
 					regHbIn2 <= 0;
 					regHbIn3 <= 0;
 					regHbIn4 <= 0;
+					tdEn <= 1;
+					driveState <= JUNCTION;
 				end
 			end
 
@@ -465,7 +472,20 @@ module MainModule(
 						//TODO: Add code for stop
 					end
 					else if (tdDir == STRAIGHT)begin
-						//TODO: Add code for forward
+						if (jncCounter <= 12_500_000)begin
+							jncCounter <= jncCounter + 1;
+							regHbEnA <= regFullSpeedPwm;
+							regHbEnB <= regFullSpeedPwm;
+							regHbIn1 <= 0;
+							regHbIn2 <= 1;
+							regHbIn3 <= 1;
+							regHbIn4 <= 0;
+						end
+						else begin
+							driveState <= FORWARDS;
+							jncCounter <= 0;
+							tdEn <= 0;
+						end	
 					end
 					else if (tdDir == LEFT)begin
 						//TODO: Add code for turn left
