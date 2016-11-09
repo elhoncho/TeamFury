@@ -44,3 +44,7 @@ NET "led2" LOC = "M11";
 NET "led3" LOC = "P7";
 
 #Pushbutton
+NET "pb1" LOC = "A7";
+NET "pb2" LOC = "M4";
+NET "pb3" LOC = "C11";
+NET "pb4" LOC = "G12";
