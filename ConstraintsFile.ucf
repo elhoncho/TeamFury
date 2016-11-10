@@ -42,6 +42,10 @@ NET "SW6" LOC = "E2";
 NET "led1" LOC = "M5";
 NET "led2" LOC = "M11";
 NET "led3" LOC = "P7";
+NET "led8" LOC = "G1";
+NET "led7" LOC = "P4";
+NET "led6" LOC = "N4";
+NET "led5" LOC = "N5";
 
 #Pushbutton
 NET "pb1" LOC = "A7";

@@ -39,6 +39,10 @@ module MainModule(
 	input bp3,
 	input bp4,
 	input bp5,
+	input pb1,
+	input pb2,
+	input pb3,
+	input pb4,
 	
 	//Collision Detection
 	input colDetF1,
@@ -50,12 +54,10 @@ module MainModule(
 	output led1,
 	output led2,
 	output led3,
-	
-	//Pushbuttons
-	input pb1,
-	input pb2,
-	input pb3,
-	input pb4
+	output led5,
+	output led6,
+	output led7,
+	output led8
 	);
 	
 	//Input from Direction Control module
@@ -65,7 +67,7 @@ module MainModule(
 	wire dcDrive;
 	
 	//Input from Tone Detection module
-	wire tdEn;
+	//wire tdEn; doesnt come from tone detection module
 	wire [2:0] tdDir;
 
 	//PWM Parameters
@@ -123,6 +125,7 @@ module MainModule(
 	
 	//Junction Registers
 	reg [26:0] jncCounter = 0;
+	reg tdEn;
 	
 
 	//Pin Assignments
@@ -180,6 +183,10 @@ module MainModule(
 		.pb2 (pb2),
 		.pb3 (pb3),
 		.pb4 (pb4),
+		.led8 (led8),
+		.led7 (led7),
+		.led6 (led6),
+		.led5 (led5),
 		.tdDIR (tdDir)
 	);
 	
@@ -253,7 +260,6 @@ module MainModule(
 					driveState <= REVERSE;
 					Drive <= 0;
 				end
-				
 				
 				//Turn Left
 				else if(dirControl[3:2] == 2'b01)begin
@@ -360,10 +366,10 @@ module MainModule(
 					driveState <= COLLISION;
 				end
 				
-								//Direction control for testing
-				if (SW6 == 1) begin
+				//Direction control for testing
+				if (SW6 == 0) begin
 					driveState <= FORWARDS;
-					Drive <= 1;
+					Drive <= 0;
 				end
 				
 				//Turn Left
