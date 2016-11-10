@@ -96,6 +96,15 @@ module MainModule(
 	parameter  RIGHT = 3'b010;
 	parameter  BACK = 3'b011;
 	parameter  STOP = 3'b100;
+	
+	//H-Bridge Parameters
+	/*
+	parameter HbRight = 4'b0101;
+	parameter HbLeft = 4'b1010;
+	parameter HbStraight = 4'b0110;
+	parameter HbStop = 4'b0000;
+	*/
+	
 
 	//PWM Registers
 	reg regFullSpeedPwm = 0;
@@ -116,6 +125,12 @@ module MainModule(
 	reg regHbIn2 = 0;
 	reg regHbIn3 = 0;
 	reg regHbIn4 = 0;
+	/*
+	reg [3:0] HbRightReg = 0;
+	reg [3:0] HbLeftReg = 0;
+	reg [3:0] HbStraightReg = 0;
+	reg [3:0] HbDrive = 0;
+	*/
 
 	//Drive State Machine Registers
 	reg [1:0] driveState = FORWARDS;
@@ -132,6 +147,12 @@ module MainModule(
 	assign hbIn2 = regHbIn2;
 	assign hbIn3 = regHbIn3;
 	assign hbIn4 = regHbIn4;
+	/*
+	assign HbDrive[0] = hbIn1;
+	assign HbDrive[1] = hbIn2;
+	assign HbDrive[2] = hbIn3;
+	assign HbDrive[3] = hbIn4;
+	*/
 
 	//Testing Pin
 	assign testOut = regVeerSpeedPwm;
@@ -241,8 +262,20 @@ module MainModule(
 
 	//Drive State Machine
 	always @(posedge clk) begin
+		/*if (Drive == 1) begin
+			HbRightReg <= HbRight;
+			HbLeftReg <= HbLeft;
+			HbStraightReg <= HbStraight;
+		end
+		else if (Drive == 0) begin
+			HbRightReg <= ~HbRight;
+			HbLeftReg <= ~HbLeft;
+			HbStraightReg <= ~HbStraight;
+		end */
+	
 		case(driveState)
 			FORWARDS: begin
+				Drive <= 1;
 				//Collision detected
 				if(!colDetect || SW7) begin
 					driveState <= COLLISION;
@@ -355,12 +388,13 @@ module MainModule(
 			end
 
 			REVERSE: begin
-							//Collision detected
+				Drive <= 0;
+				//Collision detected
 				if(!colDetect || SW7) begin
 					driveState <= COLLISION;
 				end
 				
-								//Direction control for testing
+				//Direction control for testing
 				if (SW6 == 1) begin
 					driveState <= FORWARDS;
 					Drive <= 1;
