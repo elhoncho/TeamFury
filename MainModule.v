@@ -530,7 +530,6 @@ module MainModule(
 				regLed6 <= 0;
 				regLed7 <= 0;
 				regLed8 <= 0;
-				jncCounter <= jncCounter + 1;
 				
 				if(tdDir == STOP)begin
 					regLed4 <= 1;
@@ -549,6 +548,7 @@ module MainModule(
 				end
 				//Straight
 				else if (tdDir == STRAIGHT)begin
+					jncCounter <= jncCounter + 1;
 					regLed4 <= 0;
 					regLed5 <= 1;
 					regLed6 <= 0;
@@ -567,11 +567,11 @@ module MainModule(
 						driveState <= FORWARDS;
 						Drive <= 1;
 						jncCounter <= 0;
-					end
-					jncCounter <= jncCounter + 1;				
+					end			
 				end
 				//Left
 				else if (tdDir == LEFT)begin
+					jncCounter <= jncCounter + 1;
 					regLed4 <= 0;
 					regLed5 <= 0;
 					regLed6 <= 1;
@@ -594,6 +594,7 @@ module MainModule(
 				end
 				//Right
 				else if (tdDir == RIGHT)begin
+					jncCounter <= jncCounter + 1;
 					regLed4 <= 0;
 					regLed5 <= 0;
 					regLed6 <= 0;
@@ -616,6 +617,7 @@ module MainModule(
 				end
 				//Back
 				else if (tdDir == BACK)begin
+					jncCounter <= jncCounter + 1;
 					regLed4 <= 0;
 					regLed5 <= 0;
 					regLed6 <= 0;

@@ -161,32 +161,38 @@ module ToneDetection(
 				end
 				
 				DETECTED: begin
-					junctionCounter = junctionCounter + 1;
-					if (junctionCounter <= 12_500_000)begin
 						if (bp2Detect == 1)begin 
 							regTdDir <= STRAIGHT;
+							toneState <= DONE;
 						end	
-						else if (bp3Detect == 1)begin 
+						else if (bp3Detect == 1) begin 
 							regTdDir <= LEFT;
+							toneState <= DONE;
 						end	
 						else if (bp4Detect == 1) begin
 							regTdDir <= RIGHT;
+							toneState <= DONE;
 						end	
-						else if (bp5Detect == 1) begin
+						else begin
 							regTdDir <= BACK;
+							toneState <= DONE;
 						end
-					end
-					else if (junctionCounter > 12_500_000) begin
+				end
+				
+				DONE: begin
+					junctionCounter <= junctionCounter + 1;
+					if (junctionCounter == 25_000_000) begin
 						regTdDir <= STOP;
-						junctionCounter = 0;
 						toneState <= NO_SIGNAL;
 						bp2Detect <= 0;
 						bp3Detect <= 0;
 						bp4Detect <= 0;
 						bp5Detect <= 0;
-					end	
+						junctionCounter <= 0;
+					end
 				end
-				default: toneState <= NO_SIGNAL;
+				
+				
 			endcase
 		end		
 endmodule
