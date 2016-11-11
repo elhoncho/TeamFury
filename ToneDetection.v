@@ -14,14 +14,14 @@ module ToneDetection(
 	 input pb2,
 	 input pb3,
 	 input pb4,
-	 output led8,
-	 output led7,
-	 output led6,
-	 output led5,
-	 output reg [2:0] tdDIR
+	 //output led8,
+	 //output led7,
+	 //output led6,
+	 //output led5,
+	 output wire [2:0] tdDir
     );
 	 //State parameters
-	 parameter   NOSIGNAL = 2'b00;
+	 parameter   NO_SIGNAL = 2'b00;
 	 parameter   CHECKSIGNAL = 2'b01;
 	 parameter   DETECTED = 2'b10;
 	 parameter   DONE = 2'b11;
@@ -32,13 +32,15 @@ module ToneDetection(
 	 parameter   RIGHT = 3'b0_10;
 	 parameter   BACK = 3'b0_11;
 	 
+	 reg [2:0] regTdDir = STOP;
 	 reg [31:0] toneCounter;
 	 reg [31:0] bp1Counter;
 	 reg [31:0] bp2Counter;
 	 reg [31:0] bp3Counter;
 	 reg [31:0] bp4Counter;
 	 reg [31:0] bp5Counter;
-	 reg [1:0] toneState;
+	 reg [31:0] junctionCounter;
+	 reg [1:0] toneState = NO_SIGNAL;
 	 reg bp1Detect;
 	 reg bp2Detect;
 	 reg bp3Detect;
@@ -49,79 +51,72 @@ module ToneDetection(
 	 //reg pb3Reg;
 	 //reg pb4Reg;
 	 
-	 reg regled8;
-	 reg regled7;
-	 reg regled6;
-	 reg regled5;
+	 //reg regled8;
+	 //reg regled7;
+	 //reg regled6;
+	 //reg regled5;
+	 
 	 
 	 //assign pb1 = pb1Reg;
 	 //assign pb2 = pb2Reg;
 	 //assign pb3 = pb3Reg;
 	 //assign pb4 = pb4Reg;
 	 
-	 assign led8 = regled8;
-	 assign led7 = regled7;
-	 assign led6 = regled6;
-	 assign led5 = regled5;
+	 //assign led8 = regled8;
+	 //assign led7 = regled7;
+	 //assign led6 = regled6;
+	 //assign led5 = regled5;
+	 assign tdDir = regTdDir;
 	 
 	 
 	 always @ (posedge clk) begin
 			case(toneState)
-				NOSIGNAL: begin
+				NO_SIGNAL: begin
 					bp1Counter <= 0;
 					bp2Counter <= 0;
 					bp3Counter <= 0;
 					bp4Counter <= 0;
 					bp5Counter <= 0;
-					if (bp1 == 1) begin
-						toneState <= CHECKSIGNAL;
-					end
+					//if (bp1 == 1) begin
+					//	toneState <= CHECKSIGNAL;
+					//end
 					
-					else if (pb1 == 1) begin
+					if (pb1 == 1) begin
 						toneState <= CHECKSIGNAL;
-						regled8 <= 1;
-						regled7 <= 0;
-						regled6 <= 0;
-						regled5 <= 0;
+						//regLed8 <= 1;
+						//regLed7 <= 0;
+						//regLed6 <= 0;
+						//regLed5 <= 0;
+						//regLed5 <= 0;
 					end
 					
 					else if (pb2 == 1) begin
 						toneState <= CHECKSIGNAL;
-						regled8 <= 0;
-						regled7 <= 1;
-						regled6 <= 0;
-						regled5 <= 0;
+						//regLed8 <= 0;
+						//regLed7 <= 1;
+						//regLed6 <= 0;
+						//regLed5 <= 0;
 					end
 					
 					else if (pb3 == 1) begin
 						toneState <= CHECKSIGNAL;
-						regled8 <= 0;
-						regled7 <= 0;
-						regled6 <= 1;
-						regled5 <= 0;
+						//regLed8 <= 0;
+						//regLed7 <= 0;
+						//regLed6 <= 1;
+						//regLed5 <= 0;
 					end
 					
 					else if (pb4 == 1) begin	
 						toneState <= CHECKSIGNAL;
-						regled8 <= 0;
-						regled7 <= 0;
-						regled6 <= 0;
-						regled5 <= 1;
-					end	
+						//regLed8 <= 0;
+						//regLed7 <= 0;
+						//regLed6 <= 0;
+						//regLed5 <= 1;
+					end
 				end
+				
 				CHECKSIGNAL: begin
 					//BP1
-					if (bp1 == 1) begin
-						bp1Counter <= bp1Counter + 1;
-						if (bp1Counter >= 12_500_000) begin
-							bp1Detect <= 1; 
-							toneState <= DETECTED;
-						end	
-					end
-					else begin
-						toneState <= NOSIGNAL;
-						bp1Counter <= 0;
-					end
 					//BP2
 					if (pb1 == 1) begin
 						bp2Counter <= bp2Counter + 1;
@@ -130,36 +125,24 @@ module ToneDetection(
 							toneState <= DETECTED;
 						end	
 					end
-					else begin
-						toneState <= NOSIGNAL;
-						bp2Counter <= 0;
-					end
 					//BP3
-					if (pb2 == 1) begin
+					else if (pb2 == 1) begin
 						bp3Counter <= bp3Counter + 1;
 						if (bp3Counter >= 12_500_000) begin
 							bp3Detect <= 1; 
 							toneState <= DETECTED;
 						end	
 					end
-					else begin
-						toneState <= NOSIGNAL;
-						bp3Counter <= 0;
-					end
 					//BP4
-					if (pb3 == 1) begin
+					else if (pb3 == 1) begin
 						bp4Counter <= bp4Counter + 1;
 						if (bp4Counter >= 12_500_000) begin
 							bp4Detect <= 1; 
 							toneState <= DETECTED;
 						end	
 					end
-					else begin
-						toneState <= NOSIGNAL;
-						bp4Counter <= 0;
-					end
 					//BP5
-					if (pb4 == 1) begin
+					else if (pb4 == 1) begin
 						bp5Counter <= bp5Counter + 1;
 						if (bp5Counter >= 12_500_000) begin
 							bp5Detect <= 1; 
@@ -167,26 +150,43 @@ module ToneDetection(
 						end	
 					end
 					else begin
-						toneState <= NOSIGNAL;
+						bp1Counter <= 0;
+						bp2Counter <= 0;
+						bp3Counter <= 0;
+						bp4Counter <= 0;
 						bp5Counter <= 0;
-					end	
-				end			
-				DETECTED: begin
-					if (bp1Detect == 1) 
-						tdDIR <= STOP;
-					if (bp2Detect == 1) 
-						tdDIR <= STRAIGHT;
-					if (bp3Detect == 1) 
-						tdDIR <= LEFT;
-					if (bp4Detect == 1) 
-						tdDIR <= RIGHT;
-					if (bp5Detect == 1) 
-						tdDIR <= BACK;	
+						
+						toneState <= NO_SIGNAL;
+					end
 				end
-				default: toneState <= NOSIGNAL;
+				
+				DETECTED: begin
+					junctionCounter = junctionCounter + 1;
+					if (junctionCounter <= 12_500_000)begin
+						if (bp2Detect == 1)begin 
+							regTdDir <= STRAIGHT;
+						end	
+						else if (bp3Detect == 1)begin 
+							regTdDir <= LEFT;
+						end	
+						else if (bp4Detect == 1) begin
+							regTdDir <= RIGHT;
+						end	
+						else if (bp5Detect == 1) begin
+							regTdDir <= BACK;
+						end
+					end
+					else if (junctionCounter > 12_500_000) begin
+						regTdDir <= STOP;
+						junctionCounter = 0;
+						toneState <= NO_SIGNAL;
+						bp2Detect <= 0;
+						bp3Detect <= 0;
+						bp4Detect <= 0;
+						bp5Detect <= 0;
+					end	
+				end
+				default: toneState <= NO_SIGNAL;
 			endcase
 		end		
-					
-
-
 endmodule

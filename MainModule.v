@@ -54,6 +54,7 @@ module MainModule(
 	output led1,
 	output led2,
 	output led3,
+	output led4,
 	output led5,
 	output led6,
 	output led7,
@@ -67,7 +68,6 @@ module MainModule(
 	wire dcDrive;
 	
 	//Input from Tone Detection module
-	//wire tdEn; doesnt come from tone detection module
 	wire [2:0] tdDir;
 
 	//PWM Parameters
@@ -98,6 +98,15 @@ module MainModule(
 	parameter  RIGHT = 3'b010;
 	parameter  BACK = 3'b011;
 	parameter  STOP = 3'b100;
+	
+	//H-Bridge Parameters
+	/*
+	parameter HbRight = 4'b0101;
+	parameter HbLeft = 4'b1010;
+	parameter HbStraight = 4'b0110;
+	parameter HbStop = 4'b0000;
+	*/
+	
 
 	//PWM Registers
 	reg regFullSpeedPwm = 0;
@@ -118,6 +127,12 @@ module MainModule(
 	reg regHbIn2 = 0;
 	reg regHbIn3 = 0;
 	reg regHbIn4 = 0;
+	/*
+	reg [3:0] HbRightReg = 0;
+	reg [3:0] HbLeftReg = 0;
+	reg [3:0] HbStraightReg = 0;
+	reg [3:0] HbDrive = 0;
+	*/
 
 	//Drive State Machine Registers
 	reg [1:0] driveState = FORWARDS;
@@ -125,7 +140,11 @@ module MainModule(
 	
 	//Junction Registers
 	reg [26:0] jncCounter = 0;
-	reg tdEn;
+	reg regLed4 = 0;
+	reg regLed5 = 0;
+	reg regLed6 = 0;
+	reg regLed7 = 0;
+	reg regLed8 = 0;
 	
 
 	//Pin Assignments
@@ -135,6 +154,12 @@ module MainModule(
 	assign hbIn2 = regHbIn2;
 	assign hbIn3 = regHbIn3;
 	assign hbIn4 = regHbIn4;
+	/*
+	assign HbDrive[0] = hbIn1;
+	assign HbDrive[1] = hbIn2;
+	assign HbDrive[2] = hbIn3;
+	assign HbDrive[3] = hbIn4;
+	*/
 
 	//Testing Pin
 	assign testOut = regVeerSpeedPwm;
@@ -146,6 +171,12 @@ module MainModule(
 	assign sevenSeg2 = 1;
 	assign sevenSeg3 = 1;
 
+   //Junction
+	assign led4 = regLed4;
+	assign led5 = regLed5;
+	assign led6 = regLed6;
+	assign led7 = regLed7;
+	assign led8 = regLed8;
 	//Instanciate Drive Control
 	DirectionControl myDirectionControl(
 		.clk	(clk),
@@ -183,11 +214,11 @@ module MainModule(
 		.pb2 (pb2),
 		.pb3 (pb3),
 		.pb4 (pb4),
-		.led8 (led8),
-		.led7 (led7),
-		.led6 (led6),
-		.led5 (led5),
-		.tdDIR (tdDir)
+		//.led8 (led8),
+		//.led7 (led7),
+		//.led6 (led6),
+		//.led5 (led5),
+		.tdDir (tdDir)
 	);
 	
 	//PWM
@@ -248,21 +279,37 @@ module MainModule(
 
 	//Drive State Machine
 	always @(posedge clk) begin
+		/*if (Drive == 1) begin
+			HbRightReg <= HbRight;
+			HbLeftReg <= HbLeft;
+			HbStraightReg <= HbStraight;
+		end
+		else if (Drive == 0) begin
+			HbRightReg <= ~HbRight;
+			HbLeftReg <= ~HbLeft;
+			HbStraightReg <= ~HbStraight;
+		end */
+	
 		case(driveState)
 			FORWARDS: begin
 				//Collision detected
+				
+				/*
 				if(!colDetect || SW7) begin
 					driveState <= COLLISION;
 				end
+				*/
 				
+				/*
 				//Direction control for testing
 				if (SW6 == 0) begin
 					driveState <= REVERSE;
 					Drive <= 0;
 				end
+				*/
 				
 				//Turn Left
-				else if(dirControl[3:2] == 2'b01)begin
+				if(dirControl[3:2] == 2'b01)begin
 					//Veer Left
 					if(dirControl[1:0] == 2'b01)begin
 						regHbEnA <= regVeerSpeedPwm;
@@ -343,7 +390,6 @@ module MainModule(
 					regHbIn2 <= 0;
 					regHbIn3 <= 0;
 					regHbIn4 <= 0;
-					tdEn <= 1;
 					driveState <= JUNCTION;
 				end
 				
@@ -355,22 +401,18 @@ module MainModule(
 					regHbIn2 <= 0;
 					regHbIn3 <= 0;
 					regHbIn4 <= 0;
-					tdEn <= 1;
 					driveState <= JUNCTION;
 				end
 			end
 
 			REVERSE: begin
-							//Collision detected
+			//Collision detected
 				if(!colDetect || SW7) begin
 					driveState <= COLLISION;
 				end
 				
 				//Direction control for testing
-				if (SW6 == 0) begin
-					driveState <= FORWARDS;
-					Drive <= 0;
-				end
+
 				
 				//Turn Left
 				else if(dirControl[3:2] == 2'b01)begin
@@ -454,7 +496,6 @@ module MainModule(
 					regHbIn2 <= 0;
 					regHbIn3 <= 0;
 					regHbIn4 <= 0;
-					tdEn <= 1;
 					driveState <= JUNCTION;
 				end
 				
@@ -466,19 +507,16 @@ module MainModule(
 					regHbIn2 <= 0;
 					regHbIn3 <= 0;
 					regHbIn4 <= 0;
-					tdEn <= 1;
 					driveState <= JUNCTION;
 				end
 			end
 
 			COLLISION: begin
-						if (SW6 == 0 && colDetect || SW6 == 0) begin
+						if (colDetect && Drive == 0) begin
 							driveState <= REVERSE;
-							Drive <= 0;
 						end
-						else if (SW6 == 1 && colDetect || SW6 == 1) begin
+						else if (colDetect && Drive == 1) begin
 							driveState <= FORWARDS;
-							Drive <= 1;
 						end					
 						
 				regHbEnA <= 0;
@@ -487,79 +525,117 @@ module MainModule(
 			end
 
 			JUNCTION: begin
-				if(tdEn)begin
-					if(tdDir == STOP)begin
-						//not sure if we have to do anything here, so we chillin
-					end
-					//Straight
-					else if (tdDir == STRAIGHT)begin
-						if (jncCounter <= 12_500_000)begin
-							jncCounter <= jncCounter + 1;
-							regHbEnA <= regFullSpeedPwm;
-							regHbEnB <= regFullSpeedPwm;
-							regHbIn1 <= 0;
-							regHbIn2 <= 1;
-							regHbIn3 <= 1;
-							regHbIn4 <= 0;
-						end
-						else begin
-							driveState <= FORWARDS;
-							jncCounter <= 0;
-							tdEn <= 0;
-						end	
-					end
-					//Left
-					else if (tdDir == LEFT)begin
-						if (jncCounter <= 25_000_000)begin
-							jncCounter <= jncCounter + 1;
-							regHbEnA <= regNinetySpeedPwm;
-							regHbEnB <= regNinetyFastSpeedPwm;
-							regHbIn1 <= 1;
-							regHbIn2 <= 0;
-							regHbIn3 <= 1;
-							regHbIn4 <= 0;
-						end
-						else begin
-							driveState <= FORWARDS;
-							jncCounter <= 0;
-							tdEn <= 0;
-						end	
-					end
-					//Right
-					else if (tdDir == RIGHT)begin
-						if (jncCounter <= 25_000_000)begin
-							jncCounter <= jncCounter + 1;
-							regHbEnA <= regNinetyFastSpeedPwm;
-							regHbEnB <= regNinetySpeedPwm;
-							regHbIn1 <= 0;
-							regHbIn2 <= 1;
-							regHbIn3 <= 0;
-							regHbIn4 <= 1;
-						end
-						else begin
-							driveState <= FORWARDS;
-							jncCounter <= 0;
-							tdEn <= 0;
-						end	
-					end
-					//Back
-					else if (tdDir == BACK)begin
-						if (jncCounter <= 12_500_000)begin
-							jncCounter <= jncCounter + 1;
-							regHbEnA <= regFullSpeedPwm;
-							regHbEnB <= regFullSpeedPwm;
-							regHbIn1 <= 1;
-							regHbIn2 <= 0;
-							regHbIn3 <= 0;
-							regHbIn4 <= 1;
-						end
-						else begin
-							driveState <= REVERSE;
-							jncCounter <= 0;
-							tdEn <= 0;
-						end	
-					end
+				regLed4 <= 0;
+				regLed5 <= 0;
+				regLed6 <= 0;
+				regLed7 <= 0;
+				regLed8 <= 0;
+				jncCounter <= jncCounter + 1;
+				
+				if(tdDir == STOP)begin
+					regLed4 <= 1;
+					regLed5 <= 0;
+					regLed6 <= 0;
+					regLed7 <= 0;
+					regLed8 <= 0;
+					
+					//not sure if we have to do anything here, so we chillin
+					regHbEnA <= 0;
+					regHbEnB <= 0;
+					regHbIn1 <= 0;
+					regHbIn2 <= 0;
+					regHbIn3 <= 0;
+					regHbIn4 <= 0;
 				end
+				//Straight
+				else if (tdDir == STRAIGHT)begin
+					regLed4 <= 0;
+					regLed5 <= 1;
+					regLed6 <= 0;
+					regLed7 <= 0;
+					regLed8 <= 0;
+					
+					if (jncCounter <= 25_00_000)begin	
+						regHbEnA <= regFullSpeedPwm;
+						regHbEnB <= regFullSpeedPwm;
+						regHbIn1 <= 0;
+						regHbIn2 <= 1;
+						regHbIn3 <= 1;
+						regHbIn4 <= 0;
+					end
+					else begin
+						driveState <= FORWARDS;
+						Drive <= 1;
+						jncCounter <= 0;
+					end
+					jncCounter <= jncCounter + 1;				
+				end
+				//Left
+				else if (tdDir == LEFT)begin
+					regLed4 <= 0;
+					regLed5 <= 0;
+					regLed6 <= 1;
+					regLed7 <= 0;
+					regLed8 <= 0;
+					
+					if (jncCounter <= 25_000_000)begin
+						regHbEnA <= regNinetySpeedPwm;
+						regHbEnB <= regNinetyFastSpeedPwm;
+						regHbIn1 <= 1;
+						regHbIn2 <= 0;
+						regHbIn3 <= 1;
+						regHbIn4 <= 0;
+					end
+					else begin
+						driveState <= FORWARDS;
+						Drive <= 1;
+						jncCounter <= 0;
+					end	
+				end
+				//Right
+				else if (tdDir == RIGHT)begin
+					regLed4 <= 0;
+					regLed5 <= 0;
+					regLed6 <= 0;
+					regLed7 <= 1;
+					regLed8 <= 0;
+					
+					if (jncCounter <= 25_000_000)begin
+						regHbEnA <= regNinetyFastSpeedPwm;
+						regHbEnB <= regNinetySpeedPwm;
+						regHbIn1 <= 0;
+						regHbIn2 <= 1;
+						regHbIn3 <= 0;
+						regHbIn4 <= 1;
+					end
+					else begin
+						driveState <= FORWARDS;
+						Drive <= 1;
+						jncCounter <= 0;
+					end	
+				end
+				//Back
+				else if (tdDir == BACK)begin
+					regLed4 <= 0;
+					regLed5 <= 0;
+					regLed6 <= 0;
+					regLed7 <= 0;
+					regLed8 <= 1;
+					
+					if (jncCounter <= 25_000_000)begin
+						regHbEnA <= regFullSpeedPwm;
+						regHbEnB <= regFullSpeedPwm;
+						regHbIn1 <= 1;
+						regHbIn2 <= 0;
+						regHbIn3 <= 0;
+						regHbIn4 <= 1;
+					end
+					else begin
+						driveState <= REVERSE;
+						Drive <= 0;
+						jncCounter <= 0;
+					end	
+				end	
 			end		
 		endcase
 	end
