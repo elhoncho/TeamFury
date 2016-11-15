@@ -58,7 +58,11 @@ module MainModule(
 	output led5,
 	output led6,
 	output led7,
-	output led8
+	output led8,
+	
+	//UART
+	output txData,
+	input rxData
 	);
 	
 	//Input from Direction Control module
@@ -106,6 +110,11 @@ module MainModule(
 	parameter FORWARDS = 1'b1;
 	parameter REVERSE = 1'b0;
 	
+	//UART Parameters
+	parameter IDLE = 0;
+	parameter LOAD_MESSAGE = 1;
+	parameter PUSH_BUTTON = 2;
+	
 
 	//PWM Registers
 	reg regFullSpeedPwm = 0;
@@ -138,7 +147,30 @@ module MainModule(
 	reg regLed6 = 0;
 	reg regLed7 = 0;
 	reg regLed8 = 0;
+
+
+	reg rst = 0;
+	reg txClk = 0;
+	reg writeEn = 0;
+	reg clearToWrite = 0;
 	
+	//These need to be the same size
+	reg [6:0] loadCounter = 0;
+	reg [6:0] messageSize = 0;
+	
+	reg [7:0] initHoldDown = 0;
+	reg [7:0] message [40:0];
+	reg [7:0] din;
+	reg [12:0] txClkCounter = 0;
+	reg [6:0] systemPoll = 2;
+
+	wire rdClk;
+	wire readEn;
+	wire [7:0] dout;
+	wire full;
+	wire empty;
+	wire [9:0] wrDataCount;
+	wire [9:0] rdDataCount;
 
 	//Pin Assignments
 	assign hbEnA = regHbEnA;
@@ -207,6 +239,129 @@ module MainModule(
 		//.led5 (led5),
 		.tdDir (tdDir)
 	);
+	
+	//Instanciate TxUART
+	TxUART myTxUART(
+		.clk (clk),
+		.rst (rst),
+		.txClk (rdClk),
+		.readEn (readEn),
+		.dout (dout),
+		.full (full),
+		.empty (empty),
+		.rdDataCount (rdDataCount),
+		.txData (txData)
+	);
+	
+	UART_Buffer myUART_Buffer (
+		.rst				(rst),    // input rst
+		.wr_clk			(clk),    // input wr_clk
+		.rd_clk			(rdClk),  // input rd_clk
+		.din				(din),    // input [7 : 0] din
+		.wr_en			(writeEn),// input wr_en
+		.rd_en			(readEn), // input rd_en
+		.dout				(dout),   // output [7 : 0] dout
+		.full				(full),   // output full
+		.empty			(empty),  // output empty
+		.rd_data_count	(rdDataCount), // output [9 : 0] rd_data_count
+		.wr_data_count	(wrDataCount)  // output [9 : 0] wr_data_count
+	);
+	
+	always @(posedge clk or posedge rst)begin
+		if(rst)begin
+			txClkCounter <=0;
+			txClk <= 0;
+			initHoldDown <= 0;
+			loadCounter <= 0;
+			clearToWrite <= 0;
+			writeEn <= 0;
+			din <= 0;
+		end
+		else begin
+			//Sets baud rate of transmision
+			if(initHoldDown < 110)begin
+				initHoldDown <= initHoldDown + 1;
+			end
+			else begin
+				//-----------------Data to write-------------------//
+				case(systemPoll)
+					IDLE: begin
+						if(wrDataCount == 0)begin
+							systemPoll <= PUSH_BUTTON;
+						end
+					end
+					LOAD_MESSAGE: begin
+						if(loadCounter <= messageSize)begin
+							writeEn <= 1;
+							din <= message[loadCounter];
+							loadCounter <= loadCounter + 1;
+						end
+						else begin
+							writeEn <= 0;
+							systemPoll <= IDLE;
+						end
+					end
+					PUSH_BUTTON: begin
+						loadCounter <= 0;
+						systemPoll <= LOAD_MESSAGE;	
+						
+						if(pb1)begin
+							messageSize <= 20;
+							message[0] <= "P";
+							message[1] <= "B";
+							message[2] <= "1";
+							message[3] <= " ";
+							message[4] <= "S";
+							message[5] <= "t";
+							message[6] <= "a";
+							message[7] <= "t";
+							message[8] <= "u";
+							message[9] <= "s";
+							message[10] <= ":";
+							message[11] <= " ";
+							message[12] <= "P";
+							message[13] <= "r";
+							message[14] <= "e";
+							message[15] <= "s";
+							message[16] <= "s";
+							message[17] <= "e";
+							message[18] <= "d";
+							message[19] <= 13;
+							message[20] <= 10;
+						end
+						else begin
+							messageSize <= 24;
+							message[0] <= "P";
+							message[1] <= "B";
+							message[2] <= "1";
+							message[3] <= " ";
+							message[4] <= "S";
+							message[5] <= "t";
+							message[6] <= "a";
+							message[7] <= "t";
+							message[8] <= "u";
+							message[9] <= "s";
+							message[10] <= ":";
+							message[11] <= " ";
+							message[12] <= "N";
+							message[13] <= "o";
+							message[14] <= "t";
+							message[15] <= " ";
+							message[16] <= "P";
+							message[17] <= "r";
+							message[18] <= "e";
+							message[19] <= "s";
+							message[20] <= "s";
+							message[21] <= "e";
+							message[22] <= "d";
+							message[23] <= 13;
+							message[24] <= 10;
+						end
+					end
+				endcase
+			end
+		end
+	end
 	
 	//PWM
 	always @(posedge clk) begin
