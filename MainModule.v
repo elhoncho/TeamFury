@@ -169,8 +169,8 @@ module MainModule(
 	wire [7:0] dout;
 	wire full;
 	wire empty;
-	wire [9:0] wrDataCount;
-	wire [9:0] rdDataCount;
+	wire [11:0] wrDataCount;
+	wire [11:0] rdDataCount;
 
 	//Pin Assignments
 	assign hbEnA = regHbEnA;
@@ -263,8 +263,8 @@ module MainModule(
 		.dout				(dout),   // output [7 : 0] dout
 		.full				(full),   // output full
 		.empty			(empty),  // output empty
-		.rd_data_count	(rdDataCount), // output [9 : 0] rd_data_count
-		.wr_data_count	(wrDataCount)  // output [9 : 0] wr_data_count
+		.rd_data_count	(rdDataCount), // output [11 : 0] rd_data_count
+		.wr_data_count	(wrDataCount)  // output [11 : 0] wr_data_count
 	);
 	
 	always @(posedge clk or posedge rst)begin

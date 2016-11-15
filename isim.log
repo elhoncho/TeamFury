@@ -1,12 +1,10 @@
 ISim log file
-Running: D:\HDL\TeamFury\TestFixture_isim_beh.exe -intstyle ise -gui -tclbatch isim.cmd -wdb D:/HDL/TeamFury/TestFixture_isim_beh.wdb 
+Running: C:\Users\Denton\ownCloud\School\EE\ProjectLab1\Varalog\TeamFury\TestFixture_isim_beh.exe -intstyle ise -gui -tclbatch isim.cmd -wdb C:/Users/Denton/ownCloud/School/EE/ProjectLab1/Varalog/TeamFury/TestFixture_isim_beh.wdb 
 ISim P.20131013 (signature 0x7708f090)
 WARNING: A WEBPACK license was found.
 WARNING: Please use Xilinx License Configuration Manager to check out a full ISim license.
 WARNING: ISim will run in Lite mode. Please refer to the ISim documentation for more information on the differences between the Lite and the Full version.
 This is a Lite version of ISim.
-WARNING: File "D:/HDL/TeamFury/MainModule.v" Line 165.  For instance uut/myUART_Buffer/, width 12 of formal port rd_data_count is not equal to width 10 of actual signal rdDataCount.
-WARNING: File "D:/HDL/TeamFury/MainModule.v" Line 164.  For instance uut/myUART_Buffer/, width 12 of formal port wr_data_count is not equal to width 10 of actual signal wrDataCount.
 Time resolution is 1 ps
 # onerror resume
 # wave add /
@@ -19,46 +17,10 @@ WARNING: A WEBPACK license was found.
 WARNING: Please use Xilinx License Configuration Manager to check out a full ISim license.
 WARNING: ISim will run in Lite mode. Please refer to the ISim documentation for more information on the differences between the Lite and the Full version.
 This is a Lite version of ISim.
-WARNING: File "D:/HDL/TeamFury/MainModule.v" Line 165.  For instance uut/myUART_Buffer/, width 12 of formal port rd_data_count is not equal to width 10 of actual signal rdDataCount.
-WARNING: File "D:/HDL/TeamFury/MainModule.v" Line 164.  For instance uut/myUART_Buffer/, width 12 of formal port wr_data_count is not equal to width 10 of actual signal wrDataCount.
-# run 1000 ns
-Simulator is doing circuit initialization process.
-WARNING: Behavioral models for independent clock FIFO configurations do not model synchronization delays. The behavioral models are functionally correct, and will represent the behavior of the configured FIFO. See the FIFO Generator User Guide for more information.
-Finished circuit initialization process.
-ISim P.20131013 (signature 0x7708f090)
-WARNING: A WEBPACK license was found.
-WARNING: Please use Xilinx License Configuration Manager to check out a full ISim license.
-WARNING: ISim will run in Lite mode. Please refer to the ISim documentation for more information on the differences between the Lite and the Full version.
-This is a Lite version of ISim.
-WARNING: File "D:/HDL/TeamFury/MainModule.v" Line 165.  For instance uut/myUART_Buffer/, width 12 of formal port rd_data_count is not equal to width 10 of actual signal rdDataCount.
-WARNING: File "D:/HDL/TeamFury/MainModule.v" Line 164.  For instance uut/myUART_Buffer/, width 12 of formal port wr_data_count is not equal to width 10 of actual signal wrDataCount.
 # run 1000 ns
 Simulator is doing circuit initialization process.
 WARNING: Behavioral models for independent clock FIFO configurations do not model synchronization delays. The behavioral models are functionally correct, and will represent the behavior of the configured FIFO. See the FIFO Generator User Guide for more information.
 Finished circuit initialization process.
 # run 30ms
-ISim P.20131013 (signature 0x7708f090)
-WARNING: A WEBPACK license was found.
-WARNING: Please use Xilinx License Configuration Manager to check out a full ISim license.
-WARNING: ISim will run in Lite mode. Please refer to the ISim documentation for more information on the differences between the Lite and the Full version.
-This is a Lite version of ISim.
-WARNING: File "D:/HDL/TeamFury/MainModule.v" Line 168.  For instance uut/myUART_Buffer/, width 12 of formal port rd_data_count is not equal to width 10 of actual signal rdDataCount.
-WARNING: File "D:/HDL/TeamFury/MainModule.v" Line 167.  For instance uut/myUART_Buffer/, width 12 of formal port wr_data_count is not equal to width 10 of actual signal wrDataCount.
-# run 1000 ns
-Simulator is doing circuit initialization process.
-WARNING: Behavioral models for independent clock FIFO configurations do not model synchronization delays. The behavioral models are functionally correct, and will represent the behavior of the configured FIFO. See the FIFO Generator User Guide for more information.
-Finished circuit initialization process.
 # run 30ms
-ISim P.20131013 (signature 0x7708f090)
-WARNING: A WEBPACK license was found.
-WARNING: Please use Xilinx License Configuration Manager to check out a full ISim license.
-WARNING: ISim will run in Lite mode. Please refer to the ISim documentation for more information on the differences between the Lite and the Full version.
-This is a Lite version of ISim.
-WARNING: File "D:/HDL/TeamFury/MainModule.v" Line 168.  For instance uut/myUART_Buffer/, width 12 of formal port rd_data_count is not equal to width 10 of actual signal rdDataCount.
-WARNING: File "D:/HDL/TeamFury/MainModule.v" Line 167.  For instance uut/myUART_Buffer/, width 12 of formal port wr_data_count is not equal to width 10 of actual signal wrDataCount.
-# run 1000 ns
-Simulator is doing circuit initialization process.
-WARNING: Behavioral models for independent clock FIFO configurations do not model synchronization delays. The behavioral models are functionally correct, and will represent the behavior of the configured FIFO. See the FIFO Generator User Guide for more information.
-Finished circuit initialization process.
 # run 30ms
-# run 60ms
