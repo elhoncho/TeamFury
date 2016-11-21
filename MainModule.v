@@ -542,7 +542,6 @@ module MainModule(
 					regLed7 <= 0;
 					regLed8 <= 0;
 					
-					//not sure if we have to do anything here, so we chillin
 					regHbEnA <= 0;
 					regHbEnB <= 0;
 					HbDrive <= HbStop;
@@ -556,7 +555,7 @@ module MainModule(
 					regLed7 <= 0;
 					regLed8 <= 0;
 					
-					if (jncCounter <= 25_00_000)begin	
+					if (jncCounter <= 50_00_000)begin	
 						regHbEnA <= regFullSpeedPwm;
 						regHbEnB <= regFullSpeedPwm;
 						HbDrive <= HbStraight;
@@ -576,7 +575,7 @@ module MainModule(
 					regLed7 <= 0;
 					regLed8 <= 0;
 					
-					if (jncCounter <= 25_000_000)begin
+					if (jncCounter <= 50_000_000)begin
 						regHbEnA <= regNinetySpeedPwm;
 						regHbEnB <= regNinetyFastSpeedPwm;
 						HbDrive <= HbLeft;
@@ -596,7 +595,7 @@ module MainModule(
 					regLed7 <= 1;
 					regLed8 <= 0;
 					
-					if (jncCounter <= 25_000_000)begin
+					if (jncCounter <= 50_000_000)begin
 						regHbEnA <= regNinetyFastSpeedPwm;
 						regHbEnB <= regNinetySpeedPwm;
 						HbDrive <= HbRight;
@@ -616,7 +615,7 @@ module MainModule(
 					regLed7 <= 0;
 					regLed8 <= 1;
 					
-					if (jncCounter <= 25_000_000)begin
+					if (jncCounter <= 50_000_000)begin
 						regHbEnA <= regFullSpeedPwm;
 						regHbEnB <= regFullSpeedPwm;
 						HbDrive <= ~HbStraight;
