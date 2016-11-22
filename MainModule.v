@@ -47,8 +47,6 @@ module MainModule(
 	//Collision Detection
 	input colDetF1,
 	input colDetF2, 
-	input SW7,
-	input SW6,
 	
 	//LEDs
 	output led1,
@@ -127,9 +125,10 @@ module MainModule(
 	parameter P_PUSH_BUTTON = 2;
 	parameter P_DC_DIR = 3;
 	parameter P_DRIVE_DIR = 4;
+	parameter P_DRIVE_STATE = 5;
 	//this one has to be the max number
 	//because of how the case statement works
-	parameter P_CLEAR_TERM = 5;
+	parameter P_CLEAR_TERM = 6;
 	
 
 	//PWM Registers
@@ -414,7 +413,7 @@ module MainModule(
 							message[6] <= "e";
 							message[7] <= "f";
 							message[8] <= "t";
-							message[9] <= "t";
+							message[9] <= " ";
 							message[10] <= " ";
 							message[11] <= " ";
 							message[12] <= 13;
@@ -502,6 +501,67 @@ module MainModule(
 							message[12] <= " ";
 							message[13] <= 13;
 							message[14] <= 10;
+						end
+					end
+					P_DRIVE_STATE: begin
+						loadCounter <= 0;
+						systemPoll <= P_LOAD_MESSAGE;
+						lastSystemPolled <= P_DRIVE_STATE;	
+						
+						messageSize <= 23;
+						
+						message[0] <= "D";
+						message[1] <= "r";
+						message[2] <= "i";
+						message[3] <= "v";
+						message[4] <= "e";
+						message[5] <= " ";
+						message[6] <= "S";
+						message[7] <= "t";
+						message[8] <= "a";
+						message[9] <= "t";
+						message[10] <= "e";
+						message[11] <= ":";
+						message[12] <= " ";
+	
+						if(driveState == DRIVE)begin
+							message[13] <= "D";
+							message[14] <= "r";
+							message[15] <= "i";
+							message[16] <= "v";
+							message[17] <= "e";
+							message[18] <= " ";
+							message[19] <= " ";
+							message[20] <= " ";
+							message[21] <= " ";
+							message[22] <= 13;
+							message[23] <= 10;
+						end
+						else if(driveState == COLLISION)begin
+							message[13] <= "C";
+							message[14] <= "o";
+							message[15] <= "l";
+							message[16] <= "l";
+							message[17] <= "i";
+							message[18] <= "s";
+							message[19] <= "i";
+							message[20] <= "o";
+							message[21] <= "n";
+							message[22] <= 13;
+							message[23] <= 10;
+						end
+						else if(driveState == JUNCTION)begin
+							message[13] <= "J";
+							message[14] <= "u";
+							message[15] <= "n";
+							message[16] <= "c";
+							message[17] <= "t";
+							message[18] <= "i";
+							message[19] <= "o";
+							message[20] <= "n";
+							message[21] <= " ";
+							message[22] <= 13;
+							message[23] <= 10;
 						end
 					end
 					P_CLEAR_TERM: begin
@@ -603,7 +663,7 @@ module MainModule(
 			DRIVE: begin
 			
 				//Collision detected	
-				if(!colDetect || SW7) begin
+				if(!colDetect) begin
 					driveState <= COLLISION;
 				end
 			
@@ -685,9 +745,9 @@ module MainModule(
 
 			//Collision State
 			COLLISION: begin
-						if (colDetect) begin
-							driveState <= DRIVE;
-						end
+				if (colDetect) begin
+					driveState <= DRIVE;
+				end
 				regHbEnA <= 0;
 				regHbEnB <= 0;
 				
