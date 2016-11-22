@@ -27,7 +27,8 @@ module TxUART(
 			input full,
 			input empty,
 			input [11:0]rdDataCount,
-			output txData
+			output txData,
+			output rxData
 			);
 
 //-----------------------------//
@@ -64,6 +65,7 @@ module TxUART(
 //-----------------------------//
 
 	assign txData = regTxData;
+	assign rxData = txClk;
 
 	always@(posedge clk)begin
 		//----------------Clock Generator-----------------//
