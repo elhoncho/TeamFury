@@ -34,12 +34,12 @@ module ToneDetection(
 	 
 	 reg [2:0] regTdDir = STOP;
 	 reg [31:0] toneCounter;
-	 reg [31:0] bp1Counter;
-	 reg [31:0] bp2Counter;
-	 reg [31:0] bp3Counter;
-	 reg [31:0] bp4Counter;
-	 reg [31:0] bp5Counter;
-	 reg [31:0] junctionCounter;
+	 reg [31:0] bp1Counter = 0;
+	 reg [31:0] bp2Counter = 0;
+	 reg [31:0] bp3Counter = 0;
+	 reg [31:0] bp4Counter = 0;
+	 reg [31:0] bp5Counter = 0;
+	 reg [31:0] junctionCounter = 0;
 	 reg [1:0] toneState = NO_SIGNAL;
 	 reg bp1Detect;
 	 reg bp2Detect;

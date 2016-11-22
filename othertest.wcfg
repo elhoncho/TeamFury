@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="C:/Users/jnwad_000/Documents/School/Project Lab 1/TeamFury/TestingToneDetection_isim_beh1.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="TestingToneDetection" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="18" />
+   <wvobject fp_name="/TestingToneDetection/tdDir" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">tdDir[2:0]</obj_property>
+      <obj_property name="ObjectShortName">tdDir[2:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestingToneDetection/uut/bp1Counter" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">bp1Counter[31:0]</obj_property>
+      <obj_property name="ObjectShortName">bp1Counter[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestingToneDetection/uut/bp2Counter" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">bp2Counter[31:0]</obj_property>
+      <obj_property name="ObjectShortName">bp2Counter[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestingToneDetection/uut/bp3Counter" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">bp3Counter[31:0]</obj_property>
+      <obj_property name="ObjectShortName">bp3Counter[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestingToneDetection/uut/bp4Counter" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">bp4Counter[31:0]</obj_property>
+      <obj_property name="ObjectShortName">bp4Counter[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestingToneDetection/uut/bp5Counter" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">bp5Counter[31:0]</obj_property>
+      <obj_property name="ObjectShortName">bp5Counter[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestingToneDetection/uut/junctionCounter" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">junctionCounter[31:0]</obj_property>
+      <obj_property name="ObjectShortName">junctionCounter[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestingToneDetection/uut/toneState" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">toneState[1:0]</obj_property>
+      <obj_property name="ObjectShortName">toneState[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestingToneDetection/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestingToneDetection/bp1" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">bp1</obj_property>
+      <obj_property name="ObjectShortName">bp1</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestingToneDetection/bp2" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">bp2</obj_property>
+      <obj_property name="ObjectShortName">bp2</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestingToneDetection/bp3" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">bp3</obj_property>
+      <obj_property name="ObjectShortName">bp3</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestingToneDetection/bp4" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">bp4</obj_property>
+      <obj_property name="ObjectShortName">bp4</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestingToneDetection/bp5" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">bp5</obj_property>
+      <obj_property name="ObjectShortName">bp5</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestingToneDetection/pb1" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">pb1</obj_property>
+      <obj_property name="ObjectShortName">pb1</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestingToneDetection/pb2" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">pb2</obj_property>
+      <obj_property name="ObjectShortName">pb2</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestingToneDetection/pb3" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">pb3</obj_property>
+      <obj_property name="ObjectShortName">pb3</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestingToneDetection/pb4" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">pb4</obj_property>
+      <obj_property name="ObjectShortName">pb4</obj_property>
+   </wvobject>
+</wave_config>
