@@ -1,11 +1,26 @@
+<<<<<<< HEAD
 Running: fuse.exe -relaunch -intstyle "ise" -incremental -lib "unisims_ver" -lib "unimacro_ver" -lib "xilinxcorelib_ver" -o "C:/Users/jnwad_000/Documents/School/Project Lab 1/TeamFury/TestingToneDetection_isim_beh.exe" -prj "C:/Users/jnwad_000/Documents/School/Project Lab 1/TeamFury/TestingToneDetection_beh.prj" "work.TestingToneDetection" "work.glbl" 
+=======
+Running: D:\Xilinx\14.7\ISE_DS\ISE\bin\nt64\unwrapped\fuse.exe -intstyle ise -incremental -lib unisims_ver -lib unimacro_ver -lib xilinxcorelib_ver -o D:/HDL/TeamFury/TestFixture_isim_beh.exe -prj D:/HDL/TeamFury/TestFixture_beh.prj work.TestFixture work.glbl 
+>>>>>>> origin/master
 ISim P.20131013 (signature 0x7708f090)
 Number of CPUs detected in this system: 4
 Turning on mult-threading, number of parallel sub-compilation jobs: 8 
 Determining compilation order of HDL files
+<<<<<<< HEAD
 Analyzing Verilog file "C:/Users/jnwad_000/Documents/School/Project Lab 1/TeamFury/ToneDetection.v" into library work
 Analyzing Verilog file "C:/Users/jnwad_000/Documents/School/Project Lab 1/TeamFury/TestingToneDetection.v" into library work
 Analyzing Verilog file "C:/Xilinx/14.7/ISE_DS/ISE//verilog/src/glbl.v" into library work
+=======
+Analyzing Verilog file "D:/HDL/TeamFury/TxUART.v" into library work
+Analyzing Verilog file "D:/HDL/TeamFury/ToneDetection.v" into library work
+Analyzing Verilog file "D:/HDL/TeamFury/ipcore_dir/UART_Buffer.v" into library work
+Analyzing Verilog file "D:/HDL/TeamFury/DirectionControl.v" into library work
+Analyzing Verilog file "D:/HDL/TeamFury/CollisionDetection.v" into library work
+Analyzing Verilog file "D:/HDL/TeamFury/MainModule.v" into library work
+Analyzing Verilog file "D:/HDL/TeamFury/TestFixture.v" into library work
+Analyzing Verilog file "D:/Xilinx/14.7/ISE_DS/ISE//verilog/src/glbl.v" into library work
+>>>>>>> origin/master
 Starting static elaboration
 Completed static elaboration
 Compiling module ToneDetection
@@ -13,8 +28,14 @@ Compiling module TestingToneDetection
 Compiling module glbl
 Time Resolution for simulation is 1ps.
 Waiting for 1 sub-compilation(s) to finish...
+<<<<<<< HEAD
 WARNING:Simulator - Unable to copy libPortabilityNOSH.dll to the simulation executable directory: boost::filesystem::copy_file: The system cannot find the path specified, "isim\TestingToneDetection_isim_beh.exe.sim\libPortability.dll".
 Compiled 3 Verilog Units
 Built simulation executable C:/Users/jnwad_000/Documents/School/Project Lab 1/TeamFury/TestingToneDetection_isim_beh.exe
 Fuse Memory Usage: 27300 KB
+=======
+Compiled 12 Verilog Units
+Built simulation executable D:/HDL/TeamFury/TestFixture_isim_beh.exe
+Fuse Memory Usage: 33484 KB
+>>>>>>> origin/master
 Fuse CPU Usage: 374 ms

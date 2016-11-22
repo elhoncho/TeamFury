@@ -47,8 +47,6 @@ module MainModule(
 	//Collision Detection
 	input colDetF1,
 	input colDetF2, 
-	input SW7,
-	input SW6,
 	
 	//LEDs
 	output led1,
@@ -62,7 +60,7 @@ module MainModule(
 	
 	//UART
 	output txData,
-	input rxData
+	output rxData
 	);
 	
 	//Input from Direction Control module
@@ -95,6 +93,17 @@ module MainModule(
 	parameter COLLISION = 2'b10;
 	parameter JUNCTION = 2'b11;
 	
+	//Direction Control
+	parameter DC_PROCEED = 2'b00;
+	parameter DC_TURN_LEFT = 2'b01;
+	parameter DC_TURN_RIGHT = 2'b10;
+	parameter DC_STOP = 2'b11;
+	parameter DC_FULL = 2'b00;
+	parameter DC_VEER = 2'b01;
+	parameter DC_HARD = 2'b10;
+	
+	
+	
 	//Junction Conditions
 	parameter  STRAIGHT = 3'b000;
 	parameter  LEFT = 3'b001;
@@ -111,9 +120,15 @@ module MainModule(
 	parameter REVERSE = 1'b0;
 	
 	//UART Parameters
-	parameter IDLE = 0;
-	parameter LOAD_MESSAGE = 1;
-	parameter PUSH_BUTTON = 2;
+	parameter P_IDLE = 0;
+	parameter P_LOAD_MESSAGE = 1;
+	parameter P_PUSH_BUTTON = 2;
+	parameter P_DC_DIR = 3;
+	parameter P_DRIVE_DIR = 4;
+	parameter P_DRIVE_STATE = 5;
+	//this one has to be the max number
+	//because of how the case statement works
+	parameter P_CLEAR_TERM = 6;
 	
 
 	//PWM Registers
@@ -162,7 +177,8 @@ module MainModule(
 	reg [7:0] message [40:0];
 	reg [7:0] din;
 	reg [12:0] txClkCounter = 0;
-	reg [6:0] systemPoll = 2;
+	reg [6:0] systemPoll = P_IDLE;
+	reg [6:0] lastSystemPolled = P_IDLE;
 
 	wire rdClk;
 	wire readEn;
@@ -250,7 +266,8 @@ module MainModule(
 		.full (full),
 		.empty (empty),
 		.rdDataCount (rdDataCount),
-		.txData (txData)
+		.txData (txData),
+		.rxData (rxData)
 	);
 	
 	UART_Buffer myUART_Buffer (
@@ -285,28 +302,33 @@ module MainModule(
 			else begin
 				//-----------------Data to write-------------------//
 				case(systemPoll)
-					IDLE: begin
+					P_IDLE: begin
 						if(wrDataCount == 0)begin
-							systemPoll <= PUSH_BUTTON;
+							systemPoll <= P_PUSH_BUTTON;
 						end
 					end
-					LOAD_MESSAGE: begin
+					P_LOAD_MESSAGE: begin
 						if(loadCounter <= messageSize)begin
 							writeEn <= 1;
 							din <= message[loadCounter];
 							loadCounter <= loadCounter + 1;
 						end
+						else if(lastSystemPolled < P_CLEAR_TERM)begin
+							writeEn <= 0;
+							systemPoll <= lastSystemPolled + 1;
+						end
 						else begin
 							writeEn <= 0;
-							systemPoll <= IDLE;
+							systemPoll <= P_IDLE;
 						end
 					end
-					PUSH_BUTTON: begin
+					P_PUSH_BUTTON: begin
 						loadCounter <= 0;
-						systemPoll <= LOAD_MESSAGE;	
+						systemPoll <= P_LOAD_MESSAGE;
+						lastSystemPolled <= P_PUSH_BUTTON;						
 						
 						if(pb1)begin
-							messageSize <= 20;
+							messageSize <= 24;
 							message[0] <= "P";
 							message[1] <= "B";
 							message[2] <= "1";
@@ -326,8 +348,12 @@ module MainModule(
 							message[16] <= "s";
 							message[17] <= "e";
 							message[18] <= "d";
-							message[19] <= 13;
-							message[20] <= 10;
+							message[19] <= " ";
+							message[20] <= " ";
+							message[21] <= " ";
+							message[22] <= " ";
+							message[23] <= 13;
+							message[24] <= 10;
 						end
 						else begin
 							messageSize <= 24;
@@ -357,6 +383,206 @@ module MainModule(
 							message[23] <= 13;
 							message[24] <= 10;
 						end
+					end
+					P_DC_DIR: begin
+						loadCounter <= 0;
+						systemPoll <= P_LOAD_MESSAGE;
+						lastSystemPolled <= P_DC_DIR;	
+						
+						messageSize <= 13;
+						
+						message[0] <= "D";
+						message[1] <= "i";
+						message[2] <= "r";
+						message[3] <= ":";
+						message[4] <= " ";
+						
+						if(dirControl[3:2] == DC_PROCEED) begin
+							message[5] <= "P";
+							message[6] <= "r";
+							message[7] <= "o";
+							message[8] <= "c";
+							message[9] <= "e";
+							message[10] <= "e";
+							message[11] <= "d";
+							message[12] <= 13;
+							message[13] <= 10;
+						end
+						else if(dirControl[3:2] == DC_TURN_LEFT) begin
+							message[5] <= "L";
+							message[6] <= "e";
+							message[7] <= "f";
+							message[8] <= "t";
+							message[9] <= " ";
+							message[10] <= " ";
+							message[11] <= " ";
+							message[12] <= 13;
+							message[13] <= 10;
+						end
+						else if(dirControl[3:2] == DC_TURN_RIGHT) begin
+							message[5] <= "R";
+							message[6] <= "i";
+							message[7] <= "g";
+							message[8] <= "h";
+							message[9] <= "t";
+							message[10] <= " ";
+							message[11] <= " ";
+							message[12] <= 13;
+							message[13] <= 10;
+						end
+						else if(dirControl[3:2] == DC_STOP) begin
+							message[5] <= "S";
+							message[6] <= "t";
+							message[7] <= "o";
+							message[8] <= "p";
+							message[9] <= " ";
+							message[10] <= " ";
+							message[11] <= " ";
+							message[12] <= 13;
+							message[13] <= 10;
+						end
+						else begin
+							message[5] <= "E";
+							message[6] <= "R";
+							message[7] <= "R";
+							message[8] <= "O";
+							message[9] <= "R";
+							message[10] <= "!";
+							message[11] <= " ";
+							message[12] <= 13;
+							message[13] <= 10;
+						end
+					end
+					P_DRIVE_DIR: begin
+						loadCounter <= 0;
+						systemPoll <= P_LOAD_MESSAGE;
+						lastSystemPolled <= P_DRIVE_DIR;	
+						
+						messageSize <= 14;
+						
+						message[0] <= "F";
+						message[1] <= "/";
+						message[2] <= "R";
+						message[3] <= ":";
+						message[4] <= " ";
+						
+						if(Drive == FORWARDS)begin
+							message[5] <= "F";
+							message[6] <= "o";
+							message[7] <= "r";
+							message[8] <= "w";
+							message[9] <= "a";
+							message[10] <= "r";
+							message[11] <= "d";
+							message[12] <= "s";
+							message[13] <= 13;
+							message[14] <= 10;
+						end
+						else if(Drive == REVERSE)begin
+							message[5] <= "R";
+							message[6] <= "e";
+							message[7] <= "v";
+							message[8] <= "e";
+							message[9] <= "r";
+							message[10] <= "s";
+							message[11] <= "e";
+							message[12] <= " ";
+							message[13] <= 13;
+							message[14] <= 10;
+						end
+						else begin
+							message[5] <= "E";
+							message[6] <= "R";
+							message[7] <= "R";
+							message[8] <= "O";
+							message[9] <= "R";
+							message[10] <= " ";
+							message[11] <= " ";
+							message[12] <= " ";
+							message[13] <= 13;
+							message[14] <= 10;
+						end
+					end
+					P_DRIVE_STATE: begin
+						loadCounter <= 0;
+						systemPoll <= P_LOAD_MESSAGE;
+						lastSystemPolled <= P_DRIVE_STATE;	
+						
+						messageSize <= 23;
+						
+						message[0] <= "D";
+						message[1] <= "r";
+						message[2] <= "i";
+						message[3] <= "v";
+						message[4] <= "e";
+						message[5] <= " ";
+						message[6] <= "S";
+						message[7] <= "t";
+						message[8] <= "a";
+						message[9] <= "t";
+						message[10] <= "e";
+						message[11] <= ":";
+						message[12] <= " ";
+	
+						if(driveState == DRIVE)begin
+							message[13] <= "D";
+							message[14] <= "r";
+							message[15] <= "i";
+							message[16] <= "v";
+							message[17] <= "e";
+							message[18] <= " ";
+							message[19] <= " ";
+							message[20] <= " ";
+							message[21] <= " ";
+							message[22] <= 13;
+							message[23] <= 10;
+						end
+						else if(driveState == COLLISION)begin
+							message[13] <= "C";
+							message[14] <= "o";
+							message[15] <= "l";
+							message[16] <= "l";
+							message[17] <= "i";
+							message[18] <= "s";
+							message[19] <= "i";
+							message[20] <= "o";
+							message[21] <= "n";
+							message[22] <= 13;
+							message[23] <= 10;
+						end
+						else if(driveState == JUNCTION)begin
+							message[13] <= "J";
+							message[14] <= "u";
+							message[15] <= "n";
+							message[16] <= "c";
+							message[17] <= "t";
+							message[18] <= "i";
+							message[19] <= "o";
+							message[20] <= "n";
+							message[21] <= " ";
+							message[22] <= 13;
+							message[23] <= 10;
+						end
+					end
+					P_CLEAR_TERM: begin
+						loadCounter <= 0;
+						systemPoll <= P_LOAD_MESSAGE;
+						lastSystemPolled <= P_CLEAR_TERM;	
+						
+						messageSize <= 8;
+						
+						//Return home
+						message[0] <= 27;
+						message[1] <= 91;
+						message[2] <= 72;
+						
+						//Hide cursor ESC[?25l to show it ESC[?25h
+						message[3] <= 27;
+						message[4] <= 91;
+						message[5] <= 63;
+						message[6] <= 50;
+						message[7] <= 53;
+						message[8] <= 108;
 					end
 				endcase
 			end
@@ -437,29 +663,29 @@ module MainModule(
 			DRIVE: begin
 			
 				//Collision detected	
-				if(!colDetect || SW7) begin
+				if(!colDetect) begin
 					driveState <= COLLISION;
 				end
 			
 				//Turn Left
-				if(dirControl[3:2] == 2'b01)begin
+				if(dirControl[3:2] == DC_TURN_LEFT)begin
 				
 					//Veer Left
-					if(dirControl[1:0] == 2'b01)begin
+					if(dirControl[1:0] == DC_VEER)begin
 						regHbEnA <= regVeerSpeedPwm;
 						regHbEnB <= regFullSpeedPwm;
 						HbDrive <= HbStraightReg;
 					end
 					
 					//Hard Left
-					else if(dirControl[1:0] == 2'b10) begin
+					else if(dirControl[1:0] == DC_HARD) begin
 						regHbEnA <= regVeerSpeedPwm;
 						regHbEnB <= regHardSpeedPwm;
 						HbDrive <= HbLeftReg;
 					end
 					
 					//Stop Left
-					else if(dirControl[1:0] == 2'b11) begin
+					else if(dirControl[1:0] == DC_STOP) begin
 						regHbEnA <= regNinetySpeedPwm;
 						regHbEnB <= regNinetyFastSpeedPwm;
 						HbDrive <= HbLeftReg;
@@ -467,24 +693,24 @@ module MainModule(
 				end
 				
 				//Turn Right
-				else if(dirControl[3:2] == 2'b10) begin
+				else if(dirControl[3:2] == DC_TURN_RIGHT) begin
 				
 					//Veer Right
-					if(dirControl[1:0] == 2'b01) begin
+					if(dirControl[1:0] == DC_VEER) begin
 						regHbEnA <= regFullSpeedPwm;
 						regHbEnB <= regVeerSpeedPwm;
 						HbDrive <= HbStraightReg;
 					end
 					
 					//Hard Right
-				   else if(dirControl[1:0] == 2'b10) begin
+				   else if(dirControl[1:0] == DC_HARD) begin
 						regHbEnA <= regHardSpeedPwm;
 						regHbEnB <= regVeerSpeedPwm;
 						HbDrive <= HbRightReg;
 					end 
 					
 					//Stop Right
-					else if(dirControl[1:0] == 2'b11) begin
+					else if(dirControl[1:0] == DC_STOP) begin
 						regHbEnA <= regNinetyFastSpeedPwm;
 						regHbEnB <= regNinetySpeedPwm;
 						HbDrive <= HbRightReg;
@@ -492,7 +718,7 @@ module MainModule(
 				end
 				
 				//Straight
-				else if(dirControl[3:2] == 2'b00) begin
+				else if(dirControl[3:2] == DC_PROCEED) begin
 					if(dirControl[1:0] == 2'b00) begin
 						regHbEnA <= regFullSpeedPwm;
 						regHbEnB <= regFullSpeedPwm;
@@ -501,7 +727,7 @@ module MainModule(
 				end	
 				
 				//Stop
-				else if(dirControl[3:2] == 2'b11) begin
+				else if(dirControl[3:2] == DC_STOP) begin
 					regHbEnA <= 0;
 					regHbEnB <= 0;
 					HbDrive <= HbStop;
@@ -519,9 +745,9 @@ module MainModule(
 
 			//Collision State
 			COLLISION: begin
-						if (colDetect) begin
-							driveState <= DRIVE;
-						end
+				if (colDetect) begin
+					driveState <= DRIVE;
+				end
 				regHbEnA <= 0;
 				regHbEnB <= 0;
 				
