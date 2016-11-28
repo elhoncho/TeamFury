@@ -15,7 +15,7 @@ module DirectionControl(
 		output reg [3:0]DIR
    );
 
-	parameter MAX_COUNT = 10_000; //debounce time delay
+	parameter MAX_COUNT = 5_000; //debounce time delay
 	parameter INTERSECT_TIMER = 30_000_000; //Detect 90 or intersect
 	parameter NORMAL = 2'b00;
 	parameter DEBOUNCE = 2'b01;

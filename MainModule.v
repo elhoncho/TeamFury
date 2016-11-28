@@ -13,7 +13,6 @@ module MainModule(
 	output hbIn2, 
 	output hbIn3,
 	output hbIn4,
-	input shaftPulseL,
 	input shaftPulseR,
 	
 	//Direction Control

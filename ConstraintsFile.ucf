@@ -5,7 +5,6 @@ NET "clk" LOC = "B8";
 NET "hbEnA"  LOC = "B2";
 NET "hbIn1" LOC = "A3";
 NET "hbIn2" LOC = "J3";
-NET "shaftPulseL" LOC = "B5";
 NET "hbEnB" LOC = "C6";
 NET "hbIn3" LOC = "B6";
 NET "hbIn4" LOC = "C5";
@@ -47,7 +46,7 @@ NET "led7" LOC = "P4";
 NET "led8" LOC = "G1";
 
 #UART
-NET "txData" LOC = "B1";
+NET "txData" LOC = "B5";
 NET "rxData" LOC = "C3";
 
 #Pushbutton
