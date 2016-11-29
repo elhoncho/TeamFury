@@ -31,6 +31,7 @@ module ToneDetection(
 	 parameter   LEFT = 3'b0_01;
 	 parameter   RIGHT = 3'b0_10;
 	 parameter   BACK = 3'b0_11;
+	 parameter   FINISH = 3'b1_11;
 	 
 	 reg [2:0] regTdDir = STOP;
 	 reg [31:0] toneCounter;
@@ -77,6 +78,11 @@ module ToneDetection(
 					bp3Counter <= 0;
 					bp4Counter <= 0;
 					bp5Counter <= 0;
+					bp2Detect <= 0;
+					bp3Detect <= 0;
+					bp4Detect <= 0;
+					bp5Detect <= 0;
+					//regTdDir <= NULL;
 					
 					if (pb1 == 1) begin
 						toneState <= CHECKSIGNAL;
@@ -143,25 +149,29 @@ module ToneDetection(
 				DETECTED: begin
 						if (bp2Detect == 1)begin 
 							regTdDir <= STRAIGHT;
+							//toneState <= NO_SIGNAL;
 							toneState <= DONE;
 						end	
 						else if (bp3Detect == 1) begin 
 							regTdDir <= LEFT;
+							//toneState <= NO_SIGNAL;
 							toneState <= DONE;
 						end	
 						else if (bp4Detect == 1) begin
 							regTdDir <= RIGHT;
+							//toneState <= NO_SIGNAL;
 							toneState <= DONE;
 						end	
 						else begin
 							regTdDir <= BACK;
+							//toneState <= NO_SIGNAL;
 							toneState <= DONE;
 						end
 				end
 				
 				DONE: begin
 					junctionCounter <= junctionCounter + 1;
-					if (junctionCounter == 50_000_000) begin
+					if (junctionCounter == 120_000_000) begin
 						regTdDir <= STOP;
 						toneState <= NO_SIGNAL;
 						bp2Detect <= 0;
