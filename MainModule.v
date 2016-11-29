@@ -778,7 +778,7 @@ module MainModule(
 					if (jncCounter <= 50_00_000)begin	
 						regHbEnA <= regFullSpeedPwm;
 						regHbEnB <= regFullSpeedPwm;
-						HbDrive <= HbStraight;
+						HbDrive <= HbStraightReg;
 					end
 					else begin
 						regLed4 <= 0;
@@ -797,22 +797,12 @@ module MainModule(
 					if (jncCounter <= 75_000_000)begin
 						regHbEnA <= regNinetySpeedPwm;
 						regHbEnB <= regNinetyFastSpeedPwm;
-						HbDrive <= HbLeft;
+						HbDrive <= HbLeftReg;
 					end
-					else if (jncCounter > 75_000_000 && LFS && RFS)begin
+					else if (jncCounter > 75_000_000 && dirControl[3:2] == DC_STOP)begin
 						regHbEnA <= regFullSpeedPwm;
 						regHbEnB <= regFullSpeedPwm;
-						HbDrive <= HbStraight;
-							/*if (~RFS || ~LFS) begin
-								regLed4 <= 0;
-								regLed5 <= 0;
-								regLed6 <= 1;
-								regLed7 <= 0;
-								regLed8 <= 0;
-								driveState <= DRIVE;
-								//Drive <= FORWARDS;
-								jncCounter <= 0;
-							end	*/
+						HbDrive <= HbStraightReg;
 					end
 					else begin
 						regLed4 <= 0;
@@ -831,31 +821,21 @@ module MainModule(
 					if (jncCounter <= 75_000_000)begin
 						regHbEnA <= regNinetyFastSpeedPwm;
 						regHbEnB <= regNinetySpeedPwm;
-						HbDrive <= HbRight;
+						HbDrive <= HbRightReg;
 					end
-					else if (jncCounter > 75_000_000 && RFS && LFS)begin
+					else if (jncCounter > 75_000_000 && dirControl[3:2] == DC_STOP)begin
 						regHbEnA <= regFullSpeedPwm;
 						regHbEnB <= regFullSpeedPwm;
-						HbDrive <= HbStraight;
-							/*if (~RFS || ~LFS) begin
-								regLed4 <= 0;
-								regLed5 <= 0;
-								regLed6 <= 1;
-								regLed7 <= 0;
-								regLed8 <= 0;
-								driveState <= DRIVE;
-								//Drive <= FORWARDS;
-								jncCounter <= 0;
-							end	*/
-					end
+						HbDrive <= HbStraightReg;
+					end	
 					else begin
 						regLed4 <= 0;
 						regLed5 <= 0;
 						regLed6 <= 1;
 						regLed7 <= 0;
 						regLed8 <= 0;
-						//driveState <= DRIVE;
-						Drive <= FORWARDS;
+						driveState <= DRIVE;
+						//Drive <= FORWARDS;
 						jncCounter <= 0;
 					end	
 				end
@@ -871,7 +851,7 @@ module MainModule(
 					if (jncCounter <= 50_000_000)begin
 						regHbEnA <= regFullSpeedPwm;
 						regHbEnB <= regFullSpeedPwm;
-						HbDrive <= ~HbStraight;
+						HbDrive <= HbStraightReg;
 					end
 					else begin
 						regLed4 <= 0;

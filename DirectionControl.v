@@ -147,30 +147,29 @@ module DirectionControl(
 			
 			//Ceck intersect state: determines 90 degree or intersect
 			CHK_INTERSECT: begin
+								//Leading sensors on tape, change states
+								if (leadSens != 2'b00) begin
+									state = CHANGE_DIR;
+								end
 								//Intersect timer reached or both side sensors on tape
-								if (intersectCount == INTERSECT_TIMER || stableSignal[3:2] == 2'b11) begin
+								else if (intersectCount == INTERSECT_TIMER || stableSignal[3:2] == 2'b11) begin
 									DIR = STOP;
 									state = NORMAL;
 								end
 								//Check for 90-degree turn
-								else begin
-									//Ninety Left state until leading sensors on tape
-									if (stableSignal[3:2] == 2'b01) begin
-										DIR = NINETY_LEFT;
-									end
-									//Ninety Right state until leading sensors on tape
-									else if (stableSignal[3:2] == 2'b10) begin
-										DIR = NINETY_RIGHT;
-									end
-									//Leading sensors on tape, change states
-									if (leadSens != 2'b00) begin
-										state = CHANGE_DIR;
-									end
-									//No signal detected, proceed and keep counting
-									else if (DIR != NINETY_RIGHT && DIR != NINETY_LEFT && stableSignal[3:2] == 2'b00)begin
-											intersectCount = intersectCount + 1;
-											DIR = PROCEED;
-									end
+								//Ninety Left state until leading sensors on tape
+								else if (stableSignal[3:2] == 2'b01) begin
+									DIR = NINETY_LEFT;
+								end
+								//Ninety Right state until leading sensors on tape
+								else if (stableSignal[3:2] == 2'b10) begin
+									DIR = NINETY_RIGHT;
+								end
+
+								//No signal detected, proceed and keep counting
+								else if (DIR != NINETY_RIGHT && DIR != NINETY_LEFT && stableSignal[3:2] == 2'b00)begin
+										intersectCount = intersectCount + 1;
+										DIR = PROCEED;
 								end
 			end
 			
