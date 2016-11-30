@@ -208,7 +208,6 @@ module Drive(
 						led7 <= 0;
 						led8 <= 0;
 						driveState <= DRIVE;
-						//Drive <= FORWARDS;
 						jncCounter <= 0;
 					end
 				end
@@ -232,7 +231,6 @@ module Drive(
 						led7 <= 0;
 						led8 <= 0;
 						driveState <= DRIVE;
-						//Drive <= FORWARDS;
 						jncCounter <= 0;
 					end	
 				end

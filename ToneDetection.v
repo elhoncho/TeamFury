@@ -78,8 +78,6 @@ module ToneDetection(
 				end
 				
 				CHECKSIGNAL: begin
-					//BP1
-					//BP2
 					if (pb1 == 1) begin
 						bp2Counter <= bp2Counter + 1;
 						if (bp2Counter >= 12_500_000) begin
@@ -87,7 +85,6 @@ module ToneDetection(
 							toneState <= DETECTED;
 						end	
 					end
-					//BP3
 					else if (pb2 == 1) begin
 						bp3Counter <= bp3Counter + 1;
 						if (bp3Counter >= 12_500_000) begin
@@ -95,7 +92,6 @@ module ToneDetection(
 							toneState <= DETECTED;
 						end	
 					end
-					//BP4
 					else if (pb3 == 1) begin
 						bp4Counter <= bp4Counter + 1;
 						if (bp4Counter >= 12_500_000) begin
@@ -103,7 +99,6 @@ module ToneDetection(
 							toneState <= DETECTED;
 						end	
 					end
-					//BP5
 					else if (pb4 == 1) begin
 						bp5Counter <= bp5Counter + 1;
 						if (bp5Counter >= 12_500_000) begin
@@ -125,22 +120,18 @@ module ToneDetection(
 				DETECTED: begin
 						if (bp2Detect == 1)begin 
 							regTdDir <= STRAIGHT;
-							//toneState <= NO_SIGNAL;
 							toneState <= DONE;
 						end	
 						else if (bp3Detect == 1) begin 
 							regTdDir <= LEFT;
-							//toneState <= NO_SIGNAL;
 							toneState <= DONE;
 						end	
 						else if (bp4Detect == 1) begin
 							regTdDir <= RIGHT;
-							//toneState <= NO_SIGNAL;
 							toneState <= DONE;
 						end	
 						else begin
 							regTdDir <= BACK;
-							//toneState <= NO_SIGNAL;
 							toneState <= DONE;
 						end
 				end
