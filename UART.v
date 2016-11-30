@@ -8,7 +8,7 @@ module UART(
 	input clk,
 	input pushBtn1,
 	input [3:0] dirControl,
-	input drive,
+	input direction,
 	input [1:0] driveState,
 	output txData,
 	input hbEnA,
@@ -249,7 +249,7 @@ module UART(
 						message[3] <= ":";
 						message[4] <= " ";
 						
-						if(drive == FORWARDS)begin
+						if(direction == FORWARDS)begin
 							message[5] <= "F";
 							message[6] <= "o";
 							message[7] <= "r";
@@ -261,7 +261,7 @@ module UART(
 							message[13] <= 13;
 							message[14] <= 10;
 						end
-						else if(drive == REVERSE)begin
+						else if(direction == REVERSE)begin
 							message[5] <= "R";
 							message[6] <= "e";
 							message[7] <= "v";

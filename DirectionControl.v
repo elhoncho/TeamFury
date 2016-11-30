@@ -12,7 +12,7 @@ module DirectionControl(
 		input LMS,
 		input LFS, 
 		input LRS,
-		input wire Direction,
+		input direction,
 		output reg [3:0]DIR
    );
 
@@ -69,11 +69,11 @@ module DirectionControl(
 		unstableIn[5] <= ~RFS;
 		
 		//Pulls out leading sensors
-		if (Direction == FORWARDS) begin //If forwards
+		if (direction == FORWARDS) begin //If forwards
 			prevDirection <= FORWARDS;		//Resets debouonce check for change in direction
 			leadSens <= stableSignal[5:4]; //Front two sensors
 		end
-		else if (Direction == BACKWARDS) begin // If backwards
+		else if (direction == BACKWARDS) begin // If backwards
 			prevDirection <= BACKWARDS;	//Resets debouonce check for change in direction
 			leadSens <= stableSignal[1:0]; //Rear two sensors
 		end
@@ -83,16 +83,16 @@ module DirectionControl(
 			
 			//Normal state: looks for change in signal based on direction
 			NORMAL: begin
-				if (Direction == FORWARDS) begin //If Forwards
+				if (direction == FORWARDS) begin //If Forwards
 					//Change in leading sensors?
-					if (prevSignal[5:2] != stableSignal[5:2] || Direction != prevDirection) begin
+					if (prevSignal[5:2] != stableSignal[5:2] || direction != prevDirection) begin
 						state <= DEBOUNCE;
 						tempSignal <= prevSignal[5:2];
 					end
 				end
-				else if (Direction == BACKWARDS) begin //If Backwards
+				else if (direction == BACKWARDS) begin //If Backwards
 					//Change in leading sensors?
-					if (prevSignal[3:0] != stableSignal[3:0] || Direction != prevDirection) begin
+					if (prevSignal[3:0] != stableSignal[3:0] || direction != prevDirection) begin
 						state <= DEBOUNCE;
 						tempSignal <= prevSignal[3:0];
 					end
@@ -105,10 +105,10 @@ module DirectionControl(
 				CountOne <= CountOne + 1;
 				//Signal still there?
 				//No, return to NORMAL
-				if (stableSignal[5:2] == tempSignal && Direction == prevDirection && Direction == FORWARDS) begin //If Forwards
+				if (stableSignal[5:2] == tempSignal && direction == prevDirection && direction == FORWARDS) begin //If Forwards
 					state <= NORMAL;		
 				end
-				else if (stableSignal[3:0] == tempSignal && Direction == prevDirection && Direction == BACKWARDS) begin //If Backwards
+				else if (stableSignal[3:0] == tempSignal && direction == prevDirection && direction == BACKWARDS) begin //If Backwards
 					state <= NORMAL;		
 				end
 				//Yes, reset count and move to Change Direction state

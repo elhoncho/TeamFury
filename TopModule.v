@@ -68,7 +68,7 @@ module TopModule(
 	wire ninetyFastSpeedPwm;
 	wire [2:0] tdDir;
 	wire [1:0] driveState;
-	wire drive;
+	wire direction;
 	
 	//Turn Off The 7-Seg Display
 	assign sevenSeg0 = 1;
@@ -77,22 +77,22 @@ module TopModule(
 	assign sevenSeg3 = 1;
 	
 	DirectionControl myDirectionControl(
-		.clk	(clk),
+		.clk (clk),
 		.rst (rst),
-		.RFS	(RFS),
-		.RRS	(RRS),
-		.RMS  (RMS),
-		.LFS	(LFS),
-		.LRS	(LRS),
-		.LMS  (LMS),
-		.Direction (drive),
-		.DIR	(dirControl)
+		.RFS (RFS),
+		.RRS (RRS),
+		.RMS (RMS),
+		.LFS (LFS),
+		.LRS (LRS),
+		.LMS (LMS),
+		.direction (direction),
+		.DIR (dirControl)
 	);
 	
 	CollisionDetection myCollisionDetection(
 		.clk (clk),
 		.rst (rst),
-		.direction (drive),
+		.direction (direction),
 		.sensf (colDetF1),
 		.sensb (colDetF2),
 		.led1 (led1),
@@ -121,7 +121,7 @@ module TopModule(
 		.rst (rst),
 		.pushBtn1 (pushBtn1),
 		.dirControl (dirControl),
-		.drive (drive),
+		.direction (direction),
 		.driveState (driveState),
 		.txData (txData),
 		.hbEnA (hbEnA),
@@ -161,7 +161,7 @@ module TopModule(
 		.led7 (led7),
 		.led8 (led8),
 		.driveState (driveState),
-		.drive (drive)
+		.direction (direction)
 	);
 	
 endmodule

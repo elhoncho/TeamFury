@@ -18,15 +18,15 @@ module Drive(
 	output hbIn2,
 	output hbIn3,
 	output hbIn4,
-	output reg hbEnA,
-	output reg hbEnB,
-	output reg led4,
-	output reg led5,
-	output reg led6,
-	output reg led7,
-	output reg led8,
-	output reg [1:0] driveState,
-	output reg drive
+	output reg hbEnA = 0,
+	output reg hbEnB = 0,
+	output reg led4 = 0,
+	output reg led5 = 0,
+	output reg led6 = 0,
+	output reg led7 = 0,
+	output reg led8 = 0,
+	output reg [1:0] driveState = 0,
+	output reg direction = 0
 	);
 	 
 	`include "parameters.vh"
@@ -36,10 +36,6 @@ module Drive(
 	reg [3:0] regHbLeft = 0;
 	reg [3:0] regHbStraight = 0;
 	reg [3:0] regHbDrive = 0;
-
-	//Drive State Machine Registers
-	//reg [1:0] regDriveState = DRIVE;
-	//reg regDrive = FORWARDS;
 	
 	//Junction Registers
 	reg [26:0] jncCounter = 0;
@@ -54,12 +50,12 @@ module Drive(
 	always @(posedge clk) begin
 	
 		//Diretion and bit assignments for H-Bridge
-		if (drive == FORWARDS) begin
+		if (direction == FORWARDS) begin
 			regHbRight <= HB_RIGHT;
 			regHbLeft <= HB_LEFT;
 			regHbStraight <= HB_STRAIGHT;
 		end
-		else if (drive == REVERSE) begin
+		else if (direction == REVERSE) begin
 			regHbRight <= ~HB_RIGHT;
 			regHbLeft <= ~HB_LEFT;
 			regHbStraight <= ~HB_STRAIGHT;
@@ -188,7 +184,7 @@ module Drive(
 						led7 <= 0;
 						led8 <= 0;
 						driveState <= DRIVE;
-						drive <= FORWARDS;
+						direction <= FORWARDS;
 						jncCounter <= 0;
 					end			
 				end
@@ -261,13 +257,13 @@ module Drive(
 						led7 <= 0;
 						led8 <= 0;
 						driveState <= DRIVE;
-						drive <= REVERSE;
+						direction <= REVERSE;
 						jncCounter <= 0;
 					end	
 				end
 				else begin
 					driveState <= DRIVE;
-					drive <= FORWARDS;
+					direction <= FORWARDS;
 					jncCounter <= 0;
 				end	
 			end		

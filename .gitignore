@@ -66,3 +66,10 @@ xst/
 _ngo/
 _xmsgs/
 ipcore_dir/
+*.exe
+*.wdb
+*.html
+*.log
+*.xmsgs
+*.cmd
+isim/
