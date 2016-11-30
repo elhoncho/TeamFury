@@ -4,7 +4,11 @@
 // Collision Detection
 //////////////////////////////////////////////////////////////////////////////////
 module CollisionDetection(
-	input clk, direction, sensf, sensb,
+	input clk,
+	input rst,
+	input direction, 
+	input sensf, 
+	input sensb,
 	output led1, led2, led3,
 	output reg colDetect = 0
     );

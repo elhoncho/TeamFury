@@ -6,7 +6,6 @@ parameter PWM_VEER_SPEED_PERCENT_ON = 33;
 parameter PWM_NINETY_SPEED_PERCENT_ON = 40;
 parameter PWM_NINETY_FAST_SPEED_PERCENT_ON = 42;
 parameter PWM_FREQUENCY  = 80;
-
 parameter PWM_COUNT_FREQ = 50_000_000/(PWM_FREQUENCY);
 parameter PWM_COUNT_FULL_SPEED_ON   = PWM_COUNT_FREQ*PWM_FULL_SPEED_PERCENT_ON/100;
 parameter PWM_COUNT_VEER_SPEED_ON   = PWM_COUNT_FREQ*PWM_VEER_SPEED_PERCENT_ON/100;
@@ -27,8 +26,6 @@ parameter DC_STOP = 2'b11;
 parameter DC_FULL = 2'b00;
 parameter DC_VEER = 2'b01;
 parameter DC_HARD = 2'b10;
-
-
 
 //Junction Conditions
 parameter  STRAIGHT = 3'b000;

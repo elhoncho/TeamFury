@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Team Fury
-// Main Module
+// Top Module
 //////////////////////////////////////////////////////////////////////////////////
 module TopModule(
 	input clk,
@@ -13,7 +13,6 @@ module TopModule(
 	output hbIn2, 
 	output hbIn3,
 	output hbIn4,
-	input shaftPulseR,
 	
 	//Direction Control
 	input RFS, 
@@ -58,8 +57,6 @@ module TopModule(
 	output txData
 	);
 	
-	`include "parameters.vh"
-	
 	reg rst = 0;
 
 	wire dcDrive;
@@ -80,6 +77,7 @@ module TopModule(
 	
 	DirectionControl myDirectionControl(
 		.clk	(clk),
+		.rst (rst),
 		.RFS	(RFS),
 		.RRS	(RRS),
 		.RMS  (RMS),
@@ -92,6 +90,7 @@ module TopModule(
 	
 	CollisionDetection myCollisionDetection(
 		.clk (clk),
+		.rst (rst),
 		.direction (dcDrive),
 		.sensf (colDetF1),
 		.sensb (colDetF2),
@@ -103,6 +102,7 @@ module TopModule(
 
 	ToneDetection myToneDetection (
 		.clk (clk),
+		.rst (rst),
 		.bp1 (bp1),
 		.bp2 (bp2),
 		.bp3 (bp3),
@@ -116,8 +116,8 @@ module TopModule(
 	);
 	
 	UART myUART(
-		.rst (rst),
 		.clk (clk),
+		.rst (rst),
 		.pb1 (pb1),
 		.dirControl (dirControl),
 		.drive (drive),
@@ -127,6 +127,7 @@ module TopModule(
 	
 	PulseWidthModulation myPulseWidthModulation(
 		.clk (clk),
+		.rst (rst),
 		.fullSpeedPwm (fullSpeedPwm),
 		.veerSpeedPwm (veerSpeedPwm),
 		.hardSpeedPwm (hardSpeedPwm),
@@ -136,6 +137,7 @@ module TopModule(
 
 	Drive myDrive(
 		.clk (clk),
+		.rst (rst),
 		.colDetect (colDetect),
 		.dirControl (dirControl),
 		.veerSpeedPwm (veerSpeedPwm),

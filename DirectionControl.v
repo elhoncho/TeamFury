@@ -5,6 +5,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 module DirectionControl(
 		input clk,
+		input rst,
 		input RFS, 
 		input RRS, 
 		input RMS, 
@@ -69,12 +70,12 @@ module DirectionControl(
 		
 		//Pulls out leading sensors
 		if (Direction == FORWARDS) begin //If forwards
-			prevDirection = FORWARDS;		//Resets debouonce check for change in direction
-			leadSens = stableSignal[5:4]; //Front two sensors
+			prevDirection <= FORWARDS;		//Resets debouonce check for change in direction
+			leadSens <= stableSignal[5:4]; //Front two sensors
 		end
 		else if (Direction == BACKWARDS) begin // If backwards
-			prevDirection = BACKWARDS;	//Resets debouonce check for change in direction
-			leadSens = stableSignal[1:0]; //Rear two sensors
+			prevDirection <= BACKWARDS;	//Resets debouonce check for change in direction
+			leadSens <= stableSignal[1:0]; //Rear two sensors
 		end
 		
 		//State machine for direction control
@@ -85,95 +86,92 @@ module DirectionControl(
 				if (Direction == FORWARDS) begin //If Forwards
 					//Change in leading sensors?
 					if (prevSignal[5:2] != stableSignal[5:2] || Direction != prevDirection) begin
-						state = DEBOUNCE;
-						tempSignal = prevSignal[5:2];
+						state <= DEBOUNCE;
+						tempSignal <= prevSignal[5:2];
 					end
 				end
 				else if (Direction == BACKWARDS) begin //If Backwards
-						//Change in leading sensors?
-						if (prevSignal[3:0] != stableSignal[3:0] || Direction != prevDirection) begin
-							state = DEBOUNCE;
-							tempSignal = prevSignal[3:0];
-						end
+					//Change in leading sensors?
+					if (prevSignal[3:0] != stableSignal[3:0] || Direction != prevDirection) begin
+						state <= DEBOUNCE;
+						tempSignal <= prevSignal[3:0];
+					end
 				end
-
 			end
 			
 			//Debounce state: checks for consistent signal
 			DEBOUNCE: begin
 				//Begin count
-				CountOne = CountOne + 1;
+				CountOne <= CountOne + 1;
 				//Signal still there?
 				//No, return to NORMAL
 				if (stableSignal[5:2] == tempSignal && Direction == prevDirection && Direction == FORWARDS) begin //If Forwards
-					state = NORMAL;		
+					state <= NORMAL;		
 				end
 				else if (stableSignal[3:0] == tempSignal && Direction == prevDirection && Direction == BACKWARDS) begin //If Backwards
-					state = NORMAL;		
+					state <= NORMAL;		
 				end
 				//Yes, reset count and move to Change Direction state
 				else if (CountOne == MAX_COUNT) begin
-					state = CHANGE_DIR;
-					CountOne = 0;
+					state <= CHANGE_DIR;
+					CountOne <= 0;
 				end
 			end
 			
 			//Change direction state: intreprets signal and outputs to main module
 			CHANGE_DIR: begin
-								case (leadSens)
-									//Proceed
-									2'b11: begin
-											DIR = PROCEED;
-											state = NORMAL;
-									end
-									//Hard Right
-									2'b10: begin
-											DIR = HARD_RIGHT;
-											state = NORMAL;
-									end
-									//Hard Left
-									2'b01: begin
-											DIR = HARD_LEFT;
-											state = NORMAL;
-									end
-									//90 degree or intersect		
-									2'b00: begin
-												intersectCount = 0; //Set intersect timer
-												state = CHK_INTERSECT;
-									end										
-									default: DIR = STOP;
-								endcase	
+				case (leadSens)
+					//Proceed
+					2'b11: begin
+							DIR <= PROCEED;
+							state <= NORMAL;
+					end
+					//Hard Right
+					2'b10: begin
+							DIR <= HARD_RIGHT;
+							state <= NORMAL;
+					end
+					//Hard Left
+					2'b01: begin
+							DIR <= HARD_LEFT;
+							state <= NORMAL;
+					end
+					//90 degree or intersect		
+					2'b00: begin
+								intersectCount <= 0; //Set intersect timer
+								state <= CHK_INTERSECT;
+					end										
+					default: DIR <= STOP;
+				endcase	
 			end
 			
 			//Ceck intersect state: determines 90 degree or intersect
 			CHK_INTERSECT: begin
-								//Leading sensors on tape, change states
-								if (leadSens != 2'b00) begin
-									state = CHANGE_DIR;
-								end
-								//Intersect timer reached or both side sensors on tape
-								else if (intersectCount == INTERSECT_TIMER || stableSignal[3:2] == 2'b11) begin
-									DIR = STOP;
-									state = NORMAL;
-								end
-								//Check for 90-degree turn
-								//Ninety Left state until leading sensors on tape
-								else if (stableSignal[3:2] == 2'b01) begin
-									DIR = NINETY_LEFT;
-								end
-								//Ninety Right state until leading sensors on tape
-								else if (stableSignal[3:2] == 2'b10) begin
-									DIR = NINETY_RIGHT;
-								end
+				//Leading sensors on tape, change states
+				if (leadSens != 2'b00) begin
+					state <= CHANGE_DIR;
+				end
+				//Intersect timer reached or both side sensors on tape
+				else if (intersectCount == INTERSECT_TIMER || stableSignal[3:2] == 2'b11) begin
+					DIR <= STOP;
+					state <= NORMAL;
+				end
+				//Check for 90-degree turn
+				//Ninety Left state until leading sensors on tape
+				else if (stableSignal[3:2] == 2'b01) begin
+					DIR <= NINETY_LEFT;
+				end
+				//Ninety Right state until leading sensors on tape
+				else if (stableSignal[3:2] == 2'b10) begin
+					DIR <= NINETY_RIGHT;
+				end
 
-								//No signal detected, proceed and keep counting
-								else if (DIR != NINETY_RIGHT && DIR != NINETY_LEFT && stableSignal[3:2] == 2'b00)begin
-										intersectCount = intersectCount + 1;
-										DIR = PROCEED;
-								end
+				//No signal detected, proceed and keep counting
+				else if (DIR != NINETY_RIGHT && DIR != NINETY_LEFT && stableSignal[3:2] == 2'b00)begin
+						intersectCount <= intersectCount + 1;
+						DIR <= PROCEED;
+				end
 			end
-			
-			endcase
+		endcase
 	end
-	
 endmodule

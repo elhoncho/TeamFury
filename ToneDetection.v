@@ -5,6 +5,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 module ToneDetection(
 	 input clk,
+	 input rst,
 	 input bp1,
 	 input bp2,
 	 input bp3,
@@ -14,10 +15,6 @@ module ToneDetection(
 	 input pb2,
 	 input pb3,
 	 input pb4,
-	 //output led8,
-	 //output led7,
-	 //output led6,
-	 //output led5,
 	 output wire [2:0] tdDir
     );
 	 //State parameters
@@ -47,26 +44,6 @@ module ToneDetection(
 	 reg bp3Detect;
 	 reg bp4Detect;
 	 reg bp5Detect;
-	 //reg pb1Reg;
-	 //reg pb2Reg;
-	 //reg pb3Reg;
-	 //reg pb4Reg;
-	 
-	 //reg regled8;
-	 //reg regled7;
-	 //reg regled6;
-	 //reg regled5;
-	 
-	 
-	 //assign pb1 = pb1Reg;
-	 //assign pb2 = pb2Reg;
-	 //assign pb3 = pb3Reg;
-	 //assign pb4 = pb4Reg;
-	 
-	 //assign led8 = regled8;
-	 //assign led7 = regled7;
-	 //assign led6 = regled6;
-	 //assign led5 = regled5;
 	 assign tdDir = regTdDir;
 	 
 	 
@@ -82,7 +59,6 @@ module ToneDetection(
 					bp3Detect <= 0;
 					bp4Detect <= 0;
 					bp5Detect <= 0;
-					//regTdDir <= NULL;
 					
 					if (pb1 == 1) begin
 						toneState <= CHECKSIGNAL;
@@ -181,8 +157,6 @@ module ToneDetection(
 						junctionCounter <= 0;
 					end
 				end
-				
-				
 			endcase
 		end		
 endmodule

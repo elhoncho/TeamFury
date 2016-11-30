@@ -8,7 +8,6 @@ NET "hbIn2" LOC = "J3";
 NET "hbEnB" LOC = "C6";
 NET "hbIn3" LOC = "B6";
 NET "hbIn4" LOC = "C5";
-NET "shaftPulseR" LOC = "B7";
 
 #Direction Control Pins
 NET "RFS" LOC = "A9" | pullup;
