@@ -29,15 +29,15 @@ module TopModule(
 	output sevenSeg3,
 
 	//Tone  Detection
-	input bp1,
-	input bp2,
-	input bp3,
-	input bp4,
-	input bp5,
-	input pb1,
-	input pb2,
-	input pb3,
-	input pb4,
+	input bandPass1,
+	input bandPass2,
+	input bandPass3,
+	input bandPass4,
+	input bandPass5,
+	input pushBtn1,
+	input pushBtn2,
+	input pushBtn3,
+	input pushBtn4,
 	
 	//Collision Detection
 	input colDetF1,
@@ -103,22 +103,22 @@ module TopModule(
 	ToneDetection myToneDetection (
 		.clk (clk),
 		.rst (rst),
-		.bp1 (bp1),
-		.bp2 (bp2),
-		.bp3 (bp3),
-		.bp4 (bp4),
-		.bp5 (bp5),
-		.pb1 (pb1),
-		.pb2 (pb2),
-		.pb3 (pb3),
-		.pb4 (pb4),
+		.bp1 (bandPass1),
+		.bp2 (bandPass2),
+		.bp3 (bandPass3),
+		.bp4 (bandPass4),
+		.bp5 (bandPass5),
+		.pb1 (pushBtn1),
+		.pb2 (pushBtn2),
+		.pb3 (pushBtn3),
+		.pb4 (pushBtn4),
 		.tdDir (tdDir)
 	);
 	
 	UART myUART(
 		.clk (clk),
 		.rst (rst),
-		.pb1 (pb1),
+		.pushBtn1 (pushBtn1),
 		.dirControl (dirControl),
 		.drive (drive),
 		.driveState (driveState),

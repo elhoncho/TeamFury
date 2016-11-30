@@ -6,7 +6,7 @@
 module UART(
 	input rst,
 	input clk,
-	input pb1,
+	input pushBtn1,
 	input [3:0] dirControl,
 	input drive,
 	input [1:0] driveState,
@@ -108,7 +108,7 @@ module UART(
 						systemPoll <= P_LOAD_MESSAGE;
 						lastSystemPolled <= P_PUSH_BUTTON;						
 						
-						if(pb1)begin
+						if(pushBtn1)begin
 							messageSize <= 24;
 							message[0] <= "P";
 							message[1] <= "B";

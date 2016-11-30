@@ -18,11 +18,11 @@ NET "RRS" LOC = "C12" | pullup;
 NET "LRS" LOC = "A13" | pullup;
 
 #Tone Detection Pins
-NET "bp1" LOC = "F13";
-NET "bp2" LOC = "G14";
-NET "bp3" LOC = "J13";
-NET "bp4" LOC = "J14";
-NET "bp5" LOC = "K13";
+NET "bandPass1" LOC = "F13";
+NET "bandPass2" LOC = "G14";
+NET "bandPass3" LOC = "J13";
+NET "bandPass4" LOC = "J14";
+NET "bandPass5" LOC = "K13";
 
 #Seven Seg
 NET "sevenSeg0" LOC = "F12";
@@ -49,7 +49,7 @@ NET "txData" LOC = "B1";
 //NET "rxData" LOC = "C3";
 
 #Pushbutton
-NET "pb1" LOC = "A7";
-NET "pb2" LOC = "M4";
-NET "pb3" LOC = "C11";
-NET "pb4" LOC = "G12";
+NET "pushBtn1" LOC = "A7";
+NET "pushBtn2" LOC = "M4";
+NET "pushBtn3" LOC = "C11";
+NET "pushBtn4" LOC = "G12";
