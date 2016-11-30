@@ -46,8 +46,8 @@ NET "led7" LOC = "P4";
 NET "led8" LOC = "G1";
 
 #UART
-NET "txData" LOC = "B5";
-NET "rxData" LOC = "C3";
+NET "txData" LOC = "B1";
+//NET "rxData" LOC = "C3";
 
 #Pushbutton
 NET "pb1" LOC = "A7";

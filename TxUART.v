@@ -1,23 +1,5 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date:    20:03:30 10/24/2016 
-// Design Name: 
-// Module Name:    TopModule 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
-//
-// Dependencies: 
-//
-// Revision: 
-// Revision 0.01 - File Created
-// Additional Comments: 
-//
-//////////////////////////////////////////////////////////////////////////////////
+
 module TxUART(
 			input clk,
 			input rst,
@@ -27,8 +9,7 @@ module TxUART(
 			input full,
 			input empty,
 			input [11:0]rdDataCount,
-			output txData,
-			output rxData
+			output txData
 			);
 
 //-----------------------------//
@@ -65,7 +46,6 @@ module TxUART(
 //-----------------------------//
 
 	assign txData = regTxData;
-	assign rxData = txClk;
 
 	always@(posedge clk)begin
 		//----------------Clock Generator-----------------//
