@@ -10,7 +10,9 @@ module UART(
 	input [3:0] dirControl,
 	input drive,
 	input [1:0] driveState,
-	output txData
+	output txData,
+	input hbEnA,
+	input hbEnB
    );
 	
 	`include "parameters.vh"

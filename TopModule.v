@@ -59,7 +59,6 @@ module TopModule(
 	
 	reg rst = 0;
 
-	wire dcDrive;
 	wire colDetect;
 	wire [3:0] dirControl;
 	wire fullSpeedPwm;
@@ -68,6 +67,8 @@ module TopModule(
 	wire ninetySpeedPwm;
 	wire ninetyFastSpeedPwm;
 	wire [2:0] tdDir;
+	wire [1:0] driveState;
+	wire drive;
 	
 	//Turn Off The 7-Seg Display
 	assign sevenSeg0 = 1;
@@ -84,14 +85,14 @@ module TopModule(
 		.LFS	(LFS),
 		.LRS	(LRS),
 		.LMS  (LMS),
-		.Direction (dcDrive),
+		.Direction (drive),
 		.DIR	(dirControl)
 	);
 	
 	CollisionDetection myCollisionDetection(
 		.clk (clk),
 		.rst (rst),
-		.direction (dcDrive),
+		.direction (drive),
 		.sensf (colDetF1),
 		.sensb (colDetF2),
 		.led1 (led1),
@@ -122,7 +123,9 @@ module TopModule(
 		.dirControl (dirControl),
 		.drive (drive),
 		.driveState (driveState),
-		.txData (txData)
+		.txData (txData),
+		.hbEnA (hbEnA),
+		.hbEnB (hbEnB)
 	);
 	
 	PulseWidthModulation myPulseWidthModulation(
@@ -156,7 +159,9 @@ module TopModule(
 		.led5 (led5),
 		.led6 (led6),
 		.led7 (led7),
-		.led8 (led8)
+		.led8 (led8),
+		.driveState (driveState),
+		.drive (drive)
 	);
 	
 endmodule

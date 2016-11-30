@@ -13,59 +13,44 @@ module Drive(
 	input hardSpeedPwm,
 	input ninetySpeedPwm,
 	input ninetyFastSpeedPwm,
-	input tdDir,
+	input [2:0] tdDir,
 	output hbIn1,
 	output hbIn2,
 	output hbIn3,
 	output hbIn4,
-	output hbEnA,
-	output hbEnB,
-	output led4,
-	output led5,
-	output led6,
-	output led7,
-	output led8
+	output reg hbEnA,
+	output reg hbEnB,
+	output reg led4,
+	output reg led5,
+	output reg led6,
+	output reg led7,
+	output reg led8,
+	output reg [1:0] driveState,
+	output reg drive
 	);
 	 
 	`include "parameters.vh"
 	
 	//H-Bridge Registers
-	reg regHbEnA = 0;
-	reg regHbEnB = 0;
 	reg [3:0] regHbRight = 0;
 	reg [3:0] regHbLeft = 0;
 	reg [3:0] regHbStraight = 0;
 	reg [3:0] regHbDrive = 0;
 
 	//Drive State Machine Registers
-	reg [1:0] driveState = DRIVE;
-	reg drive = FORWARDS;
+	//reg [1:0] regDriveState = DRIVE;
+	//reg regDrive = FORWARDS;
 	
 	//Junction Registers
 	reg [26:0] jncCounter = 0;
 	reg [26:0] jncTurnCounter = 0;
-	reg regLed4 = 0;
-	reg regLed5 = 0;
-	reg regLed6 = 0;
-	reg regLed7 = 0;
-	reg regLed8 = 0;
 	
-	//Junction
-	assign led4 = regLed4;
-	assign led5 = regLed5;
-	assign led6 = regLed6;
-	assign led7 = regLed7;
-	assign led8 = regLed8;
-	
-		//Pin Assignments
-	assign hbEnA = regHbEnA;
-	assign hbEnB = regHbEnB;
 	assign hbIn1 = regHbDrive[0];
 	assign hbIn2 = regHbDrive[1];
 	assign hbIn3 = regHbDrive[2];
 	assign hbIn4 = regHbDrive[3];
-	assign dcDrive = drive;
 	
+	//assign driveState = regDriveState;
 	always @(posedge clk) begin
 	
 		//Diretion and bit assignments for H-Bridge
@@ -94,22 +79,22 @@ module Drive(
 				
 					//Veer Left
 					if(dirControl[1:0] == DC_VEER)begin
-						regHbEnA <= veerSpeedPwm;
-						regHbEnB <= fullSpeedPwm;
+						hbEnA <= veerSpeedPwm;
+						hbEnB <= fullSpeedPwm;
 						regHbDrive <= regHbStraight;
 					end
 					
 					//Hard Left
 					else if(dirControl[1:0] == DC_HARD) begin
-						regHbEnA <= veerSpeedPwm;
-						regHbEnB <= hardSpeedPwm;
+						hbEnA <= veerSpeedPwm;
+						hbEnB <= hardSpeedPwm;
 						regHbDrive <= regHbLeft;
 					end
 					
 					//Stop Left
 					else if(dirControl[1:0] == DC_STOP) begin
-						regHbEnA <= ninetySpeedPwm;
-						regHbEnB <= ninetyFastSpeedPwm;
+						hbEnA <= ninetySpeedPwm;
+						hbEnB <= ninetyFastSpeedPwm;
 						regHbDrive <= regHbLeft;
 					end
 				end
@@ -119,22 +104,22 @@ module Drive(
 				
 					//Veer Right
 					if(dirControl[1:0] == DC_VEER) begin
-						regHbEnA <= fullSpeedPwm;
-						regHbEnB <= veerSpeedPwm;
+						hbEnA <= fullSpeedPwm;
+						hbEnB <= veerSpeedPwm;
 						regHbDrive <= regHbStraight;
 					end
 					
 					//Hard Right
 				   else if(dirControl[1:0] == DC_HARD) begin
-						regHbEnA <= hardSpeedPwm;
-						regHbEnB <= veerSpeedPwm;
+						hbEnA <= hardSpeedPwm;
+						hbEnB <= veerSpeedPwm;
 						regHbDrive <= regHbRight;
 					end 
 					
 					//Stop Right
 					else if(dirControl[1:0] == DC_STOP) begin
-						regHbEnA <= ninetyFastSpeedPwm;
-						regHbEnB <= ninetySpeedPwm;
+						hbEnA <= ninetyFastSpeedPwm;
+						hbEnB <= ninetySpeedPwm;
 						regHbDrive <= regHbRight;
 					end 
 				end
@@ -142,24 +127,24 @@ module Drive(
 				//Straight
 				else if(dirControl[3:2] == DC_PROCEED) begin
 					if(dirControl[1:0] == 2'b00) begin
-						regHbEnA <= fullSpeedPwm;
-						regHbEnB <= fullSpeedPwm;
+						hbEnA <= fullSpeedPwm;
+						hbEnB <= fullSpeedPwm;
 						regHbDrive <= regHbStraight;
 					end
 				end	
 				
 				//Stop
 				else if(dirControl[3:2] == DC_STOP) begin
-					regHbEnA <= 0;
-					regHbEnB <= 0;
+					hbEnA <= 0;
+					hbEnB <= 0;
 					regHbDrive <= HB_STOP;
 					driveState <= JUNCTION;
 				end
 				
 				//Default Stop
 				else begin
-					regHbEnA <= fullSpeedPwm;
-					regHbEnB <= fullSpeedPwm;
+					hbEnA <= fullSpeedPwm;
+					hbEnB <= fullSpeedPwm;
 					regHbDrive <= HB_STOP;
 					driveState <= JUNCTION;
 				end
@@ -170,38 +155,38 @@ module Drive(
 				if (colDetect) begin
 					driveState <= DRIVE;
 				end
-				regHbEnA <= 0;
-				regHbEnB <= 0;
+				hbEnA <= 0;
+				hbEnB <= 0;
 				
 			end
 
 			//Junction State
 			JUNCTION: begin
 				if(tdDir == STOP)begin
-					regLed4 <= 1;
-					regLed5 <= 0;
-					regLed6 <= 0;
-					regLed7 <= 0;
-					regLed8 <= 0;
+					led4 <= 1;
+					led5 <= 0;
+					led6 <= 0;
+					led7 <= 0;
+					led8 <= 0;
 					
-					regHbEnA <= 0;
-					regHbEnB <= 0;
+					hbEnA <= 0;
+					hbEnB <= 0;
 					regHbDrive <= HB_STOP;
 				end
 				//Straight
 				else if (tdDir == STRAIGHT)begin
 					jncCounter <= jncCounter + 1;
 					if (jncCounter <= 50_00_000)begin	
-						regHbEnA <= fullSpeedPwm;
-						regHbEnB <= fullSpeedPwm;
+						hbEnA <= fullSpeedPwm;
+						hbEnB <= fullSpeedPwm;
 						regHbDrive <= regHbStraight;
 					end
 					else begin
-						regLed4 <= 0;
-						regLed5 <= 0;
-						regLed6 <= 1;
-						regLed7 <= 0;
-						regLed8 <= 0;
+						led4 <= 0;
+						led5 <= 0;
+						led6 <= 1;
+						led7 <= 0;
+						led8 <= 0;
 						driveState <= DRIVE;
 						drive <= FORWARDS;
 						jncCounter <= 0;
@@ -211,21 +196,21 @@ module Drive(
 				else if (tdDir == LEFT)begin
 					jncCounter <= jncCounter + 1;
 					if (jncCounter <= 75_000_000)begin
-						regHbEnA <= ninetySpeedPwm;
-						regHbEnB <= ninetyFastSpeedPwm;
+						hbEnA <= ninetySpeedPwm;
+						hbEnB <= ninetyFastSpeedPwm;
 						regHbDrive <= regHbLeft;
 					end
 					else if (jncCounter > 75_000_000 && dirControl[3:2] == DC_STOP)begin
-						regHbEnA <= fullSpeedPwm;
-						regHbEnB <= fullSpeedPwm;
+						hbEnA <= fullSpeedPwm;
+						hbEnB <= fullSpeedPwm;
 						regHbDrive <= regHbStraight;
 					end
 					else begin
-						regLed4 <= 0;
-						regLed5 <= 0;
-						regLed6 <= 1;
-						regLed7 <= 0;
-						regLed8 <= 0;
+						led4 <= 0;
+						led5 <= 0;
+						led6 <= 1;
+						led7 <= 0;
+						led8 <= 0;
 						driveState <= DRIVE;
 						//Drive <= FORWARDS;
 						jncCounter <= 0;
@@ -235,21 +220,21 @@ module Drive(
 				else if (tdDir == RIGHT)begin
 					jncCounter <= jncCounter + 1;
 					if (jncCounter <= 75_000_000)begin
-						regHbEnA <= ninetyFastSpeedPwm;
-						regHbEnB <= ninetySpeedPwm;
+						hbEnA <= ninetyFastSpeedPwm;
+						hbEnB <= ninetySpeedPwm;
 						regHbDrive <= regHbRight;
 					end
 					else if (jncCounter > 75_000_000 && dirControl[3:2] == DC_STOP)begin
-						regHbEnA <= fullSpeedPwm;
-						regHbEnB <= fullSpeedPwm;
+						hbEnA <= fullSpeedPwm;
+						hbEnB <= fullSpeedPwm;
 						regHbDrive <= regHbStraight;
 					end	
 					else begin
-						regLed4 <= 0;
-						regLed5 <= 0;
-						regLed6 <= 1;
-						regLed7 <= 0;
-						regLed8 <= 0;
+						led4 <= 0;
+						led5 <= 0;
+						led6 <= 1;
+						led7 <= 0;
+						led8 <= 0;
 						driveState <= DRIVE;
 						//Drive <= FORWARDS;
 						jncCounter <= 0;
@@ -258,23 +243,23 @@ module Drive(
 				//Back
 				else if (tdDir == BACK)begin
 					jncCounter <= jncCounter + 1;
-					regLed4 <= 0;
-					regLed5 <= 0;
-					regLed6 <= 1;
-					regLed7 <= 0;
-					regLed8 <= 0;
+					led4 <= 0;
+					led5 <= 0;
+					led6 <= 1;
+					led7 <= 0;
+					led8 <= 0;
 					
 					if (jncCounter <= 50_000_000)begin
-						regHbEnA <= fullSpeedPwm;
-						regHbEnB <= fullSpeedPwm;
+						hbEnA <= fullSpeedPwm;
+						hbEnB <= fullSpeedPwm;
 						regHbDrive <= regHbStraight;
 					end
 					else begin
-						regLed4 <= 0;
-						regLed5 <= 0;
-						regLed6 <= 1;
-						regLed7 <= 0;
-						regLed8 <= 0;
+						led4 <= 0;
+						led5 <= 0;
+						led6 <= 1;
+						led7 <= 0;
+						led8 <= 0;
 						driveState <= DRIVE;
 						drive <= REVERSE;
 						jncCounter <= 0;
