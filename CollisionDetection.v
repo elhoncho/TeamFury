@@ -70,9 +70,7 @@ module CollisionDetection(
 			end
 
 			COLLISION_STATE: begin
-				//TODO: Take out the always DRIVE state
-				//colDetect <= STOP;
-				colDetect <= DRIVE;
+				colDetect <= STOP;
 				
 				regLed1 <= 0;
 				regLed2 <= 0;
