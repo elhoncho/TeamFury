@@ -29,11 +29,6 @@ module TopModule(
 	output sevenSeg3,
 
 	//Tone  Detection
-	input bandPass1,
-	input bandPass2,
-	input bandPass3,
-	input bandPass4,
-	input bandPass5,
 	input pushBtn1,
 	input pushBtn2,
 	input pushBtn3,
@@ -66,9 +61,11 @@ module TopModule(
 	wire hardSpeedPwm;
 	wire ninetySpeedPwm;
 	wire ninetyFastSpeedPwm;
-	wire [2:0] tdDir;
+	wire [2:0] toneDir;
 	wire [1:0] driveState;
 	wire direction;
+	wire enableToneDetection;
+	wire [1:0] junctionState;
 	
 	//Turn Off The 7-Seg Display
 	assign sevenSeg0 = 1;
@@ -104,16 +101,12 @@ module TopModule(
 	ToneDetection myToneDetection (
 		.clk (clk),
 		.rst (rst),
-		.bp1 (bandPass1),
-		.bp2 (bandPass2),
-		.bp3 (bandPass3),
-		.bp4 (bandPass4),
-		.bp5 (bandPass5),
-		.pb1 (pushBtn1),
-		.pb2 (pushBtn2),
-		.pb3 (pushBtn3),
-		.pb4 (pushBtn4),
-		.tdDir (tdDir)
+		.enableToneDetection (enableToneDetection),
+		.pushBtn1 (pushBtn1),
+		.pushBtn2 (pushBtn2),
+		.pushBtn3 (pushBtn3),
+		.pushBtn4 (pushBtn4),
+		.toneDir (toneDir)
 	);
 	
 	UART myUART(
@@ -125,7 +118,9 @@ module TopModule(
 		.driveState (driveState),
 		.txData (txData),
 		.hbEnA (hbEnA),
-		.hbEnB (hbEnB)
+		.hbEnB (hbEnB),
+		.junctionState (junctionState),
+		.toneDir (toneDir)
 	);
 	
 	PulseWidthModulation myPulseWidthModulation(
@@ -148,7 +143,7 @@ module TopModule(
 		.hardSpeedPwm (hardSpeedPwm),
 		.ninetySpeedPwm (ninetySpeedPwm),
 		.ninetyFastSpeedPwm (ninetyFastSpeedPwm),
-		.tdDir (tdDir),
+		.toneDir (toneDir),
 		.hbIn1 (hbIn1),
 		.hbIn2 (hbIn2),
 		.hbIn3 (hbIn3),
@@ -161,7 +156,9 @@ module TopModule(
 		.led7 (led7),
 		.led8 (led8),
 		.driveState (driveState),
-		.direction (direction)
+		.direction (direction),
+		.enableToneDetection (enableToneDetection),
+		.junctionStateWire (junctionState)
 	);
 	
 endmodule

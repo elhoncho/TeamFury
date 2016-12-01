@@ -13,11 +13,12 @@ module Drive(
 	input hardSpeedPwm,
 	input ninetySpeedPwm,
 	input ninetyFastSpeedPwm,
-	input [2:0] tdDir,
+	input [2:0] toneDir,
 	output hbIn1,
 	output hbIn2,
 	output hbIn3,
 	output hbIn4,
+	output reg enableToneDetection = 0,
 	output reg hbEnA = 0,
 	output reg hbEnB = 0,
 	output reg led4 = 0,
@@ -26,7 +27,8 @@ module Drive(
 	output reg led7 = 0,
 	output reg led8 = 0,
 	output reg [1:0] driveState = 0,
-	output reg direction = 0
+	output reg direction = 1,
+	output [1:0] junctionStateWire
 	);
 	 
 	`include "parameters.vh"
@@ -38,14 +40,16 @@ module Drive(
 	reg [3:0] regHbDrive = 0;
 	
 	//Junction Registers
-	reg [26:0] jncCounter = 0;
-	reg [26:0] jncTurnCounter = 0;
+	reg [1:0] junctionState = J_COMPLETE;
+	reg [2:0] junctionManeuver = TD_HOLD;
+	reg [25:0] junctionTimer = 0;
 	
 	assign hbIn1 = regHbDrive[0];
 	assign hbIn2 = regHbDrive[1];
 	assign hbIn3 = regHbDrive[2];
 	assign hbIn4 = regHbDrive[3];
 	
+	assign junctionStateWire = junctionState;
 	//assign driveState = regDriveState;
 	always @(posedge clk) begin
 	
@@ -71,7 +75,7 @@ module Drive(
 				end
 			
 				//Turn Left
-				if(dirControl[3:2] == DC_TURN_LEFT)begin
+				else if(dirControl[3:2] == DC_TURN_LEFT)begin
 				
 					//Veer Left
 					if(dirControl[1:0] == DC_VEER)begin
@@ -158,113 +162,90 @@ module Drive(
 
 			//Junction State
 			JUNCTION: begin
-				if(tdDir == STOP)begin
-					led4 <= 1;
-					led5 <= 0;
-					led6 <= 0;
-					led7 <= 0;
-					led8 <= 0;
-					
-					hbEnA <= 0;
-					hbEnB <= 0;
-					regHbDrive <= HB_STOP;
-				end
-				//Straight
-				else if (tdDir == STRAIGHT)begin
-					jncCounter <= jncCounter + 1;
-					if (jncCounter <= 50_00_000)begin	
-						hbEnA <= fullSpeedPwm;
-						hbEnB <= fullSpeedPwm;
-						regHbDrive <= regHbStraight;
-					end
-					else begin
-						led4 <= 0;
-						led5 <= 0;
-						led6 <= 1;
-						led7 <= 0;
-						led8 <= 0;
-						driveState <= DRIVE;
-						direction <= FORWARDS;
-						jncCounter <= 0;
-					end			
-				end
-				//Left
-				else if (tdDir == LEFT)begin
-					jncCounter <= jncCounter + 1;
-					if (jncCounter <= 75_000_000)begin
-						hbEnA <= ninetySpeedPwm;
-						hbEnB <= ninetyFastSpeedPwm;
-						regHbDrive <= regHbLeft;
-					end
-					else if (jncCounter > 75_000_000 && dirControl[3:2] == DC_STOP)begin
-						hbEnA <= fullSpeedPwm;
-						hbEnB <= fullSpeedPwm;
-						regHbDrive <= regHbStraight;
-					end
-					else begin
-						led4 <= 0;
-						led5 <= 0;
-						led6 <= 1;
-						led7 <= 0;
-						led8 <= 0;
-						driveState <= DRIVE;
-						jncCounter <= 0;
-					end
-				end
-				//Right
-				else if (tdDir == RIGHT)begin
-					jncCounter <= jncCounter + 1;
-					if (jncCounter <= 75_000_000)begin
-						hbEnA <= ninetyFastSpeedPwm;
-						hbEnB <= ninetySpeedPwm;
-						regHbDrive <= regHbRight;
-					end
-					else if (jncCounter > 75_000_000 && dirControl[3:2] == DC_STOP)begin
-						hbEnA <= fullSpeedPwm;
-						hbEnB <= fullSpeedPwm;
-						regHbDrive <= regHbStraight;
-					end	
-					else begin
-						led4 <= 0;
-						led5 <= 0;
-						led6 <= 1;
-						led7 <= 0;
-						led8 <= 0;
-						driveState <= DRIVE;
-						jncCounter <= 0;
-					end	
-				end
-				//Back
-				else if (tdDir == BACK)begin
-					jncCounter <= jncCounter + 1;
-					led4 <= 0;
-					led5 <= 0;
-					led6 <= 1;
-					led7 <= 0;
-					led8 <= 0;
-					
-					if (jncCounter <= 50_000_000)begin
-						hbEnA <= fullSpeedPwm;
-						hbEnB <= fullSpeedPwm;
-						regHbDrive <= regHbStraight;
-					end
-					else begin
-						led4 <= 0;
-						led5 <= 0;
-						led6 <= 1;
-						led7 <= 0;
-						led8 <= 0;
-						driveState <= DRIVE;
-						direction <= REVERSE;
-						jncCounter <= 0;
-					end	
+				//Collision detected	
+				if(!colDetect) begin
+					driveState <= COLLISION;
+					enableToneDetection <= 0;
 				end
 				else begin
-					driveState <= DRIVE;
-					direction <= FORWARDS;
-					jncCounter <= 0;
-				end	
-			end		
+					case(junctionState)
+						J_DETECT: begin
+							enableToneDetection <= 1;
+							
+							if(toneDir == TD_STRAIGHT)begin
+								junctionState <= J_MANEUVER;
+								junctionManeuver <= TD_STRAIGHT;
+							end
+							else if(toneDir == TD_LEFT)begin
+								junctionState <= J_MANEUVER;
+								junctionManeuver <= TD_LEFT;
+								junctionTimer <= 0;
+							end
+							else if(toneDir == TD_RIGHT)begin
+								junctionState <= J_MANEUVER;
+								junctionManeuver <= TD_RIGHT;
+							end
+							else if(toneDir == TD_BACK)begin
+								junctionState <= J_MANEUVER;
+								junctionManeuver <= TD_BACK;
+							end
+							else if(toneDir == TD_STOP)begin
+								junctionState <= J_MANEUVER;
+								junctionManeuver <= TD_STOP;
+							end
+							else if(toneDir == TD_HOLD)begin
+								 //Do nothing, just sit here and wate for a decision
+							end
+						end
+						J_MANEUVER: begin
+							enableToneDetection <= 0;
+							if(junctionManeuver == TD_STRAIGHT)begin
+								junctionState <= J_COMPLETE;
+								driveState <= DRIVE;
+							end
+							else if(junctionManeuver == TD_LEFT)begin
+								junctionTimer <= junctionTimer +1;
+								if(junctionTimer < 25_000_000)begin
+									hbEnA <= ninetySpeedPwm;
+									hbEnB <= ninetyFastSpeedPwm;
+									regHbDrive <= regHbLeft;
+								end
+								else begin
+									junctionTimer <= 0;
+									junctionState <= J_COMPLETE;
+									driveState <= DRIVE;
+								end
+							end
+							else if(junctionManeuver == TD_RIGHT)begin
+								junctionTimer <= junctionTimer +1;
+								if(junctionTimer < 25_000_000)begin
+									hbEnA <= ninetyFastSpeedPwm;
+									hbEnB <= ninetySpeedPwm;
+									regHbDrive <= regHbRight;
+								end
+								else begin
+									junctionTimer <= 0;
+									junctionState <= J_COMPLETE;
+									driveState <= DRIVE;
+								end
+							end
+							else if(junctionManeuver == TD_BACK)begin
+								junctionState <= J_COMPLETE;
+								driveState <= DRIVE;
+								direction <= ~direction;
+							end
+							else if(junctionManeuver == TD_STOP)begin
+								junctionState <= J_COMPLETE;
+								driveState <= DRIVE;
+							end
+						end
+						J_COMPLETE: begin
+							//This should be the first state of a new junction phase
+							junctionState <= J_DETECT;
+						end
+					endcase
+				end
+			end
 		endcase
 	end
 endmodule

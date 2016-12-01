@@ -27,12 +27,18 @@ parameter DC_FULL = 2'b00;
 parameter DC_VEER = 2'b01;
 parameter DC_HARD = 2'b10;
 
-//Junction Conditions
-parameter  STRAIGHT = 3'b000;
-parameter  LEFT = 3'b001;
-parameter  RIGHT = 3'b010;
-parameter  BACK = 3'b011;
-parameter  STOP = 3'b100;
+//Tone Detection
+parameter TD_STRAIGHT = 3'b000;
+parameter TD_LEFT = 3'b001;
+parameter TD_RIGHT = 3'b010;
+parameter TD_BACK = 3'b011;
+parameter TD_STOP = 3'b100;
+parameter TD_HOLD = 3'b101;
+
+//Junction
+parameter J_DETECT = 2'b00;
+parameter J_MANEUVER = 2'b01;
+parameter J_COMPLETE = 2'b10;
 
 //H-Bridge Parameters
 parameter HB_RIGHT = 4'b1010;
@@ -49,6 +55,8 @@ parameter P_PUSH_BUTTON = 2;
 parameter P_DC_DIR = 3;
 parameter P_DRIVE_DIR = 4;
 parameter P_DRIVE_STATE = 5;
+parameter P_JUNCTION_STATE = 6;
+parameter P_TONE_DIR = 7;
 //this one has to be the max number
 //because of how the case statement works
-parameter P_CLEAR_TERM = 6;
+parameter P_CLEAR_TERM = 8;

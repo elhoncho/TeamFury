@@ -12,7 +12,9 @@ module UART(
 	input [1:0] driveState,
 	output txData,
 	input hbEnA,
-	input hbEnB
+	input hbEnB,
+	input [1:0] junctionState,
+	input [2:0] toneDir
    );
 	
 	`include "parameters.vh"
@@ -345,6 +347,163 @@ module UART(
 							message[21] <= " ";
 							message[22] <= 13;
 							message[23] <= 10;
+						end
+					end
+					P_JUNCTION_STATE: begin
+						loadCounter <= 0;
+						systemPoll <= P_LOAD_MESSAGE;
+						lastSystemPolled <= P_JUNCTION_STATE;	
+						
+						messageSize <= 26;
+						
+						//Return home
+						message[0] <= "J";
+						message[1] <= "u";
+						message[2] <= "n";
+						message[3] <= "c";
+						message[4] <= "t";
+						message[5] <= "i";
+						message[6] <= "o";
+						message[7] <= "n";
+						message[8] <= " ";
+						message[9] <= "S";
+						message[10] <= "t";
+						message[11] <= "a";
+						message[12] <= "t";
+						message[13] <= "e";
+						message[14] <= ":";
+						message[15] <= " ";
+						
+						if(junctionState == J_DETECT)begin
+							message[16] <= "D";
+							message[17] <= "e";
+							message[18] <= "t";
+							message[19] <= "e";
+							message[20] <= "c";
+							message[21] <= "t";
+							message[22] <= " ";
+							message[23] <= " ";
+							message[24] <= " ";
+							message[25] <= 13;
+							message[26] <= 10;
+						end
+						else if(junctionState == J_MANEUVER)begin
+							message[16] <= "M";
+							message[17] <= "a";
+							message[18] <= "n";
+							message[19] <= "e";
+							message[20] <= "u";
+							message[21] <= "v";
+							message[22] <= "e";
+							message[23] <= "r";
+							message[24] <= " ";
+							message[25] <= 13;
+							message[26] <= 10;
+						end
+						else if(junctionState == J_COMPLETE)begin
+							message[16] <= "C";
+							message[17] <= "o";
+							message[18] <= "m";
+							message[19] <= "p";
+							message[20] <= "l";
+							message[21] <= "e";
+							message[22] <= "t";
+							message[23] <= "e";
+							message[24] <= " ";
+							message[25] <= 13;
+							message[26] <= 10;
+						end
+					end
+					P_TONE_DIR: begin
+						loadCounter <= 0;
+						systemPoll <= P_LOAD_MESSAGE;
+						lastSystemPolled <= P_TONE_DIR;	
+						
+						messageSize <= 19;
+						
+						//Return home
+						message[0] <= "T";
+						message[1] <= "o";
+						message[2] <= "n";
+						message[3] <= "e";
+						message[4] <= " ";
+						message[5] <= "D";
+						message[6] <= "i";
+						message[7] <= "r";
+						message[8] <= ":";
+						message[9] <= " ";
+						
+						if(toneDir == TD_STRAIGHT)begin
+							message[10] <= "S";
+							message[11] <= "t";
+							message[12] <= "r";
+							message[13] <= "a";
+							message[14] <= "i";
+							message[15] <= "g";
+							message[16] <= "h";
+							message[17] <= "t";
+							message[18] <= 13;
+							message[19] <= 10;
+						end
+						else if(toneDir == TD_LEFT)begin
+							message[10] <= "L";
+							message[11] <= "e";
+							message[12] <= "f";
+							message[13] <= "t";
+							message[14] <= " ";
+							message[15] <= " ";
+							message[16] <= " ";
+							message[17] <= " ";
+							message[18] <= 13;
+							message[19] <= 10;
+						end
+						else if(toneDir == TD_RIGHT)begin
+							message[10] <= "R";
+							message[11] <= "i";
+							message[12] <= "g";
+							message[13] <= "h";
+							message[14] <= " ";
+							message[15] <= " ";
+							message[16] <= " ";
+							message[17] <= " ";
+							message[18] <= 13;
+							message[19] <= 10;
+						end
+						else if(toneDir == TD_BACK)begin
+							message[10] <= "B";
+							message[11] <= "a";
+							message[12] <= "c";
+							message[13] <= "k";
+							message[14] <= " ";
+							message[15] <= " ";
+							message[16] <= " ";
+							message[17] <= " ";
+							message[18] <= 13;
+							message[19] <= 10;
+						end
+						else if(toneDir == TD_STOP)begin
+							message[10] <= "S";
+							message[11] <= "t";
+							message[12] <= "o";
+							message[13] <= "p";
+							message[14] <= " ";
+							message[15] <= " ";
+							message[16] <= " ";
+							message[17] <= " ";
+							message[18] <= 13;
+							message[19] <= 10;
+						end
+						else if(toneDir == TD_HOLD)begin
+							message[10] <= "H";
+							message[11] <= "o";
+							message[12] <= "l";
+							message[13] <= "d";
+							message[14] <= " ";
+							message[15] <= " ";
+							message[16] <= " ";
+							message[17] <= " ";
+							message[18] <= 13;
+							message[19] <= 10;
 						end
 					end
 					P_CLEAR_TERM: begin
