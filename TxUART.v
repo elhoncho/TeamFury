@@ -11,7 +11,7 @@ module TxUART(
 			input [7:0]dout,
 			input full,
 			input empty,
-			input [11:0]rdDataCount,
+			input [7:0]rdDataCount,
 			output txData
 			);
 

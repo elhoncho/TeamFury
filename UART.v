@@ -14,7 +14,8 @@ module UART(
 	input hbEnA,
 	input hbEnB,
 	input [1:0] junctionState,
-	input [2:0] toneDir
+	input [2:0] toneDir,
+	input [25:0] rightCount
    );
 	
 	`include "parameters.vh"
@@ -24,8 +25,17 @@ module UART(
 	wire full;
 	wire empty;
 	wire [7:0] dout;
-	wire [11:0] wrDataCount;
-	wire [11:0] rdDataCount;
+	wire [7:0] wrDataCount;
+	wire [7:0] rdDataCount;
+	
+	wire [3:0] rightOne;
+	wire [3:0] rightTen;
+	wire [3:0] rightHundred;
+	wire [3:0] rightThousand;
+	wire [3:0] rightTenThousand;
+	wire [3:0] rightHundredThousand;
+	wire [3:0] rightMil;
+	wire [3:0] rightTenMil;
 
 
 	//UART regesters
@@ -41,6 +51,8 @@ module UART(
 	reg [7:0] message [40:0];
 	reg [7:0] din;
 	reg [12:0] txClkCounter = 0;
+	reg [25:0] rightNumberToBcd = 0;
+	reg [10:0] clearScreenCounter = 0;
 	
 	UART_Buffer myUART_Buffer (
 		.rst				(rst),    // input rst
@@ -57,6 +69,7 @@ module UART(
 	);
 	
 	//Instanciate TxUART
+
 	TxUART myTxUART(
 		.clk (clk),
 		.rst (rst),
@@ -67,6 +80,19 @@ module UART(
 		.empty (empty),
 		.rdDataCount (rdDataCount),
 		.txData (txData)
+	);
+
+	bcd rightBcd(
+		.clk (clk),
+		.number (rightNumberToBcd),   
+		.one (rightOne),
+		.ten (rightTen),
+		.hundred (rightHundred),
+		.thousand (rightThousand),
+		.tenThousand (rightTenThousand),
+		.hundredThousand (rightHundredThousand),
+		.mil (rightMil),
+		.tenMil (rightTenMil)
 	);
 	
 	always @(posedge clk or posedge rst)begin
@@ -85,11 +111,12 @@ module UART(
 				initHoldDown <= initHoldDown + 1;
 			end
 			else begin
+				
 				//-----------------Data to write-------------------//
 				case(systemPoll)
 					P_IDLE: begin
 						if(wrDataCount == 0)begin
-							systemPoll <= P_PUSH_BUTTON;
+							systemPoll <= P_DC_DIR;
 						end
 					end
 					P_LOAD_MESSAGE: begin
@@ -105,68 +132,6 @@ module UART(
 						else begin
 							writeEn <= 0;
 							systemPoll <= P_IDLE;
-						end
-					end
-					P_PUSH_BUTTON: begin
-						loadCounter <= 0;
-						systemPoll <= P_LOAD_MESSAGE;
-						lastSystemPolled <= P_PUSH_BUTTON;						
-						
-						if(pushBtn1)begin
-							messageSize <= 24;
-							message[0] <= "P";
-							message[1] <= "B";
-							message[2] <= "1";
-							message[3] <= " ";
-							message[4] <= "S";
-							message[5] <= "t";
-							message[6] <= "a";
-							message[7] <= "t";
-							message[8] <= "u";
-							message[9] <= "s";
-							message[10] <= ":";
-							message[11] <= " ";
-							message[12] <= "P";
-							message[13] <= "r";
-							message[14] <= "e";
-							message[15] <= "s";
-							message[16] <= "s";
-							message[17] <= "e";
-							message[18] <= "d";
-							message[19] <= " ";
-							message[20] <= " ";
-							message[21] <= " ";
-							message[22] <= " ";
-							message[23] <= 13;
-							message[24] <= 10;
-						end
-						else begin
-							messageSize <= 24;
-							message[0] <= "P";
-							message[1] <= "B";
-							message[2] <= "1";
-							message[3] <= " ";
-							message[4] <= "S";
-							message[5] <= "t";
-							message[6] <= "a";
-							message[7] <= "t";
-							message[8] <= "u";
-							message[9] <= "s";
-							message[10] <= ":";
-							message[11] <= " ";
-							message[12] <= "N";
-							message[13] <= "o";
-							message[14] <= "t";
-							message[15] <= " ";
-							message[16] <= "P";
-							message[17] <= "r";
-							message[18] <= "e";
-							message[19] <= "s";
-							message[20] <= "s";
-							message[21] <= "e";
-							message[22] <= "d";
-							message[23] <= 13;
-							message[24] <= 10;
 						end
 					end
 					P_DC_DIR: begin
@@ -226,17 +191,6 @@ module UART(
 							message[12] <= 13;
 							message[13] <= 10;
 						end
-						else begin
-							message[5] <= "E";
-							message[6] <= "R";
-							message[7] <= "R";
-							message[8] <= "O";
-							message[9] <= "R";
-							message[10] <= "!";
-							message[11] <= " ";
-							message[12] <= 13;
-							message[13] <= 10;
-						end
 					end
 					P_DRIVE_DIR: begin
 						loadCounter <= 0;
@@ -271,18 +225,6 @@ module UART(
 							message[9] <= "r";
 							message[10] <= "s";
 							message[11] <= "e";
-							message[12] <= " ";
-							message[13] <= 13;
-							message[14] <= 10;
-						end
-						else begin
-							message[5] <= "E";
-							message[6] <= "R";
-							message[7] <= "R";
-							message[8] <= "O";
-							message[9] <= "R";
-							message[10] <= " ";
-							message[11] <= " ";
 							message[12] <= " ";
 							message[13] <= 13;
 							message[14] <= 10;
@@ -433,15 +375,15 @@ module UART(
 						message[8] <= ":";
 						message[9] <= " ";
 						
-						if(toneDir == TD_STRAIGHT)begin
-							message[10] <= "S";
-							message[11] <= "t";
+						if(toneDir == TD_FORWARD)begin
+							message[10] <= "F";
+							message[11] <= "o";
 							message[12] <= "r";
-							message[13] <= "a";
-							message[14] <= "i";
-							message[15] <= "g";
-							message[16] <= "h";
-							message[17] <= "t";
+							message[13] <= "w";
+							message[14] <= "a";
+							message[15] <= "r";
+							message[16] <= "d";
+							message[17] <= " ";
 							message[18] <= 13;
 							message[19] <= 10;
 						end
@@ -469,14 +411,14 @@ module UART(
 							message[18] <= 13;
 							message[19] <= 10;
 						end
-						else if(toneDir == TD_BACK)begin
-							message[10] <= "B";
-							message[11] <= "a";
-							message[12] <= "c";
-							message[13] <= "k";
-							message[14] <= " ";
-							message[15] <= " ";
-							message[16] <= " ";
+						else if(toneDir == TD_REVERSE)begin
+							message[10] <= "R";
+							message[11] <= "e";
+							message[12] <= "v";
+							message[13] <= "e";
+							message[14] <= "r";
+							message[15] <= "s";
+							message[16] <= "e";
 							message[17] <= " ";
 							message[18] <= 13;
 							message[19] <= 10;
@@ -506,25 +448,81 @@ module UART(
 							message[19] <= 10;
 						end
 					end
+					P_RIGHT_COUNT: begin
+						loadCounter <= 0;
+						systemPoll <= P_LOAD_MESSAGE;
+						lastSystemPolled <= P_RIGHT_COUNT;	
+						
+						rightNumberToBcd <= rightCount;
+						
+						messageSize <= 20;
+
+						message[0] <= "R";
+						message[1] <= "i";
+						message[2] <= "g";
+						message[3] <= "h";
+						message[4] <= "t";
+						message[5] <= " ";
+						message[6] <= "C";
+						message[7] <= "o";
+						message[8] <= "u";
+						message[9] <= "n";
+						message[10] <= "t";
+						message[11] <= ":";
+						message[12] <= " ";
+						message[13] <= 48+rightTenMil;
+						message[14] <= 48+rightMil;
+						message[15] <= 48+rightHundredThousand;
+						message[16] <= 48+rightTenThousand;
+						message[17] <= 48+rightThousand;
+						message[18] <= 48+rightHundred;
+						message[19] <= 48+rightTen;
+						message[20] <= 48+rightOne;
+					end
 					P_CLEAR_TERM: begin
 						loadCounter <= 0;
 						systemPoll <= P_LOAD_MESSAGE;
 						lastSystemPolled <= P_CLEAR_TERM;	
+
+						if(clearScreenCounter == CLEAR_SCREEN_COUNT) begin
+							clearScreenCounter <= 0;
 						
-						messageSize <= 8;
+							messageSize <= 11;
 						
-						//Return home
-						message[0] <= 27;
-						message[1] <= 91;
-						message[2] <= 72;
+							//Return home
+							message[0] <= 27;
+							message[1] <= 91;
+							message[2] <= 72;
+							
+							//Hide cursor ESC[?25l to show it ESC[?25h
+							message[3] <= 27;
+							message[4] <= 91;
+							message[5] <= 63;
+							message[6] <= 50;
+							message[7] <= 53;
+							message[8] <= 108;
+							
+							message[9] <= 27;
+							message[10] <= 91;
+							message[11] <= "J";
+						end
+						else begin
+							clearScreenCounter <= clearScreenCounter + 1;
+							messageSize <= 8;
 						
-						//Hide cursor ESC[?25l to show it ESC[?25h
-						message[3] <= 27;
-						message[4] <= 91;
-						message[5] <= 63;
-						message[6] <= 50;
-						message[7] <= 53;
-						message[8] <= 108;
+							//Return home
+							message[0] <= 27;
+							message[1] <= 91;
+							message[2] <= 72;
+							
+							//Hide cursor ESC[?25l to show it ESC[?25h
+							message[3] <= 27;
+							message[4] <= 91;
+							message[5] <= 63;
+							message[6] <= 50;
+							message[7] <= 53;
+							message[8] <= 108;
+						end
 					end
 				endcase
 			end

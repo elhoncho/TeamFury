@@ -28,10 +28,10 @@ parameter DC_VEER = 2'b01;
 parameter DC_HARD = 2'b10;
 
 //Tone Detection
-parameter TD_STRAIGHT = 3'b000;
+parameter TD_FORWARD = 3'b000;
 parameter TD_LEFT = 3'b001;
 parameter TD_RIGHT = 3'b010;
-parameter TD_BACK = 3'b011;
+parameter TD_REVERSE = 3'b011;
 parameter TD_STOP = 3'b100;
 parameter TD_HOLD = 3'b101;
 
@@ -51,12 +51,24 @@ parameter REVERSE = 1'b0;
 //UART Parameters
 parameter P_IDLE = 0;
 parameter P_LOAD_MESSAGE = 1;
-parameter P_PUSH_BUTTON = 2;
-parameter P_DC_DIR = 3;
-parameter P_DRIVE_DIR = 4;
-parameter P_DRIVE_STATE = 5;
-parameter P_JUNCTION_STATE = 6;
-parameter P_TONE_DIR = 7;
+parameter P_DC_DIR = 2;
+parameter P_DRIVE_DIR = 3;
+parameter P_DRIVE_STATE = 4;
+parameter P_JUNCTION_STATE = 5;
+parameter P_TONE_DIR = 6;
+parameter P_RIGHT_COUNT = 7;
 //this one has to be the max number
 //because of how the case statement works
 parameter P_CLEAR_TERM = 8;
+
+parameter CLEAR_SCREEN_COUNT = 300;
+
+//Collision Detection
+parameter C_HOLD_DOWN = 7_000_000;
+parameter C_FORWARDS = 1;
+parameter C_BACKWARDS = 0;
+parameter C_NO_COL_DETECT = 0;
+parameter C_VALIDATE_SIGNAL = 1;
+parameter C_COLLISION_STATE = 2;
+parameter C_DRIVE = 1;
+parameter C_STOP = 0; 

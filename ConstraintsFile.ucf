@@ -18,11 +18,11 @@ NET "RRS" LOC = "C12" | pullup;
 NET "LRS" LOC = "A13" | pullup;
 
 #Tone Detection Pins
-#NET "bandPass1" LOC = "F13";
-#NET "bandPass2" LOC = "G14";
-#NET "bandPass3" LOC = "J13";
-#NET "bandPass4" LOC = "J14";
-#NET "bandPass5" LOC = "K13";
+NET "bandPass1k" LOC = "F13";
+NET "bandPass1_5k" LOC = "G14";
+NET "bandPass2k" LOC = "J13";
+NET "bandPass2_5k" LOC = "J14";
+NET "bandPass3k" LOC = "K13";
 
 #Seven Seg
 NET "sevenSeg0" LOC = "F12";
@@ -31,18 +31,18 @@ NET "sevenSeg2" LOC = "M13";
 NET "sevenSeg3" LOC = "K14";
 
 #Collision Detection
-NET "colDetF1" LOC = "C13";
-NET "colDetF2" LOC = "D12";
+NET "colDetF" LOC = "C13";
+NET "colDetR" LOC = "D12";
 
 #LED
 NET "led1" LOC = "M5";
 NET "led2" LOC = "M11";
 NET "led3" LOC = "P7";
-NET "led4" LOC = "P6";
-NET "led5" LOC = "N5";
-NET "led6" LOC = "N4";
-NET "led7" LOC = "P4";
-NET "led8" LOC = "G1";
+#NET "led4" LOC = "P6";
+#NET "led5" LOC = "N5";
+#NET "led6" LOC = "N4";
+#NET "led7" LOC = "P4";
+#NET "led8" LOC = "G1";
 
 #UART
 NET "txData" LOC = "B1";

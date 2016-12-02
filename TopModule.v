@@ -33,20 +33,25 @@ module TopModule(
 	input pushBtn2,
 	input pushBtn3,
 	input pushBtn4,
+	input bandPass1k,
+	input bandPass1_5k,
+	input bandPass2k,
+	input bandPass2_5k,
+	input bandPass3k,
 	
 	//Collision Detection
-	input colDetF1,
-	input colDetF2, 
+	input colDetF,
+	input colDetR, 
 	
 	//LEDs
 	output led1,
 	output led2,
 	output led3,
-	output led4,
-	output led5,
-	output led6,
-	output led7,
-	output led8,
+	//output led4,
+	//output led5,
+	//output led6,
+	//output led7,
+	//output led8,
 	
 	//UART
 	output txData
@@ -66,6 +71,7 @@ module TopModule(
 	wire direction;
 	wire enableToneDetection;
 	wire [1:0] junctionState;
+	wire [25:0] rightCount;
 	
 	//Turn Off The 7-Seg Display
 	assign sevenSeg0 = 1;
@@ -90,8 +96,8 @@ module TopModule(
 		.clk (clk),
 		.rst (rst),
 		.direction (direction),
-		.sensf (colDetF1),
-		.sensb (colDetF2),
+		.colDetFrontRaw (colDetF),
+		.colDetRearRaw (colDetR),
 		.led1 (led1),
 		.led2 (led2),
 		.led3 (led3),
@@ -106,7 +112,13 @@ module TopModule(
 		.pushBtn2 (pushBtn2),
 		.pushBtn3 (pushBtn3),
 		.pushBtn4 (pushBtn4),
-		.toneDir (toneDir)
+		.rawBandPass1k (bandPass1k),
+		.rawBandPass1_5k (bandPass1_5k),
+		.rawBandPass2k (bandPass2k),
+		.rawBandPass2_5k (bandPass2_5k),
+		.rawBandPass3k (bandPass3k),
+		.toneDir (toneDir),
+		.rightCount (rightCount)
 	);
 	
 	UART myUART(
@@ -120,7 +132,8 @@ module TopModule(
 		.hbEnA (hbEnA),
 		.hbEnB (hbEnB),
 		.junctionState (junctionState),
-		.toneDir (toneDir)
+		.toneDir (toneDir),
+		.rightCount (rightCount)
 	);
 	
 	PulseWidthModulation myPulseWidthModulation(
@@ -132,7 +145,7 @@ module TopModule(
 		.ninetySpeedPwm (ninetySpeedPwm),
 		.ninetyFastSpeedPwm (ninetyFastSpeedPwm)
 	);
-
+	
 	Drive myDrive(
 		.clk (clk),
 		.rst (rst),
@@ -150,11 +163,6 @@ module TopModule(
 		.hbIn4 (hbIn4),
 		.hbEnA (hbEnA),
 		.hbEnB (hbEnB),
-		.led4 (led4),
-		.led5 (led5),
-		.led6 (led6),
-		.led7 (led7),
-		.led8 (led8),
 		.driveState (driveState),
 		.direction (direction),
 		.enableToneDetection (enableToneDetection),
