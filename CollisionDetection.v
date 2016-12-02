@@ -19,7 +19,8 @@ module CollisionDetection(
 	reg regLed2 = 0;
 	reg regLed3 = 0;
 	reg [1:0] state = 2'b00; 
-	reg [25:0] count = 0;
+	reg [25:0] countNoSignal = 0;
+	reg [25:0] countSignal = 0;
 	reg sens = 0; 
 	
 	reg colDetFrontBuffer;
@@ -60,15 +61,20 @@ module CollisionDetection(
 				regLed2 <= 1;
 				regLed3 <= 0;
 				if (!sens) begin
-					count <= count + 1; 
-					if (count == C_HOLD_DOWN) begin 
+					countSignal <= countSignal + 1; 
+					if (countSignal == C_HOLD_DOWN_SIGNAL) begin 
 						state <= C_COLLISION_STATE; 
-						count <= 0;
+						countNoSignal <= 0;
+						countSignal <= 0;
 					end
 				end
 				else begin
-					state <= C_NO_COL_DETECT;
-					count <= 0; 
+					countNoSignal <= countNoSignal + 1; 
+					if (countNoSignal == C_HOLD_DOWN_NO_SIGNAL) begin 
+						state <= C_NO_COL_DETECT; 
+						countNoSignal <= 0;
+						countSignal <= 0;
+					end
 				end
 			end
 
@@ -79,14 +85,7 @@ module CollisionDetection(
 				regLed2 <= 0;
 				regLed3 <= 1;
 				if (sens) begin
-					count <= count +1;
-					if (count == 50_000)begin
-						state <= C_NO_COL_DETECT; 
-						count <= 0;
-					end
-				end
-				else begin
-					count <= 0;
+					state <= C_VALIDATE_SIGNAL;
 				end
 			end
 		endcase

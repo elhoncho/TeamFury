@@ -64,7 +64,9 @@ parameter P_CLEAR_TERM = 8;
 parameter CLEAR_SCREEN_COUNT = 300;
 
 //Collision Detection
-parameter C_HOLD_DOWN = 7_000_000;
+parameter C_HOLD_DOWN_SIGNAL = 1_000_000;
+parameter C_HOLD_DOWN_NO_SIGNAL = 7_000_000;
+parameter C_NO_COL_PAUSE = 25_000_000;
 parameter C_FORWARDS = 1;
 parameter C_BACKWARDS = 0;
 parameter C_NO_COL_DETECT = 0;

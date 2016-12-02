@@ -39,6 +39,9 @@ module Drive(
 	reg [2:0] junctionManeuver = TD_HOLD;
 	reg [25:0] junctionTimer = 0;
 	
+	//Collision Registters
+	reg [25:0] colPauseCount;
+	
 	assign hbIn1 = regHbDrive[0];
 	assign hbIn2 = regHbDrive[1];
 	assign hbIn3 = regHbDrive[2];
@@ -148,10 +151,14 @@ module Drive(
 			//Collision State
 			COLLISION: begin
 				if (colDetect) begin
-					driveState <= DRIVE;
+					colPauseCount <= colPauseCount + 1;
+					if (colPauseCount == C_NO_COL_PAUSE) begin
+						driveState <= DRIVE;
+					end
 				end
-				hbEnA <= 0;
-				hbEnB <= 0;
+					hbEnA <= fullSpeedPwm;
+					hbEnB <= fullSpeedPwm;
+					regHbDrive <= HB_STOP;
 				
 			end
 
