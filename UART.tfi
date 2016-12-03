@@ -1,0 +1,20 @@
+
+
+
+// Instantiate the module
+UART instance_name (
+    .rst(rst), 
+    .clk(clk), 
+    .pushBtn1(pushBtn1), 
+    .dirControl(dirControl), 
+    .direction(direction), 
+    .driveState(driveState), 
+    .txData(txData), 
+    .hbEnA(hbEnA), 
+    .hbEnB(hbEnB), 
+    .junctionState(junctionState), 
+    .toneDir(toneDir), 
+    .rightCount(rightCount)
+    );
+
+

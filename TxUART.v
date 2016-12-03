@@ -43,12 +43,16 @@ module TxUART(
 	reg [9:0] txDataBuffer = 0;
 	reg [3:0] loadCounter = 0;
 	reg [7:0] initHoldDown = 0;
+	
+	wire [9:0] shiftInput;
+	wire [9:0] shiftOutput;
 		
 //-----------------------------//
 //        Assignments          //
 //-----------------------------//
 
 	assign txData = regTxData;
+	assign shiftInput = txDataBuffer;
 
 	always@(posedge clk)begin
 		//----------------Clock Generator-----------------//
@@ -94,6 +98,8 @@ module TxUART(
 				SENDING: begin
 					regTxData <= txDataBuffer[0];
 					txDataBuffer <= txDataBuffer >> 1;
+					bitsSent <= bitsSent >> 1; 
+					//txDataBuffer <= {1'b1, txDataBuffer[9:1]};
 					bitsSent <= bitsSent + 1;
 					if(bitsSent == BITS_TO_SEND)begin
 						bitsSent <= 0;

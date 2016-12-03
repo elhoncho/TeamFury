@@ -18,11 +18,11 @@ NET "RRS" LOC = "C12" | pullup;
 NET "LRS" LOC = "A13" | pullup;
 
 #Tone Detection Pins
-NET "bandPass1k" LOC = "F13";
-NET "bandPass1_5k" LOC = "G14";
-NET "bandPass2k" LOC = "J13";
+NET "bandPass1k" LOC = "P11";
+NET "bandPass1_5k" LOC = "K13";
+NET "bandPass2k" LOC = "K3";
 NET "bandPass2_5k" LOC = "J14";
-NET "bandPass3k" LOC = "K13";
+NET "bandPass3k" LOC = "G3";
 
 #Seven Seg
 NET "sevenSeg0" LOC = "F12";

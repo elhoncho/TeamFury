@@ -25,8 +25,8 @@ module UART(
 	wire full;
 	wire empty;
 	wire [7:0] dout;
-	wire [7:0] wrDataCount;
-	wire [7:0] rdDataCount;
+	wire [9:0] wrDataCount;
+	wire [9:0] rdDataCount;
 	
 	wire [3:0] rightOne;
 	wire [3:0] rightTen;

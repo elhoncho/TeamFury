@@ -55,7 +55,19 @@ module ToneDetection(
 		bandPass3k <= bufferBandPass3k;
 	 
 		if(enableToneDetection)begin
-			if(pushBtn1 || bandPass1_5k)begin
+			if(bandPass1k)begin
+				stopCount <= stopCount + 1;
+				if(stopCount == 25_000_000)begin
+					toneDir <= TD_STOP;
+					stopCount <= 0;
+					forwardCount <= 0;
+					leftCount <= 0;
+					rightCount <= 0;
+					reverseCount <= 0;
+					straightCount <= 0;
+				end
+			end
+			else if(pushBtn1 || bandPass1_5k)begin
 				straightCount <= straightCount + 1;
 				if(straightCount == 25_000_000)begin
 					toneDir <= TD_FORWARD;
@@ -95,18 +107,6 @@ module ToneDetection(
 				reverseCount <= reverseCount + 1;
 				if(reverseCount == 25_000_000)begin
 					toneDir <= TD_REVERSE;
-					stopCount <= 0;
-					forwardCount <= 0;
-					leftCount <= 0;
-					rightCount <= 0;
-					reverseCount <= 0;
-					straightCount <= 0;
-				end
-			end
-			else if(bandPass1k)begin
-				stopCount <= stopCount + 1;
-				if(stopCount == 25_000_000)begin
-					toneDir <= TD_STOP;
 					stopCount <= 0;
 					forwardCount <= 0;
 					leftCount <= 0;

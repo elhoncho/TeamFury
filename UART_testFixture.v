@@ -4,7 +4,7 @@
 // Company: 
 // Engineer:
 //
-// Create Date:   21:55:47 12/01/2016
+// Create Date:   17:06:18 12/02/2016
 // Design Name:   UART
 // Module Name:   C:/Users/Denton/Desktop/TeamFury/UART_testFixture.v
 // Project Name:  TeamFury
@@ -35,7 +35,7 @@ module UART_testFixture;
 	reg hbEnB;
 	reg [1:0] junctionState;
 	reg [2:0] toneDir;
-	reg [25:0] leftCount;
+	reg [25:0] rightCount;
 
 	// Outputs
 	wire txData;
@@ -53,7 +53,7 @@ module UART_testFixture;
 		.hbEnB(hbEnB), 
 		.junctionState(junctionState), 
 		.toneDir(toneDir), 
-		.leftCount(leftCount)
+		.rightCount(rightCount)
 	);
 
 	initial begin
@@ -68,7 +68,7 @@ module UART_testFixture;
 		hbEnB = 0;
 		junctionState = 0;
 		toneDir = 0;
-		leftCount = 0;
+		rightCount = 0;
 
 		// Wait 100 ns for global reset to finish
 		#100;
@@ -76,10 +76,10 @@ module UART_testFixture;
 		// Add stimulus here
 
 	end
-      
+	
 	always begin
 		#20 clk = ~clk;
 	end
-	
+      
 endmodule
 
