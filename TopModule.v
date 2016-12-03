@@ -72,6 +72,8 @@ module TopModule(
 	wire enableToneDetection;
 	wire [1:0] junctionState;
 	wire [25:0] rightCount;
+	wire [2:0] dirState;
+	wire [1:0] leadSense;
 	
 	//Turn Off The 7-Seg Display
 	assign sevenSeg0 = 1;
@@ -89,7 +91,9 @@ module TopModule(
 		.LRS (LRS),
 		.LMS (LMS),
 		.direction (direction),
-		.DIR (dirControl)
+		.DIR (dirControl),
+		.state (dirState),
+		.leadSens (leadSense)
 	);
 	
 	CollisionDetection myCollisionDetection(
@@ -133,7 +137,8 @@ module TopModule(
 		.hbEnB (hbEnB),
 		.junctionState (junctionState),
 		.toneDir (toneDir),
-		.rightCount (rightCount)
+		.rightCount (rightCount),
+		.dirState (dirState)
 	);
 	
 	PulseWidthModulation myPulseWidthModulation(
@@ -166,7 +171,8 @@ module TopModule(
 		.driveState (driveState),
 		.direction (direction),
 		.enableToneDetection (enableToneDetection),
-		.junctionStateWire (junctionState)
+		.junctionStateWire (junctionState),
+		.leadSense (leadSense)
 	);
 	
 endmodule

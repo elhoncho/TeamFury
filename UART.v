@@ -15,7 +15,8 @@ module UART(
 	input hbEnB,
 	input [1:0] junctionState,
 	input [2:0] toneDir,
-	input [25:0] rightCount
+	input [25:0] rightCount,
+	input [2:0] dirState
    );
 	
 	`include "parameters.vh"
@@ -192,6 +193,7 @@ module UART(
 							message[13] <= 10;
 						end
 					end
+					/*
 					P_DRIVE_DIR: begin
 						loadCounter <= 0;
 						systemPoll <= P_LOAD_MESSAGE;
@@ -228,6 +230,91 @@ module UART(
 							message[12] <= " ";
 							message[13] <= 13;
 							message[14] <= 10;
+						end
+					end*/
+					P_DIR_STATE: begin
+						loadCounter <= 0;
+						systemPoll <= P_LOAD_MESSAGE;
+						lastSystemPolled <= P_DIR_STATE;	
+						
+						messageSize <= 20;
+						
+						message[0] <= "D";
+						message[1] <= "i";
+						message[2] <= "r";
+						message[3] <= " ";
+						message[4] <= "S";
+						message[5] <= "t";
+						message[6] <= "a";
+						message[7] <= "t";
+						message[8] <= "e";
+						message[9] <= ":";
+						message[10] <= " ";
+						
+						//NORMAL = 2'b00;
+						//DEBOUNCE = 2'b01;
+						//CHANGE_DIR = 2'b10;
+						//CHK_INTERSECT = 2'b11;
+	
+						if(dirState == 3'b000)begin
+							message[11] <= "N";
+							message[12] <= "o";
+							message[13] <= "r";
+							message[14] <= "m";
+							message[15] <= "a";
+							message[16] <= "l";
+							message[17] <= " ";
+							message[18] <= " ";
+							message[19] <= 13;
+							message[20] <= 10;
+						end
+						else if(dirState == 3'b001)begin
+							message[11] <= "D";
+							message[12] <= "e";
+							message[13] <= "b";
+							message[14] <= "o";
+							message[15] <= "u";
+							message[16] <= "n";
+							message[17] <= "c";
+							message[18] <= "e";
+							message[19] <= 13;
+							message[20] <= 10;
+						end
+						else if(dirState == 3'b010)begin
+							message[11] <= "C";
+							message[12] <= "h";
+							message[13] <= "a";
+							message[14] <= "n";
+							message[15] <= "g";
+							message[16] <= "e";
+							message[17] <= " ";
+							message[18] <= "D";
+							message[19] <= 13;
+							message[20] <= 10;
+						end
+						else if(dirState == 3'b011)begin
+							message[11] <= "C";
+							message[12] <= "h";
+							message[13] <= "k";
+							message[14] <= " ";
+							message[15] <= "I";
+							message[16] <= "n";
+							message[17] <= "t";
+							message[18] <= " ";
+							message[19] <= 13;
+							message[20] <= 10;
+						end
+						else if(dirState == 3'b100)begin
+							message[11] <= "S";
+							message[12] <= "h";
+							message[13] <= "i";
+							message[14] <= "m";
+							message[15] <= "m";
+							message[16] <= "y";
+							message[17] <= " ";
+							message[18] <= " ";
+							message[19] <= 13;
+							message[20] <= 10;
 						end
 					end
 					P_DRIVE_STATE: begin
@@ -448,6 +535,7 @@ module UART(
 							message[19] <= 10;
 						end
 					end
+					/*
 					P_RIGHT_COUNT: begin
 						loadCounter <= 0;
 						systemPoll <= P_LOAD_MESSAGE;
@@ -479,6 +567,7 @@ module UART(
 						message[19] <= 48+rightTen;
 						message[20] <= 48+rightOne;
 					end
+					*/
 					P_CLEAR_TERM: begin
 						loadCounter <= 0;
 						systemPoll <= P_LOAD_MESSAGE;

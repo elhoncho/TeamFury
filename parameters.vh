@@ -1,10 +1,10 @@
 //PWM Parameters
 //Do not exceed 80% on per H-Bridge specifications (Allows for a max of 2.5A Stall)
-parameter PWM_FULL_SPEED_PERCENT_ON = 27;
+parameter PWM_FULL_SPEED_PERCENT_ON = 80;
 parameter PWM_HARD_SPEED_PERCENT_ON = 80;
-parameter PWM_VEER_SPEED_PERCENT_ON = 33;
-parameter PWM_NINETY_SPEED_PERCENT_ON = 40;
-parameter PWM_NINETY_FAST_SPEED_PERCENT_ON = 42;
+parameter PWM_VEER_SPEED_PERCENT_ON = 42;
+parameter PWM_NINETY_SPEED_PERCENT_ON = 50;
+parameter PWM_NINETY_FAST_SPEED_PERCENT_ON = 50;
 parameter PWM_FREQUENCY  = 80;
 parameter PWM_COUNT_FREQ = 50_000_000/(PWM_FREQUENCY);
 parameter PWM_COUNT_FULL_SPEED_ON   = PWM_COUNT_FREQ*PWM_FULL_SPEED_PERCENT_ON/100;
@@ -52,14 +52,15 @@ parameter REVERSE = 1'b0;
 parameter P_IDLE = 0;
 parameter P_LOAD_MESSAGE = 1;
 parameter P_DC_DIR = 2;
-parameter P_DRIVE_DIR = 3;
+//parameter P_DRIVE_DIR = 3;
+parameter P_DIR_STATE = 3;
 parameter P_DRIVE_STATE = 4;
 parameter P_JUNCTION_STATE = 5;
 parameter P_TONE_DIR = 6;
-parameter P_RIGHT_COUNT = 7;
+//parameter P_RIGHT_COUNT = 7;
 //this one has to be the max number
 //because of how the case statement works
-parameter P_CLEAR_TERM = 8;
+parameter P_CLEAR_TERM = 7;
 
 parameter CLEAR_SCREEN_COUNT = 300;
 

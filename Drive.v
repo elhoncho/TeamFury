@@ -23,7 +23,8 @@ module Drive(
 	output reg hbEnB = 0,
 	output reg [1:0] driveState = 0,
 	output reg direction = 1,
-	output [1:0] junctionStateWire
+	output [1:0] junctionStateWire,
+	input [1:0] leadSense
 	);
 	 
 	`include "parameters.vh"
@@ -37,7 +38,8 @@ module Drive(
 	//Junction Registers
 	reg [1:0] junctionState = J_COMPLETE;
 	reg [2:0] junctionManeuver = TD_HOLD;
-	reg [25:0] junctionTimer = 0;
+	reg [26:0] junctionTimer = 0;
+	reg [26:0] straightTimer =0;
 	
 	//Collision Registters
 	reg [25:0] colPauseCount;
@@ -139,13 +141,13 @@ module Drive(
 					driveState <= JUNCTION;
 				end
 				
-				//Default Stop
+				/*//Default Stop
 				else begin
 					hbEnA <= fullSpeedPwm;
 					hbEnB <= fullSpeedPwm;
 					regHbDrive <= HB_STOP;
 					driveState <= JUNCTION;
-				end
+				end*/
 			end
 
 			//Collision State
@@ -171,6 +173,7 @@ module Drive(
 						if(toneDir == TD_FORWARD)begin
 							junctionState <= J_MANEUVER;
 							junctionManeuver <= TD_FORWARD;
+							direction <= FORWARDS;
 						end
 						else if(toneDir == TD_LEFT)begin
 							junctionState <= J_MANEUVER;
@@ -184,6 +187,7 @@ module Drive(
 						else if(toneDir == TD_REVERSE)begin
 							junctionState <= J_MANEUVER;
 							junctionManeuver <= TD_REVERSE;
+							direction <= REVERSE;
 						end
 						else if(toneDir == TD_STOP)begin
 							junctionState <= J_MANEUVER;
@@ -197,10 +201,15 @@ module Drive(
 						enableToneDetection <= 0;
 						if(junctionManeuver == TD_FORWARD)begin
 							junctionTimer <= junctionTimer +1;
-							if(junctionTimer < 25_000_000)begin
+							if(junctionTimer < 50_000_000)begin
 								hbEnA <= fullSpeedPwm;
 								hbEnB <= fullSpeedPwm;
 								regHbDrive <= regHbStraight;
+								if(leadSense)begin
+									driveState <= DRIVE;
+									junctionState <= J_COMPLETE;
+									junctionTimer <= 0;
+								end
 							end
 							else begin
 								junctionTimer <= 0;
@@ -210,33 +219,57 @@ module Drive(
 						end
 						else if(junctionManeuver == TD_LEFT)begin
 							junctionTimer <= junctionTimer +1;
-							if(junctionTimer < 25_000_000)begin
+							if(junctionTimer < 75_000_000)begin
 								hbEnA <= ninetySpeedPwm;
 								hbEnB <= ninetyFastSpeedPwm;
 								regHbDrive <= regHbLeft;
 							end
+							else if(straightTimer < 50_000_000)begin
+								hbEnA <= fullSpeedPwm;
+								hbEnB <= fullSpeedPwm;
+								regHbDrive <= regHbStraight;
+								if(leadSense)begin
+									driveState <= DRIVE;
+									junctionState <= J_COMPLETE;
+									junctionTimer <= 0;
+									straightTimer <= 0;
+								end
+							end
 							else begin
 								junctionTimer <= 0;
+								straightTimer <= 0;
 								junctionState <= J_COMPLETE;
 								driveState <= DRIVE;
 							end
 						end
 						else if(junctionManeuver == TD_RIGHT)begin
 							junctionTimer <= junctionTimer +1;
-							if(junctionTimer < 25_000_000)begin
+							if(junctionTimer < 75_000_000)begin
 								hbEnA <= ninetyFastSpeedPwm;
 								hbEnB <= ninetySpeedPwm;
 								regHbDrive <= regHbRight;
 							end
+							else if(straightTimer < 50_000_000)begin
+								hbEnA <= fullSpeedPwm;
+								hbEnB <= fullSpeedPwm;
+								regHbDrive <= regHbStraight;
+								if(leadSense)begin
+									driveState <= DRIVE;
+									junctionState <= J_COMPLETE;
+									junctionTimer <= 0;
+									straightTimer <= 0;
+								end
+							end
 							else begin
 								junctionTimer <= 0;
+								straightTimer <= 0;
 								junctionState <= J_COMPLETE;
 								driveState <= DRIVE;
 							end
 						end
 						else if(junctionManeuver == TD_REVERSE)begin
 							junctionTimer <= junctionTimer +1;
-							if(junctionTimer < 25_000_000)begin
+							if(junctionTimer < 50_000_000)begin
 								hbEnA <= fullSpeedPwm;
 								hbEnB <= fullSpeedPwm;
 								regHbDrive <= regHbStraight;
@@ -250,9 +283,8 @@ module Drive(
 						else if(junctionManeuver == TD_STOP)begin
 							junctionTimer <= junctionTimer +1;
 							if(junctionTimer < 25_000_000)begin
-								hbEnA <= fullSpeedPwm;
-								hbEnB <= fullSpeedPwm;
-								regHbDrive <= regHbStraight;
+								hbEnA <= 0;
+								hbEnB <= 0;
 							end
 							else begin
 								junctionTimer <= 0;
