@@ -19,8 +19,8 @@ module Drive(
 	output hbIn3,
 	output hbIn4,
 	output reg enableToneDetection = 0,
-	output reg hbEnA = 0,
-	output reg hbEnB = 0,
+	output reg hbEnA,
+	output reg hbEnB,
 	output reg [1:0] driveState = 0,
 	output reg direction = 1,
 	output [1:0] junctionStateWire,
@@ -93,9 +93,17 @@ module Drive(
 					
 					//Stop Left
 					else if(dirControl[1:0] == DC_STOP) begin
-						hbEnA <= ninetySpeedPwm;
-						hbEnB <= ninetyFastSpeedPwm;
-						regHbDrive <= regHbLeft;
+						if (direction == FORWARDS) begin
+							hbEnA <= ninetySpeedPwm;
+							hbEnB <= ninetySpeedPwm;
+							regHbDrive <= regHbLeft;
+						end
+						else if (direction == REVERSE) begin 
+							hbEnA <= ninetyFastSpeedPwm;
+							hbEnB <= ninetySpeedPwm;
+							regHbDrive <= regHbLeft;
+						end
+
 					end
 				end
 				
@@ -118,9 +126,16 @@ module Drive(
 					
 					//Stop Right
 					else if(dirControl[1:0] == DC_STOP) begin
-						hbEnA <= ninetyFastSpeedPwm;
-						hbEnB <= ninetySpeedPwm;
-						regHbDrive <= regHbRight;
+					if (direction == FORWARDS) begin
+							hbEnA <= ninetySpeedPwm;
+							hbEnB <= ninetySpeedPwm;
+							regHbDrive <= regHbRight;
+						end
+						else if (direction == REVERSE) begin 
+							hbEnA <= ninetySpeedPwm;
+							hbEnB <= ninetyFastSpeedPwm;
+							regHbDrive <= regHbRight;
+						end
 					end 
 				end
 				
@@ -221,7 +236,7 @@ module Drive(
 							junctionTimer <= junctionTimer +1;
 							if(junctionTimer < 75_000_000)begin
 								hbEnA <= ninetySpeedPwm;
-								hbEnB <= ninetyFastSpeedPwm;
+								hbEnB <= ninetySpeedPwm;
 								regHbDrive <= regHbLeft;
 							end
 							else if(straightTimer < 50_000_000)begin
@@ -245,7 +260,7 @@ module Drive(
 						else if(junctionManeuver == TD_RIGHT)begin
 							junctionTimer <= junctionTimer +1;
 							if(junctionTimer < 75_000_000)begin
-								hbEnA <= ninetyFastSpeedPwm;
+								hbEnA <= ninetySpeedPwm;
 								hbEnB <= ninetySpeedPwm;
 								regHbDrive <= regHbRight;
 							end
@@ -273,6 +288,12 @@ module Drive(
 								hbEnA <= fullSpeedPwm;
 								hbEnB <= fullSpeedPwm;
 								regHbDrive <= regHbStraight;
+								if(leadSense)begin
+									driveState <= DRIVE;
+									junctionState <= J_COMPLETE;
+									junctionTimer <= 0;
+									straightTimer <= 0;
+								end
 							end
 							else begin
 								junctionTimer <= 0;
@@ -283,14 +304,20 @@ module Drive(
 						else if(junctionManeuver == TD_STOP)begin
 							junctionTimer <= junctionTimer +1;
 							if(junctionTimer < 25_000_000)begin
-								hbEnA <= 0;
-								hbEnB <= 0;
+								hbEnA <= fullSpeedPwm;
+								hbEnB <= fullSpeedPwm;
+								regHbDrive <= HB_STOP;
 							end
 							else begin
 								junctionTimer <= 0;
 								junctionState <= J_COMPLETE;
 								driveState <= DRIVE;
 							end			
+						end
+						else begin
+							junctionTimer <= 0;
+							junctionState <= J_COMPLETE;
+							junctionManeuver <= 5;
 						end
 					end
 					J_COMPLETE: begin
@@ -302,3 +329,4 @@ module Drive(
 		endcase
 	end
 endmodule
+

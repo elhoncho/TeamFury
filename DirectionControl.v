@@ -14,37 +14,14 @@ module DirectionControl(
 		input LRS,
 		input direction,
 		output reg [3:0]DIR,
-		output reg [2:0] state = 0,
-		output reg [1:0] leadSens
+		output reg [2:0]state = 0,
+		output reg [1:0]leadSens
    );
 
-	parameter MAX_COUNT = 5_000; //debounce time delay
-	parameter INTERSECT_TIMER = 15_000_000; //Detect 90 or intersect
-	parameter NORMAL = 3'b000;
-	parameter DEBOUNCE = 3'b001;
-	parameter CHANGE_DIR = 3'b010;
-	parameter CHK_INTERSECT = 3'b011;
-	parameter CHK_SKINNY = 3'b100;
-	parameter FORWARDS = 1'b1;
-	parameter BACKWARDS = 1'b0;
-	
-	parameter SKINNY_MAX = 12_500_000;
-	parameter SKINNY_LEFT = SKINNY_MAX/4;
-	parameter SKINNY_RIGHT = SKINNY_MAX/2+SKINNY_LEFT;
-	parameter SKINNY_ORIGIN = SKINNY_MAX;
-	
-	//Turning
-	parameter VEER_RIGHT = 4'b10_01;
-	parameter HARD_RIGHT = 4'b10_10;
-	parameter NINETY_RIGHT = 4'b10_11;
-	parameter VEER_LEFT = 4'b01_01;
-	parameter HARD_LEFT = 4'b01_10;
-	parameter NINETY_LEFT = 4'b01_11;
-	parameter PROCEED = 4'b00_00;
-	parameter STOP = 4'b11_11;
+	`include "parameters.vh"
 	
 	//Counting registers	
-	reg [24:0] CountOne = 0; //Time Delay for input signal
+	//reg [24:0] CountOne = 0; //Time Delay for input signal
 	reg [27:0] intersectCount = 0;
 	reg [25:0] skinnyCounter = 0;
 	
@@ -53,10 +30,10 @@ module DirectionControl(
 	reg [5:0] stableSignal = 0; //Stable signal
 	reg [5:0] bufferedSignal = 0; //Buffered Signal
 	reg [5:0] prevSignal = 0; //Used to store stable input signal
-	reg [3:0] tempSignal = 0;
+	//reg [3:0] tempSignal = 0;
 	
 	//State machine registers
-	//reg [1:0] state = 0;
+	//reg [1:0] state = NORMAL;
 	//reg [1:0] leadSens = 0; //Picks out leading sensors
 	//reg prevDirection = 0;
 	
@@ -82,7 +59,7 @@ module DirectionControl(
 			//prevDirection <= FORWARDS;		//Resets debouonce check for change in direction
 			leadSens <= stableSignal[5:4]; //Front two sensors
 		end
-		else if (direction == BACKWARDS) begin // If backwards
+		else if (direction == REVERSE) begin // If backwards
 			//prevDirection <= BACKWARDS;	//Resets debouonce check for change in direction
 			leadSens <= stableSignal[1:0]; //Rear two sensors
 		end
@@ -96,22 +73,22 @@ module DirectionControl(
 					//Change in leading sensors?
 					//if (prevSignal[5:2] != stableSignal[5:2] || direction != prevDirection) begin
 					if (prevSignal[5:2] != stableSignal[5:2]) begin
-						state <= DEBOUNCE;
-						tempSignal <= prevSignal[5:2];
+						state <= CHANGE_DIR;
+					//	tempSignal <= prevSignal[5:2];
 					end
 				end
-				else if (direction == BACKWARDS) begin //If Backwards
+				else if (direction == REVERSE) begin //If Backwards
 					//Change in leading sensors?
 					//if (prevSignal[3:0] != stableSignal[3:0] || direction != prevDirection) begin
 					if (prevSignal[3:0] != stableSignal[3:0]) begin
-						state <= DEBOUNCE;
-						tempSignal <= prevSignal[3:0];
+						state <= CHANGE_DIR;
+						//tempSignal <= prevSignal[3:0];
 					end
 				end
 			end
 			
 			//Debounce state: checks for consistent signal
-			DEBOUNCE: begin
+	/*		DEBOUNCE: begin
 				//Begin count
 				CountOne <= CountOne + 1;
 				//Signal still there?
@@ -132,7 +109,7 @@ module DirectionControl(
 					CountOne <= 0;
 				end
 			end
-			
+			*/
 			//Change direction state: intreprets signal and outputs to main module
 			CHANGE_DIR: begin
 				case (leadSens)
@@ -202,11 +179,11 @@ module DirectionControl(
 				end
 				//Check for 90-degree turn
 				//Ninety Left state until leading sensors on tape
-				else if (stableSignal[3:2] == 2'b01) begin
+				else if (stableSignal[3:2] == 2'b01 && DIR != NINETY_RIGHT) begin
 					DIR <= NINETY_LEFT;
 				end
 				//Ninety Right state until leading sensors on tape
-				else if (stableSignal[3:2] == 2'b10) begin
+				else if (stableSignal[3:2] == 2'b10 && DIR != NINETY_LEFT) begin
 					DIR <= NINETY_RIGHT;
 				end
 
